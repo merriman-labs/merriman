@@ -86,17 +86,22 @@ class App extends Component {
             </Dropdown>
           </Col>
         </Row>
-        <Route
-          path="/videos/:video?"
-          render={props => {
-            return (
-              <Row>
-                <Video {...props} library={this.state.library} />
-                <VideoList videos={this.state.videos} />
-              </Row>
-            );
-          }}
-        />
+        <Row>
+          <Route
+            path="/videos/:video?"
+            render={props => {
+              return <Video {...props} library={this.state.library} />;
+            }}
+          />
+        </Row>
+        <Row>
+          <Route
+            path="/videos"
+            render={props => (
+              <VideoList {...props} videos={this.state.videos} />
+            )}
+          />
+        </Row>
 
         <Route path="/admin" component={AdminPanel} />
       </Container>
