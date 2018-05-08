@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col } from 'reactstrap';
+import { Col } from 'reactstrap';
 
 const Video = ({
   match: {

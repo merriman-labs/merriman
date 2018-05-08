@@ -1,16 +1,13 @@
 import React from 'react';
-import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 
-const Navigation = () => {
+const Navigation = ({ children }) => {
   return (
     <div>
       <Navbar color="light" light expand="md">
         <NavbarBrand href="/">node media server</NavbarBrand>
         <Nav>
-          <NavItem>
-            <Link to="/videos">Video Libraries</Link>
-          </NavItem>
+          <NavItem>{children}</NavItem>
         </Nav>
       </Navbar>
     </div>

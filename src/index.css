@@ -1,0 +1,9 @@
+.thumbnail-link {
+  color: #fff;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+.video-cell {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

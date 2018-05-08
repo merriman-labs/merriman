@@ -13,6 +13,7 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'reactstrap';
+import Home from './Home';
 
 import AdminPanel from './admin/AdminPanel';
 import VideoList from './VideoList';
@@ -62,29 +63,29 @@ class App extends Component {
       <Container>
         <Row>
           <Col>
-            <Navigation />
+            <Navigation>
+              <Dropdown
+                isOpen={this.state.dropdown}
+                toggle={this.openLibraryPicker}
+              >
+                <DropdownToggle caret>Library</DropdownToggle>
+                <DropdownMenu>
+                  {this.state.libraries.map((library, i) => (
+                    <DropdownItem
+                      key={i}
+                      onClick={() => this._libraryClick(library)}
+                    >
+                      {library}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+            </Navigation>
           </Col>
         </Row>
 
         <Row>
-          <Col>
-            <Dropdown
-              isOpen={this.state.dropdown}
-              toggle={this.openLibraryPicker}
-            >
-              <DropdownToggle caret>Library</DropdownToggle>
-              <DropdownMenu>
-                {this.state.libraries.map((library, i) => (
-                  <DropdownItem
-                    key={i}
-                    onClick={() => this._libraryClick(library)}
-                  >
-                    {library}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-          </Col>
+          <Col />
         </Row>
         <Row>
           <Route
@@ -102,7 +103,11 @@ class App extends Component {
             )}
           />
         </Row>
-
+        <Row>
+          <Col>
+            <Route exact path="/" component={Home} />
+          </Col>
+        </Row>
         <Route path="/admin" component={AdminPanel} />
       </Container>
     );

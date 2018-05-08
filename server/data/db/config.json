@@ -3,12 +3,20 @@
     {
       "name": "Test",
       "location": "C:\\Users\\Johnny\\Videos\\sample-videos\\",
-      "created": "2018-05-08T00:23:46.100Z"
+      "created": "2018-05-08T00:23:46.100Z",
+      "initialized": true
     },
     {
       "name": "External",
       "location": "E:\\sample-videos\\videos\\",
-      "created": "2018-05-08T00:26:02.201Z"
+      "created": "2018-05-08T00:26:02.201Z",
+      "initialized": true
+    },
+    {
+      "name": "CCNA",
+      "location": "D:\\everything\\CCNA\\ICND1\\Desktop\\",
+      "created": "2018-05-08T02:49:33.846Z",
+      "initialized": true
     }
   ]
 }
