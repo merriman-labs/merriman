@@ -38,19 +38,6 @@ app.get('/libraries', function(req, res) {
   });
 });
 
-app.get('/video-list', function(req, res) {
-  fs.readdir(config.videos.path, (err, files) => {
-    const fileNames = files
-      .filter(file => /\.(mp4|flv)$/.test(file))
-      .filter(
-        file => !fs.statSync(path.join(config.videos.path, file)).isDirectory()
-      )
-      .sort((a, b) => Math.random() - 0.5);
-
-    res.json({ files: fileNames });
-  });
-});
-
 app.get('/video/:library/:video', function(req, res) {
   const repo = new ConfigRepo();
   const library = repo.loadLibrary(req.params.library);
@@ -102,6 +89,7 @@ app.get('/admin/config', function(req, res) {
 app.post('/admin/config', function(req, res) {
   const repo = new ConfigRepo();
   repo.save(req.body);
+  res.json(req.body);
 });
 
 app.post('/admin/init', function(req, res) {

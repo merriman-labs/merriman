@@ -18,6 +18,7 @@ class AdminPanel extends Component {
     this._formSubmit = this._formSubmit.bind(this);
     this._getConfigData = this._getConfigData.bind(this);
     this._initLibraries = this._initLibraries.bind(this);
+    this._removeLibrary = this._removeLibrary.bind(this);
   }
   componentDidMount() {
     this._getConfigData();
@@ -25,16 +26,17 @@ class AdminPanel extends Component {
   _getConfigData() {
     fetch('http://localhost/admin/config')
       .then(response => response.json())
-      .then(config => this.setState({ config }));
+      .then(config => this.setState({ config }))
+      .catch(console.log);
   }
   _sendConfig(config) {
-    fetch('http://localhost/admin/config', {
+    return fetch('http://localhost/admin/config', {
       body: JSON.stringify(config),
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       }
-    }).then(this._getConfigData);
+    });
   }
   _formSubmit(event) {
     event.preventDefault();
@@ -51,7 +53,9 @@ class AdminPanel extends Component {
         initialized: false
       })
     };
-    this._sendConfig(conf);
+    this._sendConfig(conf).then(this._getConfigData);
+    this.refs.name.value = '';
+    this.refs.path.value = '';
   }
   _initLibraries(event) {
     event.preventDefault();
@@ -59,6 +63,16 @@ class AdminPanel extends Component {
       .then(x => x.json())
       .then(console.log)
       .catch(console.log);
+  }
+  _removeLibrary({ name, location }) {
+    const libraries = this.state.config.libraries.filter(
+      lib => !(lib.name === name && lib.location === location)
+    );
+    const config = { ...this.state.config, libraries };
+
+    this._sendConfig(config).then(() => {
+      this.setState({ config }, this._getConfigData);
+    });
   }
   render() {
     return (
@@ -97,7 +111,12 @@ class AdminPanel extends Component {
                 <ListGroupItem>
                   <ListGroupItemHeading>{name}</ListGroupItemHeading>
                   <strong>path: </strong> <code>{location}</code>
-                  <Button color="danger" size="sm" className="float-right">
+                  <Button
+                    onClick={() => this._removeLibrary({ name, location })}
+                    color="danger"
+                    size="sm"
+                    className="float-right"
+                  >
                     delete
                   </Button>
                 </ListGroupItem>
