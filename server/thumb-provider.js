@@ -29,4 +29,19 @@ const create = (filename, sourcedir, thumbdir) => {
   ).then(() => filename);
 };
 
-module.exports = { create, hasThumb };
+const _ensureStorage = dir => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+};
+
+const ensureThumbs = (fileNames, sourceDir, destDir) => {
+  _ensureStorage(destDir);
+  return Promise.all(
+    fileNames.map(filename => {
+      return hasThumb(filename, destDir).then(exists => {
+        return create(filename, sourceDir, destDir);
+      });
+    })
+  );
+};
+
+module.exports = { create, hasThumb, ensureThumbs };

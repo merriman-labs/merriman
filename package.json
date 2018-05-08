@@ -1,18 +1,28 @@
 {
-  "name": "media-server",
-  "version": "1.0.0",
-  "main": "server.js",
-  "engines": {
-    "node": ">=8.0.0"
-  },
-  "scripts": {
-    "start": "nodemon server.js"
-  },
-  "license": "MIT",
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "main": "admin/main.js",
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "bootstrap": "^4.1.1",
+    "cors": "^2.8.4",
     "express": "^4.15.3",
     "morgan": "^1.9.0",
     "nodemon": "^1.11.0",
-    "video-thumb": "0.0.3"
+    "ramda": "^0.25.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.4",
+    "reactstrap": "^6.0.1"
+  },
+  "scripts": {
+    "server": "nodemon server/server.js",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   }
 }

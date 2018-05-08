@@ -9,7 +9,6 @@ const path = require('path');
  * @returns {Promise<{stdout:string,stderr:string}>}
  */
 const ffmpeg = function(file, destPath, time, size) {
-  console.dir(arguments);
   return new Promise((resolve, reject) => {
     if (!(file || destPath || time || size)) {
       return reject(new Error('All arguments are required!'));

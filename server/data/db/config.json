@@ -1,0 +1,14 @@
+{
+  "libraries": [
+    {
+      "name": "Test",
+      "location": "C:\\Users\\Johnny\\Videos\\sample-videos\\",
+      "created": "2018-05-08T00:23:46.100Z"
+    },
+    {
+      "name": "External",
+      "location": "E:\\sample-videos\\videos\\",
+      "created": "2018-05-08T00:26:02.201Z"
+    }
+  ]
+}
