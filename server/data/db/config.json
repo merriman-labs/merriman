@@ -1,1 +1,28 @@
-{"libraries":[{"name":"Test","location":"C:\\Users\\Johnny\\Videos\\sample-videos\\","created":"2018-05-08T00:23:46.100Z","initialized":true},{"name":"External","location":"E:\\sample-videos\\videos\\","created":"2018-05-08T00:26:02.201Z","initialized":true},{"name":"CCNA","location":"D:\\everything\\CCNA\\ICND1\\Desktop\\","created":"2018-05-08T02:49:33.846Z","initialized":true},{"name":"CCNA - ICND2","location":"D:\\everything\\CCNA\\ICND2\\Desktop\\","created":"2018-05-08T03:30:45.247Z","initialized":false}]}
+{
+  "libraries": [
+    {
+      "name": "Test",
+      "location": "C:\\Users\\Johnny\\Videos\\sample-videos\\",
+      "created": "2018-05-08T00:23:46.100Z",
+      "initialized": true
+    },
+    {
+      "name": "External",
+      "location": "E:\\sample-videos\\videos\\",
+      "created": "2018-05-08T00:26:02.201Z",
+      "initialized": true
+    },
+    {
+      "name": "ICND1",
+      "location": "D:\\everything\\CCNA\\ICND1\\Desktop\\",
+      "created": "2018-05-08T02:49:33.846Z",
+      "initialized": true
+    },
+    {
+      "name": "ICND2",
+      "location": "D:\\everything\\CCNA\\ICND2\\Desktop\\",
+      "created": "2018-05-08T03:30:45.247Z",
+      "initialized": false
+    }
+  ]
+}

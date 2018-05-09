@@ -8,3 +8,11 @@ body {
 .thumbnail-link {
   color: #fff;
 }
+.library-dropdown {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.video-cell {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

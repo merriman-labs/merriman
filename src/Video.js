@@ -1,12 +1,7 @@
 import React from 'react';
 import { Col } from 'reactstrap';
 
-const Video = ({
-  match: {
-    params: { video }
-  },
-  library
-}) => {
+const Video = ({ library, video }) => {
   window.scrollTo({ top: 0 });
   return (
     <Col>
