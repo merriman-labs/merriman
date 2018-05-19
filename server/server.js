@@ -8,39 +8,38 @@ const thumb = require('./thumb-provider');
 const morgan = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const ConfigRepo = require('./data/config-repo');
-const tap = f => x => {
-  f(x);
-  return x;
-};
+const ConfigRepo = require('./data/ConfigRepo');
+const LibraryManager = require('./managers/LibraryManager');
+
 const getVideoFiles = dir =>
   fs
     .readdirSync(dir)
-    .filter(file => /\.(mp4|flv)$/.test(file))
+    .filter(file => /\.mp4$/.test(file))
     .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
-app.use(
-  '/static',
-  express.static(os.homedir() + '\\.node-media-server\\thumbs\\')
-);
 app.use(cors());
 
-app.get('/libraries', function(req, res) {
-  const repo = new ConfigRepo();
-  res.json({
-    libraries: repo
-      .get()
-      .libraries.filter(lib => !lib.hidden)
-      .map(lib => lib.name)
-  });
+const thumbPath = path.join(os.homedir(), '.node-media-server', 'thumbs');
+const buildPath = path.join(__dirname, '../build');
+
+app.use(
+  express.static(thumbPath, { redirect: false }),
+  express.static(buildPath, { redirect: false })
+);
+
+app.get('/api/libraries', function(req, res) {
+  const response = {
+    libraries: LibraryManager.list()
+  };
+  console.log(response);
+  res.json(response);
 });
 
-app.get('/video/:library/:video', function(req, res) {
-  const repo = new ConfigRepo();
-  const library = repo.loadLibrary(req.params.library);
+app.get('/api/video/:library/:video', function(req, res) {
+  const library = LibraryManager.load(req.params.library);
   const vPath = path.join(library.location, req.params.video);
   const stat = fs.statSync(vPath);
   const fileSize = stat.size;
@@ -72,27 +71,31 @@ app.get('/video/:library/:video', function(req, res) {
   }
 });
 
-app.get('/video-list/:library', function(req, res) {
+app.get('/api/video-list/:library', function(req, res) {
   const library = req.params.library;
-  const repo = new ConfigRepo();
-  const { location } = repo.get().libraries.find(lib => lib.name === library);
+  const { location } = LibraryManager.load(library);
 
   const files = getVideoFiles(location);
   res.json({ files });
 });
 
-app.get('/admin/config', function(req, res) {
+app.get('/api/admin/config', function(req, res) {
   const repo = new ConfigRepo();
   res.json(repo.get());
 });
 
-app.post('/admin/config', function(req, res) {
+app.post('/api/admin/config', function(req, res) {
   const repo = new ConfigRepo();
   repo.save(req.body);
   res.json(req.body);
 });
 
-app.post('/admin/init', function(req, res) {
+app.post('/api/admin/add-library', function(req, res) {
+  LibraryManager.save(req.body);
+  res.json(req.body);
+});
+
+app.post('/api/admin/init', function(req, res) {
   const repo = new ConfigRepo();
   const conf = repo.get();
   const libPaths = conf.libraries
@@ -112,6 +115,10 @@ app.post('/admin/init', function(req, res) {
     .then(() => res.json('Libraries initialized!'))
     .catch(err => res.json(err));
 });
+
+app.get('/*', (req, res, next) =>
+  res.sendFile(path.join(__dirname, '../build/index.html'))
+);
 
 app.listen(80, function() {
   console.log('Listening on port 80!');

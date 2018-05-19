@@ -3,6 +3,7 @@ body {
 }
 
 .video-player {
+  margin-top: 15px;
   width: 100%;
 }
 .thumbnail-link {

@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import * as R from 'ramda';
-import VideoCard from './VideoCard';
 import Video from './Video';
 import VideoList from './VideoList';
 import { Link } from 'react-router-dom';
@@ -10,10 +8,7 @@ import {
   Container,
   Row,
   Col,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  DropdownMenu
+  DropdownItem
 } from 'reactstrap';
 
 class VideoLibrariesPage extends Component {
@@ -49,33 +44,36 @@ class VideoLibrariesPage extends Component {
         <Row>
           <Col>
             <ButtonGroup>
+              <Button color="dark" disabled>
+                {library ? library : 'No Library Selected'}
+              </Button>
               {library ? (
-                <Button color="dark" disabled>
-                  {library}
-                </Button>
+                <Button onClick={this._shuffle}>Shuffle</Button>
               ) : (
                 <div />
               )}
-              <Button onClick={this._shuffle}>Shuffle</Button>
-              <ButtonGroup className={this.state.dropdown ? 'show' : ''}>
+              <ButtonGroup>
                 <Button
                   onClick={this._toggleLibraryPicker}
                   className="dropdown-toggle"
                 >
                   Library
                 </Button>
-                <DropdownMenu className={this.state.dropdown ? 'show' : ''}>
+                <div
+                  className={
+                    'dropdown-menu' + (this.state.dropdown ? ' show' : '')
+                  }
+                >
                   {this.state.libraries.map((library, i) => (
-                    <Link to={`/videos/${library}/`}>
-                      <DropdownItem
-                        key={i}
-                        onClick={() => this._dropdownSelected(library)}
-                      >
-                        {library}
-                      </DropdownItem>
+                    <Link
+                      to={`/videos/${library.name}/`}
+                      className="dropdown-item"
+                      onClick={() => this._dropdownSelected(library.name)}
+                    >
+                      {library.name}
                     </Link>
                   ))}
-                </DropdownMenu>
+                </div>
               </ButtonGroup>
             </ButtonGroup>
           </Col>
@@ -110,17 +108,16 @@ class VideoLibrariesPage extends Component {
   }
 
   _fetchVideoList(library) {
-    console.log(library);
-    return fetch(
-      `http://192.168.50.133/video-list${library ? '/' + library : ''}`
-    )
+    const pathTail = library ? '/' + library : '';
+
+    return fetch(`http://192.168.50.133/api/video-list${pathTail}`)
       .then(response => response.json())
       .then(({ files: videos }) => this.setState({ videos }));
   }
   _fetchLibraries() {
-    return fetch('http://192.168.50.133/libraries')
+    return fetch('http://192.168.50.133/api/libraries')
       .then(response => response.json())
-      .then(res => this.setState(res));
+      .then(({ libraries }) => this.setState({ libraries }));
   }
   _toggleLibraryPicker() {
     this.setState({ dropdown: !this.state.dropdown });

@@ -10,27 +10,29 @@ import {
   ListGroupItem,
   ListGroupItemHeading
 } from 'reactstrap';
+import LibraryEdit from './LibraryEdit';
 
 class AdminPanel extends Component {
   constructor(props) {
     super(props);
     this.state = { config: { libraries: [] } };
-    this._formSubmit = this._formSubmit.bind(this);
+    this._formSubmit = this._upsertLib.bind(this);
     this._getConfigData = this._getConfigData.bind(this);
     this._initLibraries = this._initLibraries.bind(this);
     this._removeLibrary = this._removeLibrary.bind(this);
+    this._upsertLib = this._upsertLib.bind(this);
   }
   componentDidMount() {
     this._getConfigData();
   }
   _getConfigData() {
-    fetch('http://localhost/admin/config')
+    fetch('http://localhost/api/admin/config')
       .then(response => response.json())
       .then(config => this.setState({ config }))
       .catch(console.log);
   }
   _sendConfig(config) {
-    return fetch('http://localhost/admin/config', {
+    return fetch('http://localhost/api/admin/config', {
       body: JSON.stringify(config),
       method: 'POST',
       headers: {
@@ -38,28 +40,15 @@ class AdminPanel extends Component {
       }
     });
   }
-  _formSubmit(event) {
-    event.preventDefault();
-    const {
-      name: { value: name },
-      path: { value: location }
-    } = this.refs;
-    const conf = {
-      ...this.state.config,
-      libraries: this.state.config.libraries.concat({
-        name,
-        location,
-        created: new Date().toISOString(),
-        initialized: false
-      })
-    };
-    this._sendConfig(conf).then(this._getConfigData);
-    this.refs.name.value = '';
-    this.refs.path.value = '';
+  _upsertLib(library) {
+    fetch('http://localhost/api/admin/add-library', {
+      method: 'POST',
+      body: library
+    }).then(this._getConfigData);
   }
   _initLibraries(event) {
     event.preventDefault();
-    fetch('http://localhost/admin/init', { method: 'POST' })
+    fetch('http://localhost/api/admin/init', { method: 'POST' })
       .then(x => x.json())
       .then(console.log)
       .catch(console.log);
@@ -79,29 +68,7 @@ class AdminPanel extends Component {
       <Row>
         <Col md="6">
           <h2>Add Libraries</h2>
-          <Form onSubmit={this._formSubmit}>
-            <FormGroup>
-              <Label for="name">Name</Label>
-              <input
-                type="text"
-                name="name"
-                ref="name"
-                className="form-control"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="path">Path</Label>
-              <input
-                type="text"
-                name="path"
-                ref="path"
-                className="form-control"
-              />
-            </FormGroup>
-            <Button color="success" type="submit">
-              Add
-            </Button>
-          </Form>
+          <LibraryEdit saveLib={this._upsertLib} />
         </Col>
         <Col md="6">
           <h2>Libraries</h2>
