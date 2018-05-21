@@ -14,16 +14,13 @@ class LibraryManager {
   save(library) {
     const conf = this._repo.get();
 
-    const lib = R.has('_id', library) ? library : R.assoc('_id', uuid());
-    const { _id: libId } = lib;
+    const newLib = R.has('_id', library) ? library : this._initLibrary(library);
+    const { _id: libId } = newLib;
 
-    const existingLib = R.find(
-      ({ _id }) => R.equals(libId, _id),
-      conf.libraries
-    );
+    const existingLib = R.find(({ _id }) => libId === _id, conf.libraries);
     const libraries = existingLib
-      ? conf.libraries.map(lib => (lib._id === _id ? library : lib))
-      : conf.libraries.concat(library);
+      ? conf.libraries.map(lib => (lib._id === libId ? library : lib))
+      : conf.libraries.concat(newLib);
 
     const newConfig = R.mergeAll([{}, conf, { libraries }]);
 
@@ -43,16 +40,20 @@ class LibraryManager {
 
   /**
    *
-   * @param {string} library the `name` or `_id` of the library to load
+   * @param {string} id the `_id` of the library to load
    */
-  load(library) {
-    return this._repo
-      .get()
-      .libraries.find(lib => lib.name === library || lib._id === library);
+  load(id) {
+    return this._repo.get().libraries.find(lib => lib._id === id);
   }
 
   list() {
     return this._repo.get().libraries;
+  }
+
+  _initLibrary(library) {
+    return R.compose(R.assoc('created', new Date()), R.assoc('_id', uuid()))(
+      library
+    );
   }
 }
 

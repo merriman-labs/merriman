@@ -7,18 +7,28 @@ const config = require('./config');
 const thumb = require('./thumb-provider');
 const morgan = require('morgan');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const ConfigRepo = require('./data/ConfigRepo');
 const LibraryManager = require('./managers/LibraryManager');
 
+/**
+ *
+ * @param {string} dir
+ * @returns {Promise<Array<string>>}
+ */
 const getVideoFiles = dir =>
-  fs
-    .readdirSync(dir)
-    .filter(file => /\.mp4$/.test(file))
-    .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
+  new Promise(function(res, rej) {
+    fs.readdir(dir, function(err, files) {
+      if (err) return rej(err);
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+      const videoFiles = files
+        .filter(file => /\.mp4$/.test(file))
+        .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
+
+      return res(videoFiles);
+    });
+  });
+
+app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
 
@@ -34,7 +44,6 @@ app.get('/api/libraries', function(req, res) {
   const response = {
     libraries: LibraryManager.list()
   };
-  console.log(response);
   res.json(response);
 });
 
@@ -71,12 +80,21 @@ app.get('/api/video/:library/:video', function(req, res) {
   }
 });
 
-app.get('/api/video-list/:library', function(req, res) {
-  const library = req.params.library;
-  const { location } = LibraryManager.load(library);
+app.get('/api/video-list/:library', async function(req, res) {
+  const id = req.params.library;
+  const library = LibraryManager.load(id);
 
-  const files = getVideoFiles(location);
+  if (!library) return res.status(500).json({ message: 'Library not found!' });
+  const files = await getVideoFiles(library.location);
   res.json({ files });
+});
+
+app.get('/api/library/details/:id', function(req, res) {
+  const { id } = req.params;
+  const library = LibraryManager.load(id);
+
+  if (!library) return res.status(500).json({ message: 'Library not found!' });
+  res.json(library);
 });
 
 app.get('/api/admin/config', function(req, res) {
@@ -95,12 +113,15 @@ app.post('/api/admin/add-library', function(req, res) {
   res.json(req.body);
 });
 
-app.post('/api/admin/init', function(req, res) {
+app.post('/api/admin/init', async function(req, res) {
   const repo = new ConfigRepo();
   const conf = repo.get();
+
+  const files = await getVideoFiles(location);
+
   const libPaths = conf.libraries
     .map(lib => lib.location)
-    .map(location => ({ location, files: getVideoFiles(location) }));
+    .map(location => ({ location, files }));
   if (!fs.existsSync(os.homedir() + '\\.node-media-server'))
     fs.mkdirSync(os.homedir() + '\\.node-media-server');
   const thumbProcedurePromises = libPaths.map(({ location, files }) =>

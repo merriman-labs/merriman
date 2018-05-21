@@ -2,14 +2,7 @@ import React, { Component } from 'react';
 import Video from './Video';
 import VideoList from './VideoList';
 import { Link } from 'react-router-dom';
-import {
-  Button,
-  ButtonGroup,
-  Container,
-  Row,
-  Col,
-  DropdownItem
-} from 'reactstrap';
+import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
 
 class VideoLibrariesPage extends Component {
   constructor(props) {
@@ -19,7 +12,8 @@ class VideoLibrariesPage extends Component {
       libraries: [],
       dropdown: false,
       video: null,
-      library: null
+      library: null,
+      libraryDetails: { name: null }
     };
     this._toggleLibraryPicker = this._toggleLibraryPicker.bind(this);
     this._fetchVideoList = this._fetchVideoList.bind(this);
@@ -30,8 +24,11 @@ class VideoLibrariesPage extends Component {
   componentDidMount() {
     this._fetchLibraries();
 
-    if (this.props.match.params.library)
-      this._fetchVideoList(this.props.match.params.library);
+    const id = this.props.match.params.library;
+    if (id) {
+      this._fetchVideoList(id);
+      this._getLibraryDetails(id);
+    }
   }
   render() {
     const {
@@ -45,7 +42,9 @@ class VideoLibrariesPage extends Component {
           <Col>
             <ButtonGroup>
               <Button color="dark" disabled>
-                {library ? library : 'No Library Selected'}
+                {this.state.libraryDetails.name
+                  ? this.state.libraryDetails.name
+                  : 'No Library Selected'}
               </Button>
               {library ? (
                 <Button onClick={this._shuffle}>Shuffle</Button>
@@ -66,9 +65,9 @@ class VideoLibrariesPage extends Component {
                 >
                   {this.state.libraries.map((library, i) => (
                     <Link
-                      to={`/videos/${library.name}/`}
+                      to={`/videos/${library._id}/`}
                       className="dropdown-item"
-                      onClick={() => this._dropdownSelected(library.name)}
+                      onClick={() => this._dropdownSelected(library._id)}
                     >
                       {library.name}
                     </Link>
@@ -84,7 +83,7 @@ class VideoLibrariesPage extends Component {
           </Col>
         </Row>
         <Row>
-          {this.state.videos.length > 0 ? (
+          {this.state.videos && this.state.videos.length ? (
             <VideoList library={library} videos={this.state.videos} />
           ) : (
             <Col>
@@ -106,13 +105,17 @@ class VideoLibrariesPage extends Component {
       this._fetchVideoList(library)
     );
   }
-
-  _fetchVideoList(library) {
-    const pathTail = library ? '/' + library : '';
+  _getLibraryDetails(id) {
+    fetch(`http://192.168.50.133/api/library/details/${id}`)
+      .then(response => response.json())
+      .then(libraryDetails => this.setState({ libraryDetails }));
+  }
+  _fetchVideoList(id) {
+    const pathTail = id ? '/' + id : '';
 
     return fetch(`http://192.168.50.133/api/video-list${pathTail}`)
       .then(response => response.json())
-      .then(({ files: videos }) => this.setState({ videos }));
+      .then(({ files: videos }) => !videos || this.setState({ videos }));
   }
   _fetchLibraries() {
     return fetch('http://192.168.50.133/api/libraries')

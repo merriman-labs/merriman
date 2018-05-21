@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Form,
-  FormGroup,
-  Label,
   Button,
   Row,
   Col,
@@ -43,7 +40,8 @@ class AdminPanel extends Component {
   _upsertLib(library) {
     fetch('http://localhost/api/admin/add-library', {
       method: 'POST',
-      body: library
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(library)
     }).then(this._getConfigData);
   }
   _initLibraries(event) {

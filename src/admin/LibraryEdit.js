@@ -1,15 +1,5 @@
-import React, { Component } from 'react';
-import {
-  Form,
-  FormGroup,
-  Label,
-  Button,
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
-  ListGroupItemHeading
-} from 'reactstrap';
+import React from 'react';
+import { Form, FormGroup, Label, Button } from 'reactstrap';
 
 class LibraryEdit extends React.Component {
   constructor(props) {
@@ -43,9 +33,7 @@ class LibraryEdit extends React.Component {
     } = this.refs;
     const lib = {
       name,
-      location,
-      created: new Date().toISOString(),
-      initialized: false
+      location
     };
     this.props.saveLib(lib);
     this.refs.name.value = '';
