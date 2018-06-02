@@ -3,6 +3,8 @@ import Video from './Video';
 import VideoList from './VideoList';
 import { Link } from 'react-router-dom';
 import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
+import Chance from 'chance';
+const chance = Chance.Chance(Math.random);
 
 class VideoLibrariesPage extends Component {
   constructor(props) {
@@ -19,6 +21,7 @@ class VideoLibrariesPage extends Component {
     this._fetchVideoList = this._fetchVideoList.bind(this);
     this._fetchLibraries = this._fetchLibraries.bind(this);
     this._shuffle = this._shuffle.bind(this);
+    this._randomVideo = this._randomVideo.bind(this);
   }
 
   componentDidMount() {
@@ -41,13 +44,29 @@ class VideoLibrariesPage extends Component {
         <Row>
           <Col>
             <ButtonGroup>
-              <Button color="dark" disabled>
+              <Button
+                color={this.state.libraryDetails.name ? 'info' : 'secondary'}
+              >
                 {this.state.libraryDetails.name
                   ? this.state.libraryDetails.name
                   : 'No Library Selected'}
               </Button>
               {library ? (
-                <Button onClick={this._shuffle}>Shuffle</Button>
+                <Button onClick={this._shuffle} color="dark">
+                  Shuffle
+                </Button>
+              ) : (
+                <div />
+              )}
+              {this.state.videos.length ? (
+                <Link
+                  className="btn btn-dark"
+                  to={`/videos/${
+                    this.state.libraryDetails._id
+                  }/${this._randomVideo()}`}
+                >
+                  Random
+                </Link>
               ) : (
                 <div />
               )}
@@ -55,6 +74,7 @@ class VideoLibrariesPage extends Component {
                 <Button
                   onClick={this._toggleLibraryPicker}
                   className="dropdown-toggle"
+                  color="dark"
                 >
                   Library
                 </Button>
@@ -68,8 +88,12 @@ class VideoLibrariesPage extends Component {
                       to={`/videos/${library._id}/`}
                       className="dropdown-item"
                       onClick={() => this._dropdownSelected(library._id)}
+                      key={library._id}
                     >
-                      {library.name}
+                      {library.name}{' '}
+                      <span className="badge badge-primary badge-pill">
+                        {library.statistics.videos}
+                      </span>
                     </Link>
                   ))}
                 </div>
@@ -94,6 +118,9 @@ class VideoLibrariesPage extends Component {
       </Container>
     );
   }
+  _randomVideo() {
+    return chance.pickone(this.state.videos);
+  }
   _shuffle() {
     if (this.state.videos.length)
       this.setState({
@@ -101,9 +128,10 @@ class VideoLibrariesPage extends Component {
       });
   }
   _dropdownSelected(library) {
-    this.setState({ library, dropdown: false }, () =>
-      this._fetchVideoList(library)
-    );
+    this.setState({ library, dropdown: false }, () => {
+      this._fetchVideoList(library);
+      this._getLibraryDetails(library);
+    });
   }
   _getLibraryDetails(id) {
     fetch(`http://192.168.50.133/api/library/details/${id}`)

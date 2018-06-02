@@ -1,6 +1,12 @@
 const R = require('ramda');
 const uuid = require('uuid/v4');
 const ConfigRepo = require('../data/ConfigRepo');
+const VideoRepo = require('../data/VideoRepo');
+const thumb = require('../thumb-provider');
+const fs = require('fs');
+const path = require('path');
+
+const os = require('os');
 
 class LibraryManager {
   constructor() {
@@ -11,10 +17,12 @@ class LibraryManager {
    * Adds or updates a library.
    * @param {{_id:string}} library
    */
-  save(library) {
+  async save(library) {
     const conf = this._repo.get();
 
-    const newLib = R.has('_id', library) ? library : this._initLibrary(library);
+    const newLib = R.has('_id', library)
+      ? library
+      : await this._initLibrary(library);
     const { _id: libId } = newLib;
 
     const existingLib = R.find(({ _id }) => libId === _id, conf.libraries);
@@ -46,14 +54,64 @@ class LibraryManager {
     return this._repo.get().libraries.find(lib => lib._id === id);
   }
 
+  /**
+   * List all libraries.
+   */
   list() {
     return this._repo.get().libraries;
   }
 
-  _initLibrary(library) {
-    return R.compose(R.assoc('created', new Date()), R.assoc('_id', uuid()))(
-      library
+  /**
+   * Initialize a new library object with required properties.
+   * @param {{}} library
+   * @returns {LibraryConfig}
+   */
+  async _initLibrary(library) {
+    const stats = await this._initLibraryThumbnails(library);
+    const lib = R.compose(
+      R.assoc('created', new Date()),
+      R.assoc('_id', uuid()),
+      R.merge(stats)
+    )(library);
+    return lib;
+  }
+
+  _initLibraryThumbnails(library) {
+    const repo = new ConfigRepo();
+    const vidRepo = new VideoRepo();
+    const conf = repo.get();
+    const { location, _id } = library;
+
+    const files = this._getVideoFiles(location);
+
+    if (!fs.existsSync(os.homedir() + '\\.node-media-server'))
+      fs.mkdirSync(os.homedir() + '\\.node-media-server');
+    const thumbProcedurePromises = thumb.ensureThumbs(
+      files,
+      location,
+      os.homedir() + '\\.node-media-server\\thumbs\\'
     );
+
+    return thumbProcedurePromises.then(() => {
+      return {
+        statistics: {
+          videos: files.length
+        }
+      };
+    });
+  }
+
+  /**
+   *
+   * @param {string} dir
+   * @returns {Array<string>}
+   */
+  _getVideoFiles(dir) {
+    const files = fs
+      .readdirSync(dir)
+      .filter(file => /\.mp4$/.test(file))
+      .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
+    return files;
   }
 }
 

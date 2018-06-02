@@ -4,7 +4,6 @@ const os = require('os');
 const path = require('path');
 const app = express();
 const config = require('./config');
-const thumb = require('./thumb-provider');
 const morgan = require('morgan');
 const cors = require('cors');
 const ConfigRepo = require('./data/ConfigRepo');
@@ -13,21 +12,15 @@ const LibraryManager = require('./managers/LibraryManager');
 /**
  *
  * @param {string} dir
- * @returns {Promise<Array<string>>}
+ * @returns {Array<string>}
  */
-const getVideoFiles = dir =>
-  new Promise(function(res, rej) {
-    fs.readdir(dir, function(err, files) {
-      if (err) return rej(err);
-
-      const videoFiles = files
-        .filter(file => /\.mp4$/.test(file))
-        .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
-
-      return res(videoFiles);
-    });
-  });
-
+const getVideoFiles = dir => {
+  const files = fs
+    .readdirSync(dir)
+    .filter(file => /\.mp4$/.test(file))
+    .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
+  return files;
+};
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
@@ -85,7 +78,7 @@ app.get('/api/video-list/:library', async function(req, res) {
   const library = LibraryManager.load(id);
 
   if (!library) return res.status(500).json({ message: 'Library not found!' });
-  const files = await getVideoFiles(library.location);
+  const files = getVideoFiles(library.location);
   res.json({ files });
 });
 
@@ -117,11 +110,11 @@ app.post('/api/admin/init', async function(req, res) {
   const repo = new ConfigRepo();
   const conf = repo.get();
 
-  const files = await getVideoFiles(location);
+  const libPaths = conf.libraries.map(lib => lib.location).map(location => {
+    const files = getVideoFiles(location);
+    return { location, files };
+  });
 
-  const libPaths = conf.libraries
-    .map(lib => lib.location)
-    .map(location => ({ location, files }));
   if (!fs.existsSync(os.homedir() + '\\.node-media-server'))
     fs.mkdirSync(os.homedir() + '\\.node-media-server');
   const thumbProcedurePromises = libPaths.map(({ location, files }) =>

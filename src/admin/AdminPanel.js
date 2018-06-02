@@ -72,8 +72,8 @@ class AdminPanel extends Component {
           <h2>Libraries</h2>
           <ListGroup>
             {this.state.config.libraries.map(
-              ({ name, location, created, initialized }) => (
-                <ListGroupItem>
+              ({ _id, name, location, created, initialized }) => (
+                <ListGroupItem key={_id}>
                   <ListGroupItemHeading>{name}</ListGroupItemHeading>
                   <strong>path: </strong> <code>{location}</code>
                   <Button

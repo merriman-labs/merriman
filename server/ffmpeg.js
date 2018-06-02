@@ -14,7 +14,7 @@ const ffmpeg = function(file, destPath, time, size) {
       return reject(new Error('All arguments are required!'));
     }
     const command = `ffmpeg -ss ${time} -i "${file}" -y -s ${size} -vframes 1 -f image2 "${destPath}"`;
-    exec(command, function(err, stdout, stderr) {
+    exec(command, { windowsHide: true }, function(err, stdout, stderr) {
       if (err) return reject(err);
 
       return resolve({ stdout, stderr });
