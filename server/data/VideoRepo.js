@@ -10,7 +10,7 @@ class VideoRepo {
   }
 
   /**
-   * @returns {Array<MediaItem>}
+   * @returns {Array<Video>}
    */
   get() {
     return JSON.parse(
@@ -20,7 +20,7 @@ class VideoRepo {
 
   /**
    *
-   * @param {string} filename
+   * @param {Array<Video>} conf
    * @returns {string} The `_id` property of the new media item.
    */
   save(conf) {
@@ -34,9 +34,28 @@ class VideoRepo {
    */
   add(filename) {
     const videos = this.get();
+
+    const existingVideo = videos.find(video => video.filename === filename);
+
+    if (existingVideo) return existingVideo._id;
+
     const newVideo = this._initVideo(filename);
     fs.writeFileSync(this._dbpath, JSON.stringify(videos.concat(newVideo)));
     return newVideo._id;
+  }
+
+  /**
+   *
+   * @param {Video} updatedVideo
+   */
+  update(updatedVideo) {
+    const videos = this.get();
+
+    const newVideos = videos.map(
+      video => (video._id === updatedVideo._id ? updatedVideo : video)
+    );
+
+    return this.save(newVideos);
   }
 
   _ensureConfig() {
@@ -47,9 +66,12 @@ class VideoRepo {
     return {
       name,
       filename: name,
-      _id: uuid()
+      _id: uuid(),
+      favorite: false
     };
   }
 }
+
+/** @typedef {{name:string,filename:string,_id:string,favorite:boolean}} Video */
 
 module.exports = VideoRepo;

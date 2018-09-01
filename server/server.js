@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const ConfigRepo = require('./data/ConfigRepo');
 const LibraryManager = require('./managers/LibraryManager');
+const { sortBy, reverse } = require('ramda');
 
 /**
  *
@@ -19,10 +20,14 @@ const getVideoFiles = dir => {
     .readdirSync(dir)
     .filter(file => /\.mp4$/.test(file))
     .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
-  return files;
+
+  const sorted = reverse(
+    sortBy(filename => fs.statSync(path.join(dir, filename)).birthtimeMs, files)
+  );
+  return sorted;
 };
 app.use(express.json());
-app.use(morgan('dev'));
+//app.use(morgan('combined'));
 app.use(cors());
 
 const thumbPath = path.join(os.homedir(), '.node-media-server', 'thumbs');

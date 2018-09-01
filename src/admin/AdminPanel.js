@@ -23,13 +23,13 @@ class AdminPanel extends Component {
     this._getConfigData();
   }
   _getConfigData() {
-    fetch('http://localhost/api/admin/config')
+    fetch('/api/admin/config')
       .then(response => response.json())
       .then(config => this.setState({ config }))
       .catch(console.log);
   }
   _sendConfig(config) {
-    return fetch('http://localhost/api/admin/config', {
+    return fetch('/api/admin/config', {
       body: JSON.stringify(config),
       method: 'POST',
       headers: {
@@ -38,7 +38,7 @@ class AdminPanel extends Component {
     });
   }
   _upsertLib(library) {
-    fetch('http://localhost/api/admin/add-library', {
+    fetch('/api/admin/add-library', {
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(library)
@@ -46,7 +46,7 @@ class AdminPanel extends Component {
   }
   _initLibraries(event) {
     event.preventDefault();
-    fetch('http://localhost/api/admin/init', { method: 'POST' })
+    fetch('/api/admin/init', { method: 'POST' })
       .then(x => x.json())
       .then(console.log)
       .catch(console.log);

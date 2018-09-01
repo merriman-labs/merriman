@@ -84,6 +84,8 @@ class LibraryManager {
 
     const files = this._getVideoFiles(location);
 
+    files.forEach(file => vidRepo.add(file));
+
     if (!fs.existsSync(os.homedir() + '\\.node-media-server'))
       fs.mkdirSync(os.homedir() + '\\.node-media-server');
     const thumbProcedurePromises = thumb.ensureThumbs(
