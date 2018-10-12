@@ -10,7 +10,7 @@ const fs = require('fs');
  */
 const hasThumb = (filename, thumbdir) =>
   new Promise((resolve, reject) => {
-    fs.exists(path.join(thumbdir, filename), resolve);
+    fs.exists(path.join(thumbdir, filename + '.png'), resolve);
   });
 
 /**

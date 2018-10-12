@@ -134,19 +134,19 @@ class VideoLibrariesPage extends Component {
     });
   }
   _getLibraryDetails(id) {
-    fetch(`http://192.168.50.133/api/library/details/${id}`)
+    fetch(`/api/library/details/${id}`)
       .then(response => response.json())
       .then(libraryDetails => this.setState({ libraryDetails }));
   }
   _fetchVideoList(id) {
     const pathTail = id ? '/' + id : '';
 
-    return fetch(`http://192.168.50.133/api/video-list${pathTail}`)
+    return fetch(`/api/video-list${pathTail}`)
       .then(response => response.json())
       .then(({ files: videos }) => !videos || this.setState({ videos }));
   }
   _fetchLibraries() {
-    return fetch('http://192.168.50.133/api/libraries')
+    return fetch('/api/libraries')
       .then(response => response.json())
       .then(({ libraries }) => this.setState({ libraries }));
   }

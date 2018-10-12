@@ -18,6 +18,7 @@ class LibraryManager {
    * @param {{_id:string}} library
    */
   async save(library) {
+    try {
     const conf = this._repo.get();
 
     const newLib = R.has('_id', library)
@@ -33,6 +34,10 @@ class LibraryManager {
     const newConfig = R.mergeAll([{}, conf, { libraries }]);
 
     this._repo.save(newConfig);
+      return Promise.Resolve(newConfig);
+    } catch (e) {
+      return Promise.Reject(e);
+    }
   }
 
   /**

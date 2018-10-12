@@ -7,8 +7,10 @@
     "body-parser": "^1.18.2",
     "bootstrap": "^4.1.1",
     "chance": "^1.0.16",
+    "connect-busboy": "0.0.2",
     "cors": "^2.8.4",
     "express": "^4.6",
+    "forever": "^0.15.3"
     "morgan": "^1.9.0",
     "nodemon": "^1.11.0",
     "ramda": "^0.25.0",
@@ -27,5 +29,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:80"
 }

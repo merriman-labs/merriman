@@ -4,6 +4,7 @@ const os = require('os');
 const path = require('path');
 const app = express();
 const config = require('./config');
+const busboy = require('connect-busboy');
 const morgan = require('morgan');
 const cors = require('cors');
 const ConfigRepo = require('./data/ConfigRepo');
@@ -27,8 +28,9 @@ const getVideoFiles = dir => {
   return sorted;
 };
 app.use(express.json());
-//app.use(morgan('combined'));
+app.use(morgan('dev'));
 app.use(cors());
+app.use(busboy())
 
 const thumbPath = path.join(os.homedir(), '.node-media-server', 'thumbs');
 const buildPath = path.join(__dirname, '../build');
@@ -37,6 +39,26 @@ app.use(
   express.static(thumbPath, { redirect: false }),
   express.static(buildPath, { redirect: false })
 );
+
+app.post('/api/upload', function(req, res) {
+  
+  console.log('here');
+  if (req.busboy) {
+    console.log('here');
+    req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+      console.log(filename, file);
+      file.pipe(fs.createWriteStream("C:\\Users\\Johnny\\Videos\\sample-videos\\videos\\" + filename));
+    });
+
+    req.busboy.on('finish', function() {
+      res.writeHead(200, { 'Connection': 'close' });
+      res.end("That's all folks!");
+    });
+    return req.pipe(req.busboy);
+  }
+  res.writeHead(404);
+  res.end();
+});
 
 app.get('/api/libraries', function(req, res) {
   const response = {
@@ -108,8 +130,11 @@ app.post('/api/admin/config', function(req, res) {
 
 app.post('/api/admin/add-library', function(req, res) {
   LibraryManager.save(req.body);
-  res.json(req.body);
+  const repo = new ConfigRepo();
+  res.json(repo.get());
 });
+
+app
 
 app.post('/api/admin/init', async function(req, res) {
   const repo = new ConfigRepo();

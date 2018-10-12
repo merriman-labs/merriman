@@ -10,7 +10,7 @@ const Video = ({ library, video }) => {
           className="video-player"
           id="video-player"
           controls
-          src={`http://192.168.50.133/api/video/${library}/${video}`}
+          src={`/api/video/${library}/${video}`}
         />
       ) : (
         <div />

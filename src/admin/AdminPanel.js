@@ -5,7 +5,8 @@ import {
   Col,
   ListGroup,
   ListGroupItem,
-  ListGroupItemHeading
+  ListGroupItemHeading,
+  Form, FormGroup,Label
 } from 'reactstrap';
 import LibraryEdit from './LibraryEdit';
 
@@ -61,8 +62,19 @@ class AdminPanel extends Component {
       this.setState({ config }, this._getConfigData);
     });
   }
+  handleFileUpload({ target: { files, value } }) {
+    Promise.all([...files].map(file => {
+      var data = new FormData();
+      data.append('file', file);
+
+      fetch('/api/upload', {
+        method: 'POST',
+        body: data
+      });
+    })).then(() => value = null)
+  };
   render() {
-    return (
+    return [
       <Row>
         <Col md="6">
           <h2>Add Libraries</h2>
@@ -94,8 +106,16 @@ class AdminPanel extends Component {
             </ListGroupItem>
           </ListGroup>
         </Col>
-      </Row>
-    );
+      </Row>,
+      <Row>
+        <Col md="6">
+          <FormGroup>
+            <Label for="name">File</Label>
+            <input type="file" name="file" ref="file" className="form-control" onChange={(e) => this.handleFileUpload(e)} multiple/>
+          </FormGroup>
+      </Col>
+    </Row>
+    ]
   }
 }
 
