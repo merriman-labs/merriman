@@ -130,8 +130,7 @@ app.post('/api/admin/config', function(req, res) {
 
 app.post('/api/admin/add-library', function(req, res) {
   LibraryManager.save(req.body);
-  const repo = new ConfigRepo();
-  res.json(repo.get());
+  res.json(req.body);
 });
 
 app
