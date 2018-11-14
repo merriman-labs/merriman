@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { FaClock, FaCheckCircle } from 'react-icons/fa';
+import * as R from 'ramda';
 import {
   Button,
   Row,
@@ -6,14 +8,16 @@ import {
   ListGroup,
   ListGroupItem,
   ListGroupItemHeading,
-  Form, FormGroup,Label
+  Form,
+  FormGroup,
+  Label
 } from 'reactstrap';
 import LibraryEdit from './LibraryEdit';
 
 class AdminPanel extends Component {
   constructor(props) {
     super(props);
-    this.state = { config: { libraries: [] } };
+    this.state = { config: { libraries: [] }, files: [] };
     this._formSubmit = this._upsertLib.bind(this);
     this._getConfigData = this._getConfigData.bind(this);
     this._initLibraries = this._initLibraries.bind(this);
@@ -62,17 +66,30 @@ class AdminPanel extends Component {
       this.setState({ config }, this._getConfigData);
     });
   }
-  handleFileUpload({ target: { files, value } }) {
-    Promise.all([...files].map(file => {
-      var data = new FormData();
-      data.append('file', file);
-
-      fetch('/api/upload', {
-        method: 'POST',
-        body: data
-      });
-    })).then(() => value = null)
+  handleFileUploadChanged({ target: { files, value } }) {
+    const fileObjects = [...files]
+      .map(file => ({ file }))
+      .map(R.assoc('uploaded', false));
+    this.setState({ files: fileObjects });
+  }
+  _handleFileUpload = () => {
+    this.state.files.forEach(({ file }) => this._sendFile(file));
   };
+  _sendFile(file) {
+    const data = new FormData();
+    data.append('file', file);
+
+    return fetch('/api/upload', {
+      method: 'POST',
+      body: data
+    }).then(_ =>
+      this.setState(({ files }) => ({
+        files: files.map(f =>
+          f.file.name === file.name ? R.assoc('uploaded', true, f) : f
+        )
+      }))
+    );
+  }
   render() {
     return [
       <Row>
@@ -111,11 +128,40 @@ class AdminPanel extends Component {
         <Col md="6">
           <FormGroup>
             <Label for="name">File</Label>
-            <input type="file" name="file" ref="file" className="form-control" onChange={(e) => this.handleFileUpload(e)} multiple/>
+            <input
+              type="file"
+              name="file"
+              ref="file"
+              className="form-control"
+              onChange={e => this.handleFileUploadChanged(e)}
+              multiple
+            />
+            <ListGroup>
+              {this.state.files.length ? (
+                this.state.files.map(({ file: { name }, uploaded }, i) => (
+                  <ListGroupItem key={i}>
+                    {uploaded ? <FaCheckCircle /> : <FaClock />}&nbsp;
+                    {name}
+                  </ListGroupItem>
+                ))
+              ) : (
+                <div />
+              )}
+              <ListGroupItem>
+                <Button
+                  color="success"
+                  block
+                  disabled={!this.state.files.length}
+                  onClick={this._handleFileUpload}
+                >
+                  Upload
+                </Button>
+              </ListGroupItem>
+            </ListGroup>
           </FormGroup>
-      </Col>
-    </Row>
-    ]
+        </Col>
+      </Row>
+    ];
   }
 }
 

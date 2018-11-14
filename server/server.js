@@ -10,6 +10,7 @@ const cors = require('cors');
 const ConfigRepo = require('./data/ConfigRepo');
 const LibraryManager = require('./managers/LibraryManager');
 const { sortBy, reverse } = require('ramda');
+const thumb = require('./thumb-provider');
 
 /**
  *
@@ -30,7 +31,7 @@ const getVideoFiles = dir => {
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
-app.use(busboy())
+app.use(busboy());
 
 const thumbPath = path.join(os.homedir(), '.node-media-server', 'thumbs');
 const buildPath = path.join(__dirname, '../build');
@@ -41,17 +42,33 @@ app.use(
 );
 
 app.post('/api/upload', function(req, res) {
-  
-  console.log('here');
   if (req.busboy) {
-    console.log('here');
-    req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-      console.log(filename, file);
-      file.pipe(fs.createWriteStream("C:\\Users\\Johnny\\Videos\\sample-videos\\videos\\" + filename));
+    req.busboy.on('file', function(
+      fieldname,
+      file,
+      filename,
+      encoding,
+      mimetype
+    ) {
+      file.pipe(
+        fs.createWriteStream(
+          'C:\\Users\\Johnny\\Videos\\sample-videos\\videos\\' + filename
+        )
+      );
+
+      req.busboy.on('finish', function() {
+        if (filename.toLowerCase().indexOf('.mp4')) {
+          thumb.ensureThumbs(
+            [filename],
+            'C:\\Users\\Johnny\\Videos\\sample-videos\\videos\\',
+            os.homedir() + '\\.node-media-server\\thumbs\\'
+          );
+        }
+      });
     });
 
     req.busboy.on('finish', function() {
-      res.writeHead(200, { 'Connection': 'close' });
+      res.writeHead(200, { Connection: 'close' });
       res.end("That's all folks!");
     });
     return req.pipe(req.busboy);
@@ -133,16 +150,18 @@ app.post('/api/admin/add-library', function(req, res) {
   res.json(req.body);
 });
 
-app
+app;
 
 app.post('/api/admin/init', async function(req, res) {
   const repo = new ConfigRepo();
   const conf = repo.get();
 
-  const libPaths = conf.libraries.map(lib => lib.location).map(location => {
-    const files = getVideoFiles(location);
-    return { location, files };
-  });
+  const libPaths = conf.libraries
+    .map(lib => lib.location)
+    .map(location => {
+      const files = getVideoFiles(location);
+      return { location, files };
+    });
 
   if (!fs.existsSync(os.homedir() + '\\.node-media-server'))
     fs.mkdirSync(os.homedir() + '\\.node-media-server');
