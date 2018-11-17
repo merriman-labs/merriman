@@ -16,13 +16,9 @@ class App extends Component {
   }
 
   render() {
-    return (
+    return [
+      <Navigation />,
       <Container>
-        <Row>
-          <Col>
-            <Navigation />
-          </Col>
-        </Row>
         <Row>
           <Route
             path="/videos/:library?/:video?"
@@ -41,7 +37,7 @@ class App extends Component {
           component={SelectMedia}
         />
       </Container>
-    );
+    ];
   }
 }
 
