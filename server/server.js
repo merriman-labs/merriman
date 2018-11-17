@@ -1,16 +1,19 @@
 const express = require('express');
 const fs = require('fs');
 const os = require('os');
+const R = require('ramda');
 const path = require('path');
 const app = express();
 const config = require('./config');
 const busboy = require('connect-busboy');
 const morgan = require('morgan');
 const cors = require('cors');
-const ConfigRepo = require('./data/ConfigRepo');
-const LibraryManager = require('./managers/LibraryManager');
 const { sortBy, reverse } = require('ramda');
 const thumb = require('./thumb-provider');
+
+const serverConfigRepo = require('./data/ServerConfigRepo');
+const mediaRepo = require('./data/MediaRepo');
+const libraryRepo = require('./data/LibraryRepo');
 
 /**
  *
@@ -33,7 +36,8 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(busboy());
 
-const thumbPath = path.join(os.homedir(), '.node-media-server', 'thumbs');
+const thumbPath = serverConfigRepo.fetch().thumbLocation;
+const mediaPath = serverConfigRepo.fetch().mediaLocation;
 const buildPath = path.join(__dirname, '../build');
 
 app.use(
@@ -50,18 +54,21 @@ app.post('/api/upload', function(req, res) {
       encoding,
       mimetype
     ) {
+      const serverConfig = serverConfigRepo.fetch();
+
+      // Enter media into database
+      const mediaItem = mediaRepo.add(filename);
       file.pipe(
-        fs.createWriteStream(
-          'C:\\Users\\Johnny\\Videos\\sample-videos\\videos\\' + filename
-        )
+        fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
       );
 
       req.busboy.on('finish', function() {
         if (filename.toLowerCase().indexOf('.mp4')) {
+          // Make sure media has a thumbnail
           thumb.ensureThumbs(
-            [filename],
-            'C:\\Users\\Johnny\\Videos\\sample-videos\\videos\\',
-            os.homedir() + '\\.node-media-server\\thumbs\\'
+            [mediaItem.filename],
+            serverConfig.mediaLocation,
+            serverConfig.thumbLocation
           );
         }
       });
@@ -77,16 +84,45 @@ app.post('/api/upload', function(req, res) {
   res.end();
 });
 
-app.get('/api/libraries', function(req, res) {
-  const response = {
-    libraries: LibraryManager.list()
-  };
+app.get('/api/libraries', async function(req, res) {
+  const response = await libraryRepo.get();
   res.json(response);
 });
 
+app.post('/api/admin/libraries/modify-media', async function(req, res) {
+  const { library, media, action } = req.body;
+  if (library && media && action) {
+    if (action === 'ADD') {
+      libraryRepo
+        .addMediaToLibrary(media, library)
+        .then(() => res.sendStatus(200));
+    }
+    if (action === 'DROP') {
+      libraryRepo
+        .removeMediaToLibrary(media, library)
+        .then(() => res.sendStatus(200));
+    }
+  } else {
+    res.sendStatus(500);
+  }
+});
+
+app.post('/api/admin/libraries/add', function(req, res) {
+  const library = req.body;
+  libraryRepo.insert(library);
+  res.sendStatus(200);
+});
+
+app.delete('/api/admin/libraries/:id', function(req, res) {
+  const id = req.params.id;
+  if (id) libraryRepo.delete(id).then(_ => res.sendStatus(200));
+});
+
 app.get('/api/video/:library/:video', function(req, res) {
-  const library = LibraryManager.load(req.params.library);
-  const vPath = path.join(library.location, req.params.video);
+  const videoId = req.params.video;
+  const video = mediaRepo.find(({ _id }) => _id === videoId);
+  const vPath = path.join(mediaPath, video.filename);
+
   const stat = fs.statSync(vPath);
   const fileSize = stat.size;
   const range = req.headers.range;
@@ -117,65 +153,40 @@ app.get('/api/video/:library/:video', function(req, res) {
   }
 });
 
-app.get('/api/video-list/:library', async function(req, res) {
-  const id = req.params.library;
-  const library = LibraryManager.load(id);
-
-  if (!library) return res.status(500).json({ message: 'Library not found!' });
-  const files = getVideoFiles(library.location);
-  res.json({ files });
+app.get('/api/media-items', function(req, res) {
+  const media = mediaRepo.get();
+  res.json(media);
 });
 
-app.get('/api/library/details/:id', function(req, res) {
+app.get('/api/media-items/:library', async function(req, res) {
+  const id = req.params.library;
+  const library = await libraryRepo.find(({ _id }) => _id === id);
+  const media = mediaRepo.where(({ _id }) => R.contains(_id, library.items));
+
+  if (!library) return res.status(500).json({ message: 'Library not found!' });
+  res.json({ media });
+});
+
+app.get('/api/library/details/:id', async function(req, res) {
   const { id } = req.params;
-  const library = LibraryManager.load(id);
+  const library = await libraryRepo.find(({ _id }) => _id === id);
 
   if (!library) return res.status(500).json({ message: 'Library not found!' });
   res.json(library);
 });
 
-app.get('/api/admin/config', function(req, res) {
-  const repo = new ConfigRepo();
-  res.json(repo.get());
+app.post('/api/admin/server-config', function(req, res) {
+  const { mediaLocation, thumbnailLocation } = req.body;
+
+  if (mediaLocation) serverConfigRepo.setMediaLocation(mediaLocation);
+  if (thumbnailLocation)
+    serverConfigRepo.setThumbnailLocation(thumbnailLocation);
+  res.sendStatus(200);
 });
 
-app.post('/api/admin/config', function(req, res) {
-  const repo = new ConfigRepo();
-  repo.save(req.body);
-  res.json(req.body);
-});
-
-app.post('/api/admin/add-library', function(req, res) {
-  LibraryManager.save(req.body);
-  res.json(req.body);
-});
-
-app;
-
-app.post('/api/admin/init', async function(req, res) {
-  const repo = new ConfigRepo();
-  const conf = repo.get();
-
-  const libPaths = conf.libraries
-    .map(lib => lib.location)
-    .map(location => {
-      const files = getVideoFiles(location);
-      return { location, files };
-    });
-
-  if (!fs.existsSync(os.homedir() + '\\.node-media-server'))
-    fs.mkdirSync(os.homedir() + '\\.node-media-server');
-  const thumbProcedurePromises = libPaths.map(({ location, files }) =>
-    thumb.ensureThumbs(
-      files,
-      location,
-      os.homedir() + '\\.node-media-server\\thumbs\\'
-    )
-  );
-
-  Promise.all(thumbProcedurePromises)
-    .then(() => res.json('Libraries initialized!'))
-    .catch(err => res.json(err));
+app.get('/api/admin/server-config', function(req, res) {
+  const config = serverConfigRepo.fetch();
+  res.json(config);
 });
 
 app.get('/*', (req, res, next) =>
