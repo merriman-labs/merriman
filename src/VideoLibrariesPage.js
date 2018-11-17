@@ -57,12 +57,10 @@ class VideoLibrariesPage extends Component {
               ) : (
                 <div />
               )}
-              {this.state.videos.length ? (
+              {this.state.media.length ? (
                 <Link
                   className="btn btn-dark"
-                  to={`/videos/${
-                    this.state.libraryDetails._id
-                  }/${this._randomVideo()}`}
+                  to={`/videos/${library}/${this._randomVideo()._id}`}
                 >
                   Random
                 </Link>
@@ -118,12 +116,12 @@ class VideoLibrariesPage extends Component {
     );
   }
   _randomVideo() {
-    return chance.pickone(this.state.videos);
+    return chance.pickone(this.state.media);
   }
   _shuffle() {
-    if (this.state.videos.length)
+    if (this.state.media.length)
       this.setState({
-        videos: this.state.videos.sort(() => Math.random() - 0.5)
+        media: this.state.media.sort(() => Math.random() - 0.5)
       });
   }
   _dropdownSelected(library) {
