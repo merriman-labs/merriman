@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { FaClock, FaCheckCircle } from 'react-icons/fa';
+import { FaClock, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
 import * as R from 'ramda';
 import {
   Button,
+  ButtonGroup,
   Row,
   Col,
   ListGroup,
@@ -17,22 +18,30 @@ import LibraryEdit from './LibraryEdit';
 class AdminPanel extends Component {
   constructor(props) {
     super(props);
-    this.state = { config: { libraries: [] }, files: [] };
-    this._formSubmit = this._upsertLib.bind(this);
-    this._getConfigData = this._getConfigData.bind(this);
-    this._initLibraries = this._initLibraries.bind(this);
-    this._removeLibrary = this._removeLibrary.bind(this);
-    this._upsertLib = this._upsertLib.bind(this);
+    this.state = {
+      config: { mediaLocation: '', thumbLocation: '' },
+      files: [],
+      libraries: [],
+      newLibraryName: ''
+    };
+    this._handleInputChange = this._handleInputChange.bind(this);
   }
   componentDidMount() {
     this._getConfigData();
+    this._getLibraryData();
   }
-  _getConfigData() {
-    fetch('/api/admin/config')
+  _getConfigData = () => {
+    fetch('/api/admin/server-config')
       .then(response => response.json())
       .then(config => this.setState({ config }))
       .catch(console.log);
-  }
+  };
+  _getLibraryData = () => {
+    fetch('/api/libraries')
+      .then(response => response.json())
+      .then(libraries => this.setState(libraries))
+      .catch(console.log);
+  };
   _sendConfig(config) {
     return fetch('/api/admin/config', {
       body: JSON.stringify(config),
@@ -42,31 +51,19 @@ class AdminPanel extends Component {
       }
     });
   }
-  _upsertLib(library) {
-    fetch('/api/admin/add-library', {
+  _formSubmit = () => {
+    const data = {
+      mediaLocation: this.state.config.mediaLocation,
+      thumbLocation: this.state.config.thumbLocation
+    };
+
+    fetch('/api/admin/server-config', {
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify(library)
-    }).then(this._getConfigData);
-  }
-  _initLibraries(event) {
-    event.preventDefault();
-    fetch('/api/admin/init', { method: 'POST' })
-      .then(x => x.json())
-      .then(console.log)
-      .catch(console.log);
-  }
-  _removeLibrary({ name, location }) {
-    const libraries = this.state.config.libraries.filter(
-      lib => !(lib.name === name && lib.location === location)
-    );
-    const config = { ...this.state.config, libraries };
-
-    this._sendConfig(config).then(() => {
-      this.setState({ config }, this._getConfigData);
+      body: JSON.stringify(data)
     });
-  }
-  handleFileUploadChanged({ target: { files, value } }) {
+  };
+  _handleFileUploadChanged({ target: { files, value } }) {
     const fileObjects = [...files]
       .map(file => ({ file }))
       .map(R.assoc('uploaded', false));
@@ -90,35 +87,106 @@ class AdminPanel extends Component {
       }))
     );
   }
+  _handleInputChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const path = target.name;
+    this.setState(R.assocPath(R.split('.', path), value));
+  }
+  _handleAddLibrary = () => {
+    const data = {
+      name: this.state.newLibraryName
+    };
+
+    fetch('/api/admin/libraries/add', {
+      method: 'POST',
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    })
+      .then(this._getLibraryData)
+      .then(() => this.setState({ newLibraryName: '' }));
+  };
+  _handleDropLibrary = _id => () => {
+    const data = {
+      _id
+    };
+
+    fetch(`/api/admin/libraries/${_id}`, {
+      method: 'DELETE'
+    }).then(this._getLibraryData);
+  };
   render() {
     return [
       <Row>
         <Col md="6">
-          <h2>Add Libraries</h2>
-          <LibraryEdit saveLib={this._upsertLib} />
+          <h2>Server Config</h2>
+          <div className="form">
+            <FormGroup>
+              <Label for="mediaLocation">Media Location</Label>
+              <input
+                type="text"
+                name="config.mediaLocation"
+                className="form-control"
+                value={this.state.config.mediaLocation}
+                onChange={this._handleInputChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="thumbLocation">Thumbnail Location</Label>
+              <input
+                type="text"
+                name="config.thumbLocation"
+                className="form-control"
+                value={this.state.config.thumbLocation}
+                onChange={this._handleInputChange}
+              />
+            </FormGroup>
+            <Button color="success" type="submit" onClick={this._formSubmit}>
+              Add
+            </Button>
+          </div>
         </Col>
         <Col md="6">
           <h2>Libraries</h2>
-          <ListGroup>
-            {this.state.config.libraries.map(
-              ({ _id, name, location, created, initialized }) => (
+          <ListGroup className="form">
+            {this.state.libraries.length ? (
+              this.state.libraries.map(({ _id, name, items }) => (
                 <ListGroupItem key={_id}>
                   <ListGroupItemHeading>{name}</ListGroupItemHeading>
-                  <strong>path: </strong> <code>{location}</code>
-                  <Button
-                    onClick={() => this._removeLibrary({ name, location })}
-                    color="danger"
-                    size="sm"
-                    className="float-right"
-                  >
-                    delete
-                  </Button>
+                  <span>{items.length} items</span>
+                  <ButtonGroup className="float-right">
+                    <a
+                      className="btn btn-success"
+                      href={`/admin/select-media/${_id}`}
+                    >
+                      <FaPlus /> Select Media
+                    </a>
+                    <Button
+                      color="danger"
+                      onClick={this._handleDropLibrary(_id)}
+                    >
+                      <FaTrash />
+                    </Button>
+                  </ButtonGroup>
                 </ListGroupItem>
-              )
+              ))
+            ) : (
+              <div />
             )}
             <ListGroupItem>
-              <Button color="warning" block onClick={this._initLibraries}>
-                Initialize All
+              <FormGroup>
+                <ListGroupItemHeading>New Library</ListGroupItemHeading>
+                <Label>Name</Label>
+                <input
+                  type="text"
+                  name="newLibraryName"
+                  className="form-control"
+                  value={this.state.newLibraryName}
+                  onChange={this._handleInputChange}
+                />
+              </FormGroup>
+              <Button color="success" onClick={this._handleAddLibrary}>
+                <FaPlus />
               </Button>
             </ListGroupItem>
           </ListGroup>
@@ -133,7 +201,7 @@ class AdminPanel extends Component {
               name="file"
               ref="file"
               className="form-control"
-              onChange={e => this.handleFileUploadChanged(e)}
+              onChange={e => this._handleFileUploadChanged(e)}
               multiple
             />
             <ListGroup>

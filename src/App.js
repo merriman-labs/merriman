@@ -6,6 +6,7 @@ import Navigation from './Navigation';
 import VideoLibrariesPage from './VideoLibrariesPage';
 import { Container, Row, Col } from 'reactstrap';
 import Home from './Home';
+import SelectMedia from './admin/SelectMedia';
 
 import AdminPanel from './admin/AdminPanel';
 class App extends Component {
@@ -15,13 +16,9 @@ class App extends Component {
   }
 
   render() {
-    return (
+    return [
+      <Navigation />,
       <Container>
-        <Row>
-          <Col>
-            <Navigation />
-          </Col>
-        </Row>
         <Row>
           <Route
             path="/videos/:library?/:video?"
@@ -33,9 +30,14 @@ class App extends Component {
             <Route exact path="/" component={Home} />
           </Col>
         </Row>
-        <Route path="/admin" component={AdminPanel} />
+        <Route exact path="/admin" component={AdminPanel} />
+        <Route
+          exact
+          path="/admin/select-media/:library"
+          component={SelectMedia}
+        />
       </Container>
-    );
+    ];
   }
 }
 
