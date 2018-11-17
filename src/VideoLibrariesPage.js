@@ -10,6 +10,7 @@ class VideoLibrariesPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      media: [],
       videos: [],
       libraries: [],
       dropdown: false,
@@ -44,9 +45,7 @@ class VideoLibrariesPage extends Component {
         <Row>
           <Col>
             <ButtonGroup>
-              <Button
-                color={this.state.libraryDetails.name ? 'info' : 'secondary'}
-              >
+              <Button color="secondary">
                 {this.state.libraryDetails.name
                   ? this.state.libraryDetails.name
                   : 'No Library Selected'}
@@ -92,7 +91,7 @@ class VideoLibrariesPage extends Component {
                     >
                       {library.name}{' '}
                       <span className="badge badge-primary badge-pill">
-                        {library.statistics.videos}
+                        {library.items.length}
                       </span>
                     </Link>
                   ))}
@@ -107,8 +106,8 @@ class VideoLibrariesPage extends Component {
           </Col>
         </Row>
         <Row>
-          {this.state.videos && this.state.videos.length ? (
-            <VideoList library={library} videos={this.state.videos} />
+          {this.state.media && this.state.media.length ? (
+            <VideoList library={library} media={this.state.media} />
           ) : (
             <Col>
               <h3>Select a library above.</h3>
@@ -139,11 +138,11 @@ class VideoLibrariesPage extends Component {
       .then(libraryDetails => this.setState({ libraryDetails }));
   }
   _fetchVideoList(id) {
-    const pathTail = id ? '/' + id : '';
-
-    return fetch(`/api/video-list${pathTail}`)
-      .then(response => response.json())
-      .then(({ files: videos }) => !videos || this.setState({ videos }));
+    if (id) {
+      return fetch(`/api/media-items/${id}`)
+        .then(response => response.json())
+        .then(response => this.setState(response));
+    }
   }
   _fetchLibraries() {
     return fetch('/api/libraries')
