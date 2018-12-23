@@ -2,25 +2,19 @@ const path = require('path');
 const ffmpeg = require('./ffmpeg');
 const fs = require('fs');
 
-/**
- *
- * @param {string} filePath
- * @param {string} thumbdir
- * @returns {Promise<boolean>}
- */
-const hasThumb = (filename, thumbdir) =>
+const hasThumb = (filename: string, thumbdir: string): Promise<boolean> =>
   new Promise((resolve, reject) => {
     fs.exists(path.join(thumbdir, filename + '.png'), resolve);
   });
 
 /**
  *
- * @param {string} filename
- * @param {string} sourcedir
- * @param {string} thumbdir
- * @returns {Promise<string>}
  */
-const create = (filename, sourcedir, thumbdir) => {
+const create = (
+  filename: string,
+  sourcedir: string,
+  thumbdir: string
+): Promise<string> => {
   return ffmpeg(
     path.join(sourcedir, filename),
     path.join(thumbdir, filename + '.png'),
@@ -35,11 +29,12 @@ const _ensureStorage = dir => {
 
 /**
  *
- * @param {Array<string>} fileNames
- * @param {string} sourceDir
- * @param {string} destDir
  */
-const ensureThumbs = (fileNames, sourceDir, destDir) => {
+const ensureThumbs = (
+  fileNames: Array<string>,
+  sourceDir: string,
+  destDir: string
+) => {
   _ensureStorage(destDir);
   return Promise.all(
     fileNames.map(filename => {
@@ -52,4 +47,4 @@ const ensureThumbs = (fileNames, sourceDir, destDir) => {
   );
 };
 
-module.exports = { create, hasThumb, ensureThumbs };
+export default { create, hasThumb, ensureThumbs };
