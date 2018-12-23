@@ -7,8 +7,8 @@ import VideoLibrariesPage from './VideoLibrariesPage';
 import { Container, Row, Col } from 'reactstrap';
 import Home from './Home';
 import SelectMedia from './admin/SelectMedia';
-
 import AdminPanel from './admin/AdminPanel';
+
 class App extends Component {
   constructor(props) {
     super(props);

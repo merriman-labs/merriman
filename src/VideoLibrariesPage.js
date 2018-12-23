@@ -137,13 +137,13 @@ class VideoLibrariesPage extends Component {
   }
   _fetchVideoList(id) {
     if (id) {
-      return fetch(`/api/media-items/${id}`)
+      return fetch(`/api/library/${id}`)
         .then(response => response.json())
         .then(response => this.setState(response));
     }
   }
   _fetchLibraries() {
-    return fetch('/api/libraries')
+    return fetch('/api/library')
       .then(response => response.json())
       .then(({ libraries }) => this.setState({ libraries }));
   }
