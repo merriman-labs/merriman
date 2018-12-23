@@ -1,14 +1,11 @@
-const { exec } = require('child_process');
-const path = require('path');
-/**
- *
- * @param {string} path
- * @param {string} destPath
- * @param {string} time
- * @param {string} size
- * @returns {Promise<{stdout:string,stderr:string}>}
- */
-const ffmpeg = function(file, destPath, time, size) {
+import { exec } from 'child_process';
+
+const ffmpeg = function(
+  file: string,
+  destPath: string,
+  time: string,
+  size: string
+): Promise<{ stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
     if (!(file || destPath || time || size)) {
       return reject(new Error('All arguments are required!'));

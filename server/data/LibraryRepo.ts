@@ -1,8 +1,11 @@
-const fs = require('fs');
-const R = require('ramda');
-const uuid = require('uuid/v4');
+import * as fs from 'fs';
+import * as R from 'ramda';
+import { v4 } from 'uuid';
+import { Library, LibraryDatabase } from '../models';
+const uuid = v4;
 
-class LibraryRepo {
+export default class LibraryRepo {
+  private _dbpath: string;
   constructor() {
     this._dbpath = __dirname + '/db/library.json';
     this._ensureConfig();
@@ -10,33 +13,27 @@ class LibraryRepo {
 
   /**
    * Load all Libraries.
-   * @returns {LibraryDatabase}
    */
-  get() {
+  get(): LibraryDatabase {
     return JSON.parse(fs.readFileSync(this._dbpath, { encoding: 'utf8' }));
   }
   /**
    *
-   * @param {LibraryDatabase} lib
    */
-  save(lib) {
+  save(lib: LibraryDatabase) {
     fs.writeFileSync(this._dbpath, JSON.stringify(lib));
   }
   /**
    * Finds a library matching the predicate
-   * @param {((x: Library) => boolean)} predicate
-   * @returns {Promise<Library>}
    */
-  async find(predicate) {
+  async find(predicate: ((x: Library) => boolean)): Promise<Library> {
     const { libraries } = this.get();
     return R.find(predicate, libraries);
   }
   /**
    * Insert a library.
-   * @param {Library} lib
-   * @returns {Promise<string>} The _id of the new library.
    */
-  async insert(lib) {
+  async insert(lib: Library): Promise<string> {
     const newLib = this._initLibrary(lib);
     const libs = this.get();
     libs.libraries.push(newLib);
@@ -63,7 +60,7 @@ class LibraryRepo {
    * @param {Library} library
    * @returns {Promise<string>}
    */
-  async upsert(library) {
+  async upsert(library: Library): Promise<string> {
     const conf = this.get();
 
     const newLib = R.has('_id', library)
@@ -84,7 +81,7 @@ class LibraryRepo {
   /**
    * @param {string} id
    */
-  async delete(id) {
+  async delete(id: string) {
     const { libraries } = this.get();
     const filteredLibs = libraries.filter(({ _id }) => _id !== id);
     this.save({ libraries: filteredLibs });
@@ -93,15 +90,13 @@ class LibraryRepo {
    * @param {Library} lib
    * @returns {Library}
    */
-  _initLibrary(lib) {
+  _initLibrary(lib: Library): Library {
     return R.pipe(
       R.assoc('_id', uuid()),
       R.assoc('items', [])
-    )(lib);
+    )(lib) as Library;
   }
   _ensureConfig() {
     if (!fs.existsSync(this._dbpath)) this.save({ libraries: [] });
   }
 }
-
-module.exports = new LibraryRepo();
