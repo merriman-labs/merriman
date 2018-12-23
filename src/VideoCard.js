@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Card, CardImg, CardImgOverlay, CardText } from 'reactstrap';
 
 const VideoCard = ({ media: { filename, name, _id }, library }) => {
-  console.log(filename);
   return (
     <Card>
       <Link to={`/videos/${library}/${_id}`}>

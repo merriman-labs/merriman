@@ -5,11 +5,8 @@ import {
   ButtonGroup,
   Col,
   Card,
-  CardImg,
-  CardImgOverlay,
   CardText,
   CardBody,
-  CardFooter,
   Row
 } from 'reactstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
@@ -25,7 +22,7 @@ class SelectMedia extends Component {
     this.setState({ library });
   };
   _getMediaItems = async () => {
-    const mediaItems = await (await fetch('/api/media-items')).json();
+    const mediaItems = await (await fetch('/api/media')).json();
     this.setState({ mediaItems });
   };
   componentDidMount() {
@@ -51,30 +48,28 @@ class SelectMedia extends Component {
     });
   };
   _isInLibrary = media =>
-    this.state.library.items && this.state.library.items.length
+    this.state.library &&
+    this.state.library.items &&
+    this.state.library.items.length
       ? R.contains(media, this.state.library.items)
       : false;
   _addMediaItem = media => () => {
-    const library = this.props.match.params.library;
     return this._changeMediaItem('ADD', media).then(this._getLibraryInfo);
   };
   _removeMediaItem = media => () => {
-    const library = this.props.match.params.library;
     return this._changeMediaItem('DROP', media).then(this._getLibraryInfo);
   };
   _selectAll = async () => {
     const ids = R.pluck('_id', this.state.mediaItems);
-    const responses = await Promise.all(
-      ids.map(x => this._changeMediaItem('ADD', x))
+    Promise.all(ids.map(x => this._changeMediaItem('ADD', x))).then(
+      this._getLibraryInfo
     );
-    this._getLibraryInfo();
   };
   _unselectAll = async () => {
     const ids = R.pluck('_id', this.state.mediaItems);
-    const responses = await Promise.all(
-      ids.map(x => this._changeMediaItem('DROP', x))
+    Promise.all(ids.map(x => this._changeMediaItem('DROP', x))).then(
+      this._getLibraryInfo
     );
-    this._getLibraryInfo();
   };
   render() {
     return [
@@ -103,10 +98,13 @@ class SelectMedia extends Component {
       <Row>
         {this.state.mediaItems.length ? (
           R.splitEvery(4, this.state.mediaItems).map(group =>
-            group.map(({ _id, name, filename }, i) => (
-              <Col sm="6" lg="3" key={i} className="video-cell">
+            group.map(({ _id, name, filename }) => (
+              <Col sm="6" lg="3" key={_id} className="video-cell">
                 <Card>
-                  <img src={`/${filename}.png`} />
+                  <img
+                    src={`/${filename}.png`}
+                    alt={`Thumbnail for file ${filename}`}
+                  />
 
                   <CardBody>
                     <CardText>{name}</CardText>

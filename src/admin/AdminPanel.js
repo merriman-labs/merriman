@@ -9,17 +9,17 @@ import {
   ListGroup,
   ListGroupItem,
   ListGroupItemHeading,
-  Form,
   FormGroup,
   Label
 } from 'reactstrap';
-import LibraryEdit from './LibraryEdit';
+import ScanForLocalMedia from './ScanForLocalMedia';
 
 class AdminPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
       config: { mediaLocation: '', thumbLocation: '' },
+      localFiles: [],
       files: [],
       libraries: [],
       newLibraryName: ''
@@ -37,7 +37,7 @@ class AdminPanel extends Component {
       .catch(console.log);
   };
   _getLibraryData = () => {
-    fetch('/api/libraries')
+    fetch('/api/library')
       .then(response => response.json())
       .then(libraries => this.setState(libraries))
       .catch(console.log);
@@ -76,7 +76,7 @@ class AdminPanel extends Component {
     const data = new FormData();
     data.append('file', file);
 
-    return fetch('/api/upload', {
+    return fetch('/api/media/upload', {
       method: 'POST',
       body: data
     }).then(_ =>
@@ -107,10 +107,6 @@ class AdminPanel extends Component {
       .then(() => this.setState({ newLibraryName: '' }));
   };
   _handleDropLibrary = _id => () => {
-    const data = {
-      _id
-    };
-
     fetch(`/api/admin/libraries/${_id}`, {
       method: 'DELETE'
     }).then(this._getLibraryData);
@@ -150,7 +146,7 @@ class AdminPanel extends Component {
           <h2>Libraries</h2>
           <ListGroup className="form">
             {this.state.libraries.length ? (
-              this.state.libraries.map(({ _id, name, items }) => (
+              this.state.libraries.map(({ _id, name, items }, i) => (
                 <ListGroupItem key={_id}>
                   <ListGroupItemHeading>{name}</ListGroupItemHeading>
                   <span>{items.length} items</span>
@@ -195,7 +191,9 @@ class AdminPanel extends Component {
       <Row>
         <Col md="6">
           <FormGroup>
-            <Label for="name">File</Label>
+            <h2>
+              <Label for="name">File Upload</Label>
+            </h2>
             <input
               type="file"
               name="file"
@@ -228,6 +226,7 @@ class AdminPanel extends Component {
             </ListGroup>
           </FormGroup>
         </Col>
+        <ScanForLocalMedia />
       </Row>
     ];
   }
