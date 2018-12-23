@@ -1,1 +1,6 @@
-{ "ignore": ["*.json"] }
+{
+  "ignore": [".git", "node_modules", "dist_server", "build", ".cache"],
+  "watch": ["server/**/*.ts"],
+  "ext": "ts",
+  "exec": "ts-node -P server/tsconfig.json ./server/server.ts"
+}
