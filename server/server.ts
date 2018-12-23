@@ -1,17 +1,10 @@
 import * as express from 'express';
-import * as fs from 'fs';
-import * as R from 'ramda';
 import * as path from 'path';
 import * as busboy from 'connect-busboy';
 import * as morgan from 'morgan';
 import * as cors from 'cors';
-import { EventEmitter } from 'events';
-import { Request } from 'express-serve-static-core';
-import { WriteStream } from 'tty';
 import apiRouter from './routes/api';
-import LibraryRepo from './data/LibraryRepo';
 import ServerConfigRepo from './data/ServerConfigRepo';
-import MediaRepo from './data/MediaRepo';
 
 const app = express();
 const serverConfigRepo = new ServerConfigRepo();
