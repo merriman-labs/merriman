@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
-import { FaClock, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
-import * as R from 'ramda';
-import {
-  Button,
-  ButtonGroup,
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
-  ListGroupItemHeading,
-  FormGroup,
-  Label
-} from 'reactstrap';
+import { FaClock, FaCheckCircle } from 'react-icons/fa';
+import { Button, ListGroup, ListGroupItem, FormGroup, Label } from 'reactstrap';
 
 export default class ScanForLocalMedia extends Component {
   constructor(props) {
