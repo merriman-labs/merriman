@@ -19,4 +19,4 @@ const ffmpeg = function(
   });
 };
 
-module.exports = ffmpeg;
+export default ffmpeg;

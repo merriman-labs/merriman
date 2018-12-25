@@ -6,7 +6,7 @@ const VideoCard = ({ media: { filename, name, _id }, library }) => {
   return (
     <Card>
       <Link to={`/videos/${library}/${_id}`}>
-        <CardImg src={`/${filename}.png`} />
+        <CardImg src={`/000000.png`} />
         <CardImgOverlay className="thumbnail-link">
           <CardText>{name}</CardText>
         </CardImgOverlay>

@@ -1,6 +1,6 @@
-const path = require('path');
-const ffmpeg = require('./ffmpeg');
-const fs = require('fs');
+import * as path from 'path';
+import ffmpeg from './ffmpeg';
+import * as fs from 'fs';
 
 const hasThumb = (filename: string, thumbdir: string): Promise<boolean> =>
   new Promise((resolve, reject) => {
