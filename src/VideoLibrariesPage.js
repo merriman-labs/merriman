@@ -3,7 +3,7 @@ import Video from './Video';
 import { Link } from 'react-router-dom';
 import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
 import Chance from 'chance';
-import VideoActualList from './VideoActualList';
+import VideoList from './VideoList';
 const chance = Chance.Chance(Math.random);
 
 class VideoLibrariesPage extends Component {
@@ -105,7 +105,7 @@ class VideoLibrariesPage extends Component {
         </Row>
         <Row>
           {this.state.media && this.state.media.length ? (
-            <VideoActualList library={library} media={this.state.media} />
+            <VideoList library={library} media={this.state.media} />
           ) : (
             <Col>
               <h3>Select a library above.</h3>
