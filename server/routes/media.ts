@@ -1,4 +1,4 @@
-import { Router, Response, Request } from 'express';
+import { Router } from 'express';
 import LibraryRepo from '../data/LibraryRepo';
 import ServerConfigRepo from '../data/ServerConfigRepo';
 import ThumbProvider from '../thumb-provider';
