@@ -1,15 +1,8 @@
 import * as fs from 'fs';
 import * as R from 'ramda';
 import * as uuid from 'uuid/v4';
-import * as path from 'path';
 import ServerConfigRepo from './ServerConfigRepo';
-
-type MediaItem = {
-  _id: string;
-  favorite: boolean;
-  filename: string;
-  name: string;
-};
+import { MediaItem } from '../models/index';
 
 export default class MediaRepo {
   private _dbpath: string;
@@ -59,6 +52,17 @@ export default class MediaRepo {
     return media;
   }
   /**
+   * Add an existing media item from outside of the media directory to the database.
+   * @param filename Filename of the media item to add to the database
+   * @param path Path to the file
+   */
+  addExternal(filename: string, path: string): MediaItem {
+    const media = this._initVideo(filename, filename, uuid(), path);
+    const videos = this.get();
+    this._save(videos.concat(media));
+    return media;
+  }
+  /**
    *
    */
   find(predicate: ((x: MediaItem) => boolean)): MediaItem {
@@ -100,12 +104,17 @@ export default class MediaRepo {
   /**
    *
    */
-  private _initVideo(name: string, originalName: string, id): MediaItem {
-    return {
-      name: originalName,
-      filename: name,
-      _id: id,
-      favorite: false
-    };
+  private _initVideo(
+    name: string,
+    originalName: string,
+    id: string,
+    path?: string
+  ): MediaItem {
+    return R.pipe(
+      R.assoc('name', originalName),
+      R.assoc('filename', name),
+      R.assoc('_id', id),
+      x => (path ? R.assoc('path', path, x) : x)
+    )({}) as MediaItem;
   }
 }

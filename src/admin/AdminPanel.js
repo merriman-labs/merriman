@@ -12,7 +12,6 @@ import {
   FormGroup,
   Label
 } from 'reactstrap';
-import ScanForLocalMedia from './ScanForLocalMedia';
 
 class AdminPanel extends Component {
   constructor(props) {
@@ -226,7 +225,6 @@ class AdminPanel extends Component {
             </ListGroup>
           </FormGroup>
         </Col>
-        <ScanForLocalMedia />
       </Row>
     ];
   }

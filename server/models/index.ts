@@ -5,9 +5,9 @@ export type ServerConfiguration = {
 
 export type MediaItem = {
   _id: string;
-  favorite: boolean;
   filename: string;
   name: string;
+  path?: string;
 };
 
 export type Library = {

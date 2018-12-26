@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "downlevelIteration": true,
+    "moduleResolution": "node",
+    "outDir": "./dist_server",
+    "rootDir": "./server",
+    "lib": ["es2017"],
+    "sourceMap": true,
+    "target": "es5"
+  },
+  "include": ["./server/**/*.ts"]
+}
