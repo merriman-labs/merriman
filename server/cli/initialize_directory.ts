@@ -1,11 +1,12 @@
 import * as fs from 'fs';
-import { add } from 'ramda';
 import 'colors';
 import * as path from 'path';
 import * as readline from 'readline';
 import MediaRepo from '../data/MediaRepo';
 import ThumbProvider from '../thumb-provider';
 import ServerConfigRepo from '../data/ServerConfigRepo';
+import printHeader from './util/print-header';
+
 const serverConfigRepo = new ServerConfigRepo();
 class NotImplementedExpection extends Error {}
 
@@ -61,14 +62,20 @@ const pickFiles = async (files: Array<string>, source: string) => {
   while (
     (response = await ask(
       `Enter a number from the following and press <enter> to queue it up\n
-Enter the number again to remove it
+Enter the number again to remove it\n
+Enter all to add all\n
 Enter done to finish
 ${formatFileNames(fileMap, queue)}\n`
     )) !== 'done'
   ) {
-    const responseNum = Number.parseInt(response);
-    if (queue.has(responseNum)) queue.delete(responseNum);
-    else queue.add(responseNum);
+    if (response === 'all') {
+      Array.from(fileMap.keys()).forEach(key => queue.add(key));
+      continue;
+    } else {
+      const responseNum = Number.parseInt(response);
+      if (queue.has(responseNum)) queue.delete(responseNum);
+      else queue.add(responseNum);
+    }
   }
   await askProceed();
   const fileIndices = Array.from(queue.values());
@@ -84,6 +91,8 @@ const getFiles = (dir: string): Array<string> => {
 };
 
 async function main() {
+  printHeader();
+
   const initDir = await ask('Enter a path to init:\n');
 
   if (!fs.existsSync(initDir) || !fs.statSync(initDir).isDirectory()) {

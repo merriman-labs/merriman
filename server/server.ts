@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import * as cors from 'cors';
 import apiRouter from './routes/api';
 import ServerConfigRepo from './data/ServerConfigRepo';
+import printHeader from './cli/util/print-header';
 
 const app = express();
 const serverConfigRepo = new ServerConfigRepo();
@@ -29,5 +30,6 @@ app.get('/*', (req, res, next) =>
 );
 
 app.listen(80, function() {
+  printHeader();
   console.log('Listening on port 80!');
 });
