@@ -71,8 +71,9 @@ ${formatFileNames(fileMap, queue)}\n`
     else queue.add(responseNum);
   }
   await askProceed();
+  const fileIndices = Array.from(queue.values());
 
-  const filePicks = [...queue.values()].map(key => fileMap[key]);
+  const filePicks = fileIndices.map(key => fileMap.get(key));
   await initFiles(filePicks, source);
 };
 
@@ -100,9 +101,9 @@ async function main() {
   if (initMethod.includes('all')) {
     await initFiles(files, initDir);
   } else if (initMethod.includes('select')) {
-    throw new NotImplementedExpection(
-      'This is all kinds of fucked up right now.'
-    );
+    // throw new NotImplementedExpection(
+    //   'This is all kinds of fucked up right now.'
+    // );
     await pickFiles(files, initDir);
   } else if (!initMethod.includes('all') && !initMethod.includes('select')) {
     console.log('Au revoir!');
