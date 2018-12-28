@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "main": "admin/main.js",
   "dependencies": {
@@ -38,11 +38,14 @@
     "build:server": "tsc -P tsconfig.json",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "cli:init-dir": "node .\\dist_server\\cli\\initialize_directory.js"
+    "cli:init-dir": "node .\\dist_server\\cli\\init-dir\\index.js"
   },
   "proxy": "http://localhost:80",
   "devDependencies": {
     "@types/figlet": "^1.2.0",
     "ts-node": "^7.0.1"
+  },
+  "bin": {
+    "node-media-server": ".\\dist_server\\cli\\index.js"
   }
 }
