@@ -17,7 +17,8 @@ const { mediaLocation } = serverConfigRepo.fetch();
 mediaItemRouter.get('/play/:library/:video', function(req, res) {
   const videoId = req.params.video;
   const video = mediaRepo.find(({ _id }) => _id === videoId);
-  const vPath = path.join(mediaLocation, video.filename);
+  const vDir = video.path ? video.path : mediaLocation;
+  const vPath = path.join(vDir, video.filename);
 
   const stat = fs.statSync(vPath);
   const fileSize = stat.size;

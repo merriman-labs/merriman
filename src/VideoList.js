@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Col, ListGroup } from 'reactstrap';
+import { sortBy, prop } from 'ramda';
+
 const VideoActualList = ({ media, library }) => {
   return (
     <Col>
       <ListGroup>
-        {media.map(mediaItem => {
+        {sortBy(prop('name'), media).map(mediaItem => {
           return (
             <Link
               className="list-group-item"
