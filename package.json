@@ -38,7 +38,7 @@
     "build:server": "tsc -P tsconfig.json",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "cli:init-dir": "node .\\dist_server\\cli\\init-dir\\index.js"
+    "cli": "node .\\dist_server\\cli\\index.js"
   },
   "proxy": "http://localhost:80",
   "devDependencies": {
