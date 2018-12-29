@@ -26,41 +26,13 @@ class AdminPanel extends Component {
     this._handleInputChange = this._handleInputChange.bind(this);
   }
   componentDidMount() {
-    this._getConfigData();
     this._getLibraryData();
   }
-  _getConfigData = () => {
-    fetch('/api/admin/server-config')
-      .then(response => response.json())
-      .then(config => this.setState({ config }))
-      .catch(console.log);
-  };
   _getLibraryData = () => {
     fetch('/api/library')
       .then(response => response.json())
       .then(libraries => this.setState(libraries))
       .catch(console.log);
-  };
-  _sendConfig(config) {
-    return fetch('/api/admin/config', {
-      body: JSON.stringify(config),
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      }
-    });
-  }
-  _formSubmit = () => {
-    const data = {
-      mediaLocation: this.state.config.mediaLocation,
-      thumbLocation: this.state.config.thumbLocation
-    };
-
-    fetch('/api/admin/server-config', {
-      method: 'POST',
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify(data)
-    });
   };
   _handleFileUploadChanged({ target: { files, value } }) {
     const fileObjects = [...files]
@@ -111,36 +83,8 @@ class AdminPanel extends Component {
     }).then(this._getLibraryData);
   };
   render() {
-    return [
+    return (
       <Row>
-        <Col md="6">
-          <h2>Server Config</h2>
-          <div className="form">
-            <FormGroup>
-              <Label for="mediaLocation">Media Location</Label>
-              <input
-                type="text"
-                name="config.mediaLocation"
-                className="form-control"
-                value={this.state.config.mediaLocation}
-                onChange={this._handleInputChange}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="thumbLocation">Thumbnail Location</Label>
-              <input
-                type="text"
-                name="config.thumbLocation"
-                className="form-control"
-                value={this.state.config.thumbLocation}
-                onChange={this._handleInputChange}
-              />
-            </FormGroup>
-            <Button color="success" type="submit" onClick={this._formSubmit}>
-              Add
-            </Button>
-          </div>
-        </Col>
         <Col md="6">
           <h2>Libraries</h2>
           <ListGroup className="form">
@@ -186,8 +130,6 @@ class AdminPanel extends Component {
             </ListGroupItem>
           </ListGroup>
         </Col>
-      </Row>,
-      <Row>
         <Col md="6">
           <FormGroup>
             <h2>
@@ -226,7 +168,7 @@ class AdminPanel extends Component {
           </FormGroup>
         </Col>
       </Row>
-    ];
+    );
   }
 }
 
