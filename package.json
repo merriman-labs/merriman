@@ -1,8 +1,6 @@
 {
   "name": "merriman",
   "version": "0.1.2",
-  "private": true,
-  "main": "admin/main.js",
   "dependencies": {
     "body-parser": "^1.18.2",
     "bootstrap": "^4.1.1",
