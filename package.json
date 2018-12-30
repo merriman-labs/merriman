@@ -1,6 +1,6 @@
 {
   "name": "merriman",
-  "version": "0.1.2",
+  "version": "0.2.2",
   "dependencies": {
     "@types/chance": "^1.0.1",
     "@types/react": "^16.7.18",
