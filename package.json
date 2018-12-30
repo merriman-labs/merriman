@@ -1,6 +1,14 @@
 {
   "name": "merriman",
   "version": "0.2.2",
+  "author": {
+    "name": "Johnny Reina",
+    "email": "johnny.r.reina@gmail.com",
+    "url": "http://github.com/jreina"
+  },
+  "repository": {
+    "url": "https://github.com/jreina/merriman"
+  },
   "dependencies": {
     "@types/chance": "^1.0.1",
     "@types/react": "^16.7.18",
