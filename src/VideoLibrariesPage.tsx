@@ -4,19 +4,41 @@ import { Link } from 'react-router-dom';
 import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
 import Chance from 'chance';
 import VideoList from './VideoList';
+import { MediaItem, Library } from '../server/models';
+
 const chance = Chance.Chance(Math.random);
 
-class VideoLibrariesPage extends Component {
-  constructor(props) {
+type VideoLibrariesPageProps = {
+  match: {
+    params: {
+      library: string;
+      video: string;
+    };
+  };
+};
+
+type VideoLibrariesPageState = {
+  media: Array<MediaItem>;
+  videos: Array<MediaItem>;
+  libraries: Array<Library>;
+  dropdown: boolean;
+  library: string | null;
+  libraryDetails: Library | null;
+};
+
+class VideoLibrariesPage extends Component<
+  VideoLibrariesPageProps,
+  VideoLibrariesPageState
+> {
+  constructor(props: VideoLibrariesPageProps) {
     super(props);
     this.state = {
       media: [],
       videos: [],
       libraries: [],
       dropdown: false,
-      video: null,
       library: null,
-      libraryDetails: { name: null }
+      libraryDetails: null
     };
     this._toggleLibraryPicker = this._toggleLibraryPicker.bind(this);
     this._fetchVideoList = this._fetchVideoList.bind(this);
@@ -46,7 +68,7 @@ class VideoLibrariesPage extends Component {
           <Col>
             <ButtonGroup>
               <Button color="secondary">
-                {this.state.libraryDetails.name
+                {this.state.libraryDetails
                   ? this.state.libraryDetails.name
                   : 'No Library Selected'}
               </Button>
@@ -124,18 +146,18 @@ class VideoLibrariesPage extends Component {
         media: this.state.media.sort(() => Math.random() - 0.5)
       });
   }
-  _dropdownSelected(library) {
+  _dropdownSelected(library: string) {
     this.setState({ library, dropdown: false }, () => {
       this._fetchVideoList(library);
       this._getLibraryDetails(library);
     });
   }
-  _getLibraryDetails(id) {
+  _getLibraryDetails(id: string) {
     fetch(`/api/library/details/${id}`)
       .then(response => response.json())
       .then(libraryDetails => this.setState({ libraryDetails }));
   }
-  _fetchVideoList(id) {
+  _fetchVideoList(id: string) {
     if (id) {
       return fetch(`/api/library/${id}`)
         .then(response => response.json())

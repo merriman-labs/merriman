@@ -1,13 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Col, ListGroup } from 'reactstrap';
-import { sortBy, prop } from 'ramda';
+import { sortBy } from 'ramda';
+import { MediaItem } from '../server/models';
+type VideoListProps = {
+  media: Array<MediaItem>;
+  library: string;
+};
 
-const VideoActualList = ({ media, library }) => {
+const VideoList = ({ media, library }: VideoListProps) => {
   return (
     <Col>
       <ListGroup>
-        {sortBy(prop('name'), media).map(mediaItem => {
+        {sortBy(x => x.name, media).map((mediaItem: MediaItem) => {
           return (
             <Link
               className="list-group-item"
@@ -23,4 +28,4 @@ const VideoActualList = ({ media, library }) => {
   );
 };
 
-export default VideoActualList;
+export default VideoList;
