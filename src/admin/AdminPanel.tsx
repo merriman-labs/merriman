@@ -12,13 +12,20 @@ import {
   FormGroup,
   Label
 } from 'reactstrap';
+import { Library } from '../../server/models';
 
-class AdminPanel extends Component {
-  constructor(props) {
+type FileInfo = { uploaded: boolean; file: File };
+type AdminPanelProps = {};
+type AdminPanelState = {
+  files: Array<FileInfo>;
+  libraries: Array<Library>;
+  newLibraryName: string;
+};
+
+class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
+  constructor(props: AdminPanelProps) {
     super(props);
     this.state = {
-      config: { mediaLocation: '', thumbLocation: '' },
-      localFiles: [],
       files: [],
       libraries: [],
       newLibraryName: ''
@@ -34,16 +41,19 @@ class AdminPanel extends Component {
       .then(libraries => this.setState(libraries))
       .catch(console.log);
   };
-  _handleFileUploadChanged({ target: { files, value } }) {
+  _handleFileUploadChanged({
+    target: { files, value }
+  }: React.ChangeEvent<HTMLInputElement>) {
     const fileObjects = [...files]
       .map(file => ({ file }))
       .map(R.assoc('uploaded', false));
+
     this.setState({ files: fileObjects });
   }
   _handleFileUpload = () => {
     this.state.files.forEach(({ file }) => this._sendFile(file));
   };
-  _sendFile(file) {
+  _sendFile(file: File) {
     const data = new FormData();
     data.append('file', file);
 
@@ -58,7 +68,7 @@ class AdminPanel extends Component {
       }))
     );
   }
-  _handleInputChange(event) {
+  _handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const path = target.name;
@@ -77,7 +87,7 @@ class AdminPanel extends Component {
       .then(this._getLibraryData)
       .then(() => this.setState({ newLibraryName: '' }));
   };
-  _handleDropLibrary = _id => () => {
+  _handleDropLibrary = (_id: string) => () => {
     fetch(`/api/admin/libraries/${_id}`, {
       method: 'DELETE'
     }).then(this._getLibraryData);

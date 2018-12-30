@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
+import { MediaItem } from '../server/models';
 
-export default class Video extends Component {
-  constructor(props) {
+type VideoProps = {
+  video: string;
+  library: string;
+};
+type VideoState = {
+  details: MediaItem | null;
+};
+
+export default class Video extends Component<VideoProps, VideoState> {
+  constructor(props: VideoProps) {
     super(props);
     this.state = { details: null };
   }

@@ -10,9 +10,22 @@ import {
   Row
 } from 'reactstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
+import { MediaItem, Library } from '../../server/models';
 
-class SelectMedia extends Component {
-  constructor(props) {
+type SelectMediaProps = {
+  match: {
+    params: {
+      library: string;
+    };
+  };
+};
+type SelectMediaState = {
+  library: Library | null;
+  mediaItems: Array<MediaItem> | null;
+};
+
+class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
+  constructor(props: SelectMediaProps) {
     super(props);
     this.state = { library: null, mediaItems: [] };
   }
@@ -31,10 +44,10 @@ class SelectMedia extends Component {
         params: { library }
       }
     } = this.props;
-    this._getLibraryInfo(library);
+    this._getLibraryInfo();
     this._getMediaItems();
   }
-  _changeMediaItem = (action, media) => {
+  _changeMediaItem = (action: string, media: string) => {
     const library = this.props.match.params.library;
     const data = {
       action,
@@ -47,29 +60,37 @@ class SelectMedia extends Component {
       body: JSON.stringify(data)
     });
   };
-  _isInLibrary = media =>
+  _isInLibrary = (media: string) =>
     this.state.library &&
     this.state.library.items &&
     this.state.library.items.length
       ? R.contains(media, this.state.library.items)
       : false;
-  _addMediaItem = media => () => {
+  _addMediaItem = (media: string) => () => {
     return this._changeMediaItem('ADD', media).then(this._getLibraryInfo);
   };
-  _removeMediaItem = media => () => {
+  _removeMediaItem = (media: string) => () => {
     return this._changeMediaItem('DROP', media).then(this._getLibraryInfo);
   };
   _selectAll = async () => {
-    const ids = R.pluck('_id', this.state.mediaItems);
-    Promise.all(ids.map(x => this._changeMediaItem('ADD', x))).then(
-      this._getLibraryInfo
-    );
+    const ids = R.pluck('_id', this.state.mediaItems as Array<
+      MediaItem
+    >) as Array<string>;
+    Promise.all(
+      ids
+        .filter(x => !this._isInLibrary(x))
+        .map(x => this._changeMediaItem('ADD', x))
+    ).then(this._getLibraryInfo);
   };
   _unselectAll = async () => {
-    const ids = R.pluck('_id', this.state.mediaItems);
-    Promise.all(ids.map(x => this._changeMediaItem('DROP', x))).then(
-      this._getLibraryInfo
-    );
+    const ids = R.pluck('_id', this.state.mediaItems as Array<
+      MediaItem
+    >) as Array<string>;
+    Promise.all(
+      ids
+        .filter(x => !this._isInLibrary(x))
+        .map(x => this._changeMediaItem('DROP', x))
+    ).then(this._getLibraryInfo);
   };
   render() {
     return [
@@ -81,7 +102,8 @@ class SelectMedia extends Component {
       <Row>
         <Col md="12" className="mb-2">
           <ButtonGroup>
-            {this.state.mediaItems.length &&
+            {this.state.mediaItems &&
+            this.state.mediaItems.length &&
             this.state.library &&
             this.state.mediaItems.length === this.state.library.items.length ? (
               <Button onClick={this._unselectAll} color="danger">
@@ -96,7 +118,7 @@ class SelectMedia extends Component {
         </Col>
       </Row>,
       <Row>
-        {this.state.mediaItems.length ? (
+        {this.state.mediaItems && this.state.mediaItems.length ? (
           R.splitEvery(4, this.state.mediaItems).map(group =>
             group.map(({ _id, name, filename }) => (
               <Col sm="6" lg="3" key={_id} className="video-cell">

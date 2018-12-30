@@ -2,6 +2,11 @@
   "name": "merriman",
   "version": "0.1.2",
   "dependencies": {
+    "@types/chance": "^1.0.1",
+    "@types/react": "^16.7.18",
+    "@types/react-dom": "^16.0.11",
+    "@types/react-router-dom": "^4.3.1",
+    "@types/reactstrap": "^6.4.3",
     "body-parser": "^1.18.2",
     "bootstrap": "^4.1.1",
     "chance": "^1.0.16",
@@ -26,7 +31,7 @@
     "server-watch": "nodemon",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "build:server": "tsc -P tsconfig.json",
+    "build:server": "tsc -P .\\server\\tsconfig.json",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "cli": "node .\\dist_server\\cli\\index.js",
@@ -56,5 +61,11 @@
   },
   "bin": {
     "merriman": ".\\dist_server\\cli\\index.js"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

@@ -9,8 +9,11 @@ import {
   NavLink
 } from 'reactstrap';
 
-class Navigation extends Component {
-  constructor(props) {
+type NavigationProps = {};
+type NavigationState = { open: boolean };
+
+class Navigation extends Component<NavigationProps, NavigationState> {
+  constructor(props: NavigationProps) {
     super(props);
     this.state = { open: false };
   }

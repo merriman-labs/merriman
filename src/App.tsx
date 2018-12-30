@@ -1,3 +1,5 @@
+//@flow
+
 import React, { Component } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -9,12 +11,7 @@ import Home from './Home';
 import SelectMedia from './admin/SelectMedia';
 import AdminPanel from './admin/AdminPanel';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
+class App extends Component<{}> {
   render() {
     return [
       <Navigation />,
