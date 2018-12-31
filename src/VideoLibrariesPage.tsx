@@ -51,7 +51,8 @@ class VideoLibrariesPage extends Component<
     this._fetchLibraries();
 
     const id = this.props.match.params.library;
-    if (id) {
+
+    if (id && id !== '0') {
       this._fetchVideoList(id);
       this._getLibraryDetails(id);
     }
@@ -159,7 +160,7 @@ class VideoLibrariesPage extends Component<
   }
   _fetchVideoList(id: string) {
     if (id) {
-      return fetch(`/api/library/${id}`)
+      return fetch(`/api/media/${id}`)
         .then(response => response.json())
         .then(response => this.setState(response));
     }

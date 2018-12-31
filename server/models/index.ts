@@ -3,11 +3,15 @@ export type ServerConfiguration = {
   thumbLocation: string;
 };
 
+export type MediaType = 'video' | 'audio' | 'image' | 'binary';
+
 export type MediaItem = {
   _id: string;
   filename: string;
   name: string;
   path?: string;
+  type: MediaType;
+  views: number;
 };
 
 export type Library = {

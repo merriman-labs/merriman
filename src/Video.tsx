@@ -31,7 +31,7 @@ export default class Video extends Component<VideoProps, VideoState> {
             className="video-player"
             id="video-player"
             controls
-            src={`/api/media/play/${library}/${video}`}
+            src={`/api/media/play/${video}`}
           />
         ) : (
           <div />
