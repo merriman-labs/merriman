@@ -10,12 +10,16 @@ import { Container, Row, Col } from 'reactstrap';
 import Home from './Home';
 import SelectMedia from './admin/SelectMedia';
 import AdminPanel from './admin/AdminPanel';
+import StandaloneMedia from './StandaloneMedia';
 
 class App extends Component<{}> {
   render() {
     return [
       <Navigation />,
       <Container>
+        <Row>
+          <Route path="/media/:media" component={StandaloneMedia} />
+        </Row>
         <Row>
           <Route
             path="/videos/:library?/:video?"

@@ -14,7 +14,8 @@ const libraryRepo = new LibraryRepo();
 const serverConfigRepo = new ServerConfigRepo();
 const { mediaLocation } = serverConfigRepo.fetch();
 
-mediaItemRouter.get('/play/:library/:video', function(req, res) {
+// Play a video in chunks
+mediaItemRouter.get('/play/:video', function(req, res) {
   const videoId = req.params.video;
   const video = mediaRepo.find(({ _id }) => _id === videoId);
   const vDir = video.path ? video.path : mediaLocation;
@@ -50,12 +51,14 @@ mediaItemRouter.get('/play/:library/:video', function(req, res) {
   }
 });
 
-mediaItemRouter.get('/detail/:video', function(req, res) {
-  const video: string = req.params.video;
-  const media = mediaRepo.find(({ _id }) => _id === video);
+// Return the media item
+mediaItemRouter.get('/detail/:_id', function(req, res) {
+  const id: string = req.params._id;
+  const media = mediaRepo.find(({ _id }) => _id === id);
   return res.json(media);
 });
 
+// Upload a media item
 mediaItemRouter.post('/upload', function(req, res) {
   const busboy = new Busboy({ headers: req.headers });
   busboy.on('file', function(fieldname, file, filename) {

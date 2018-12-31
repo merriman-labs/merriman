@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as R from 'ramda';
 import * as uuid from 'uuid/v4';
 import ServerConfigRepo from './ServerConfigRepo';
-import { MediaItem } from '../models/index';
+import { MediaItem, MediaType } from '../models/index';
 
 export default class MediaRepo {
   private _dbpath: string;
@@ -114,7 +114,27 @@ export default class MediaRepo {
       R.assoc('name', originalName),
       R.assoc('filename', name),
       R.assoc('_id', id),
+      R.assoc('views', 0),
+      R.assoc('type', this._mapMediaType(originalName)),
       x => (path ? R.assoc('path', path, x) : x)
     )({}) as MediaItem;
+  }
+
+  private _mapMediaType(filename: string): MediaType {
+    const mediaTypeMap: Array<[RegExp, MediaType]> = [
+      [/(mp4|mpg|mpeg|avi|mov|flv|wmv|mkv)/, 'video'],
+      [/(jpg|jpeg|png|tiff|bmp|gif)/, 'image'],
+      [/(mp3|ogg|aac|wma|aiff|wav|pcm|flac|alac)/, 'audio']
+    ];
+    const filePieces = filename.split('.');
+    if (filePieces.length === 0) return 'binary';
+
+    // test all the patterns in the map until one is found
+    const testResult = mediaTypeMap.find(([pattern]) => pattern.test(filename));
+
+    // return 'binary' by default
+    if (!testResult) return 'binary';
+
+    return testResult[1];
   }
 }
