@@ -5,6 +5,8 @@ import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
 import Chance from 'chance';
 import VideoList from './VideoList';
 import { MediaItem, Library } from '../server/models';
+import MediaListing from './MediaListing';
+import { sortBy } from 'ramda';
 
 const chance = Chance.Chance(Math.random);
 
@@ -128,7 +130,10 @@ class VideoLibrariesPage extends Component<
         </Row>
         <Row>
           {this.state.media && this.state.media.length ? (
-            <VideoList library={library} media={this.state.media} />
+            <MediaListing
+              library={library}
+              media={sortBy(x => x.name, this.state.media)}
+            />
           ) : (
             <Col>
               <h3>Select a library above.</h3>

@@ -12,7 +12,7 @@ const VideoList = ({ media, library }: VideoListProps) => {
   return (
     <Col>
       <ListGroup>
-        {sortBy(x => x.name, media).map((mediaItem: MediaItem) => {
+        {media.map((mediaItem: MediaItem) => {
           return (
             <Link
               className="list-group-item"

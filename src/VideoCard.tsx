@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardImg, CardImgOverlay, CardText } from 'reactstrap';
 import { MediaItem } from '../server/models';
@@ -14,7 +14,16 @@ const VideoCard = ({
   return (
     <Card>
       <Link to={`/videos/${library}/${_id}`}>
-        <CardImg src={`/000000.png`} />
+        <CardImg
+          src={`/${filename}.png`}
+          onError={() => {
+            // @ts-ignore
+            this.onerror = null;
+
+            // @ts-ignore
+            this.src = '/000000.png';
+          }}
+        />
         <CardImgOverlay className="thumbnail-link">
           <CardText>{name}</CardText>
         </CardImgOverlay>
