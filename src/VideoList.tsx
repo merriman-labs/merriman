@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Col, ListGroup } from 'reactstrap';
-import { sortBy } from 'ramda';
 import { MediaItem } from '../server/models';
 type VideoListProps = {
   media: Array<MediaItem>;
