@@ -15,7 +15,6 @@ export default class RandomVideo extends Component<{}, VideoState> {
     const details = await (await fetch(
       `/api/media/random`
     )).json();
-    console.log(details);
     this.setState({ details });
   }
   render() {
