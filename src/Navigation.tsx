@@ -34,6 +34,9 @@ class Navigation extends Component<NavigationProps, NavigationState> {
               <NavItem>
                 <NavLink href="/admin">Admin</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink href="/random">Random</NavLink>
+              </NavItem>
             </Nav>
           </Collapse>
         </Navbar>
