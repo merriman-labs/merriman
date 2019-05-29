@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Route } from 'react-router';
+import { Route, Switch } from 'react-router';
 import Navigation from './Navigation';
 import VideoLibrariesPage from './VideoLibrariesPage';
 import { Container, Row, Col } from 'reactstrap';
@@ -9,6 +9,7 @@ import Home from './Home';
 import SelectMedia from './admin/SelectMedia';
 import AdminPanel from './admin/AdminPanel';
 import StandaloneMedia from './StandaloneMedia';
+import RandomVideo from './RandomVideo';
 
 class App extends Component<{}> {
   render() {
@@ -16,8 +17,12 @@ class App extends Component<{}> {
       <Navigation />,
       <Container>
         <Row>
-          <Route path="/media/:media" component={StandaloneMedia} />
+          <Switch>
+            <Route path="/random" component={RandomVideo} />
+            <Route path="/media/:media" component={StandaloneMedia} />
+          </Switch>
         </Row>
+        <Row />
         <Row>
           <Route
             path="/videos/:library?/:video?"

@@ -7,7 +7,9 @@ import * as path from 'path';
 import * as R from 'ramda';
 import MediaRepo from '../data/MediaRepo';
 import * as Busboy from 'busboy';
+import * as chance from 'chance';
 
+const Chance = chance.Chance();
 const mediaItemRouter = Router();
 const mediaRepo = new MediaRepo();
 const libraryRepo = new LibraryRepo();
@@ -91,18 +93,35 @@ mediaItemRouter.post('/upload', function(req, res) {
   return req.pipe(busboy);
 });
 
-mediaItemRouter.get('/:library', async function(req, res) {
-  const id = req.params.library;
-  const library = await libraryRepo.find(({ _id }) => _id === id);
-  const media = mediaRepo.where(({ _id }) => R.contains(_id, library.items));
-
-  if (!library) return res.status(500).json({ message: 'Library not found!' });
-  res.json({ media });
-});
-
 mediaItemRouter.get('/', function(req, res) {
   const media = mediaRepo.get();
   res.json(media);
+});
+
+mediaItemRouter.get('/download/:_id', function(req, res) {
+  const id: string = req.params._id;
+  const media = mediaRepo.find(({ _id }) => _id === id);
+
+  const mediaPath = media.path ? media.path : mediaLocation;
+
+  const mediaItemPath = path.join(mediaPath, media.filename);
+
+  res.sendFile(mediaItemPath);
+});
+
+mediaItemRouter.get('/random', function(req, res) {
+  const media = mediaRepo.get();
+  res.json(Chance.pickone(media));
+});
+
+mediaItemRouter.get('/:library', async function(req, res) {
+  const id = req.params.library;
+  const library = await libraryRepo.find(({ _id }) => _id === id);
+
+  if (!library) return res.status(500).json({ message: 'Library not found!' });
+
+  const media = mediaRepo.where(({ _id }) => R.contains(_id, library.items));
+  res.json({ media });
 });
 
 export default mediaItemRouter;
