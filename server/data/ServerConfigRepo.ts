@@ -1,6 +1,8 @@
 import * as fs from 'fs';
+import { Database } from '@johnny.reina/json-db';
 
 type ServerConfig = {
+  _id?: string;
   mediaLocation: string;
   thumbLocation: string;
 };
@@ -8,43 +10,29 @@ type ServerConfig = {
 const _defaultObject: ServerConfig = { mediaLocation: '', thumbLocation: '' };
 
 export default class ServerConfigRepo {
-  private _dbpath: string;
-  constructor() {
-    this._dbpath = __dirname + '/db/server.json';
-    this._ensureConfig();
+  private _coll = new Database('merriman').collection<ServerConfig>(
+    'server-config'
+  );
+
+  async setMediaLocation(location: string): Promise<void> {
+    const config = await this.fetch();
+    return this._coll.update({
+      mediaLocation: location,
+      ...config
+    });
   }
 
-  setMediaLocation(location: string) {
-    const config = this._fetch();
-
-    config.mediaLocation = location;
-
-    this._save(config);
+  async setThumbnailLocation(location: string) {
+    const config = await this.fetch();
+    return this._coll.update({
+      thumbLocation: location,
+      ...config
+    });
   }
 
-  setThumbnailLocation(location: string) {
-    const config = this._fetch();
-
-    config.thumbLocation = location;
-
-    this._save(config);
-  }
-
-  fetch(): ServerConfig {
-    return this._fetch();
-  }
-
-  private _fetch(): ServerConfig {
-    const text: string = fs.readFileSync(this._dbpath, 'utf8');
-    return JSON.parse(text) as ServerConfig;
-  }
-
-  private _save(db: ServerConfig) {
-    const text = JSON.stringify(db);
-    fs.writeFileSync(this._dbpath, text, { encoding: 'utf8' });
-  }
-
-  private _ensureConfig() {
-    if (!fs.existsSync(this._dbpath)) this._save(_defaultObject);
+  async fetch(): Promise<ServerConfig> {
+    const configItems = await this._coll.read();
+    if (configItems.length === 0) await this._coll.insert(_defaultObject);
+    return (await this._coll.read())[0];
   }
 }

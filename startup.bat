@@ -1,0 +1,1 @@
+node c:\development\merriman\dist_server\server.js

@@ -38,7 +38,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
   _getLibraryData = () => {
     fetch('/api/library')
       .then(response => response.json())
-      .then(libraries => this.setState(libraries))
+      .then(libraries => this.setState({libraries}))
       .catch(console.log);
   };
   _handleFileUploadChanged({

@@ -3,52 +3,40 @@ import * as R from 'ramda';
 import * as uuid from 'uuid/v4';
 import ServerConfigRepo from './ServerConfigRepo';
 import { MediaItem, MediaType } from '../models/index';
+import { Collection, Database } from '@johnny.reina/json-db';
 
 export default class MediaRepo {
-  private _dbpath: string;
-  constructor() {
-    this._dbpath = __dirname + '/db/media.json';
+  private _collection: Collection<MediaItem> = new Database(
+    'merriman'
+  ).collection('media');
 
-    this._ensureConfig();
+  /**
+   *
+   */
+  get(): Promise<Array<MediaItem>> {
+    return this._collection.read();
   }
 
   /**
    *
    */
-  get(): Array<MediaItem> {
-    return JSON.parse(fs.readFileSync(this._dbpath, { encoding: 'utf8' }));
-  }
-
-  /**
-   *
-   */
-  private _save(conf: Array<MediaItem>) {
-    fs.writeFileSync(this._dbpath, JSON.stringify(conf));
-  }
-
-  /**
-   *
-   */
-  add(filename: string): MediaItem {
+  async add(filename: string): Promise<MediaItem> {
     const fileParts = filename.split('.');
     const fileExtension = [...fileParts.slice(1)].join('.');
     const newId = uuid();
     const newFilename = `${newId}.${fileExtension}`;
 
-    const videos = this.get();
-
     const newVideo = this._initVideo(newFilename, filename, newId);
-    this._save(videos.concat(newVideo));
+    const id = await this._collection.insert(newVideo);
     return newVideo;
   }
   /**
    * Add an existing (local) media item to the database.
    * @param {string} filename Filename of the media item to add to the database
    */
-  addLocalMedia(filename: string): MediaItem {
+  async addLocalMedia(filename: string): Promise<MediaItem> {
     const media = this._initVideo(filename, filename, uuid());
-    const videos = this.get();
-    this._save(videos.concat(media));
+    await this._collection.insert(media);
     return media;
   }
   /**
@@ -56,22 +44,22 @@ export default class MediaRepo {
    * @param filename Filename of the media item to add to the database
    * @param path Path to the file
    */
-  addExternal(filename: string, path: string): MediaItem {
+  async addExternal(filename: string, path: string): Promise<MediaItem> {
     const media = this._initVideo(filename, filename, uuid(), path);
-    const videos = this.get();
-    this._save(videos.concat(media));
+    await this._collection.insert(media);
     return media;
   }
   /**
    *
    */
-  find(predicate: ((x: MediaItem) => boolean)): MediaItem {
-    return R.find(predicate, this.get());
+  find(predicate: ((x: MediaItem) => boolean)): Promise<MediaItem> {
+    return this._collection.find(predicate);
   }
-  findUnregisteredMedia(): Array<string> {
-    const { mediaLocation } = new ServerConfigRepo().fetch();
-    const registeredMedia = this.get().map(R.prop('filename'));
-    console.log(registeredMedia);
+  async findUnregisteredMedia(): Promise<Array<string>> {
+    const { mediaLocation } = await new ServerConfigRepo().fetch();
+    const registeredMedia = (await this._collection.read()).map(
+      R.prop('filename')
+    );
     const allMedia = fs.readdirSync(mediaLocation);
     const unregisteredMedia = allMedia.filter(
       x => !R.contains(x, registeredMedia)
@@ -81,24 +69,14 @@ export default class MediaRepo {
   /**
    *
    */
-  where(predicate: ((x: MediaItem) => boolean)): Array<MediaItem> {
-    return this.get().filter(predicate);
+  where(predicate: ((x: MediaItem) => boolean)): Promise<Array<MediaItem>> {
+    return this._collection.read(predicate);
   }
   /**
    *
    */
-  update(updatedVideo: MediaItem) {
-    const videos = this.get();
-
-    const newVideos = videos.map(video =>
-      video._id === updatedVideo._id ? updatedVideo : video
-    );
-
-    return this._save(newVideos);
-  }
-
-  private _ensureConfig() {
-    if (!fs.existsSync(this._dbpath)) this._save([]);
+  update(updatedVideo: MediaItem): Promise<void> {
+    return this._collection.update(updatedVideo);
   }
 
   /**

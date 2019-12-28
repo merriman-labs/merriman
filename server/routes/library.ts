@@ -16,7 +16,7 @@ libraryRouter.get('/', async function(req, res) {
 // Return the details of a library
 libraryRouter.get('/details/:id', async function(req, res) {
   const { id } = req.params;
-  const library = await libraryRepo.find(({ _id }) => _id === id);
+  const library = await libraryRepo.find(id);
 
   if (!library) return res.status(500).json({ message: 'Library not found!' });
   res.json(library);
@@ -25,9 +25,11 @@ libraryRouter.get('/details/:id', async function(req, res) {
 // Return media for a particular library
 libraryRouter.get('/:library', async function(req, res) {
   const id = req.params.library;
-  const library = await libraryRepo.find(({ _id }) => _id === id);
+  const library = await libraryRepo.find(id);
 
-  const media = mediaRepo.where(({ _id }) => R.contains(_id, library.items));
+  const media = await mediaRepo.where(({ _id }) =>
+    R.contains(_id, library.items)
+  );
 
   if (!library) return res.status(500).json({ message: 'Library not found!' });
   res.json({ media });

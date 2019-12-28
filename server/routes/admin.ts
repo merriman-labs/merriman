@@ -22,9 +22,9 @@ adminRouter.post('/libraries/modify-media', async function(req, res) {
   }
 });
 
-adminRouter.post('/libraries/add', function(req, res) {
+adminRouter.post('/libraries/add', async function(req, res) {
   const library = req.body;
-  libraryRepo.insert(library);
+  await libraryRepo.insert(library);
   res.sendStatus(200);
 });
 

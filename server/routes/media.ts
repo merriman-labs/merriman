@@ -14,12 +14,12 @@ const mediaItemRouter = Router();
 const mediaRepo = new MediaRepo();
 const libraryRepo = new LibraryRepo();
 const serverConfigRepo = new ServerConfigRepo();
-const { mediaLocation } = serverConfigRepo.fetch();
 
 // Play a video in chunks
-mediaItemRouter.get('/play/:video', function(req, res) {
+mediaItemRouter.get('/play/:video', async function(req, res) {
+  const { mediaLocation } = await serverConfigRepo.fetch();
   const videoId = req.params.video;
-  const video = mediaRepo.find(({ _id }) => _id === videoId);
+  const video = await mediaRepo.find(({ _id }) => _id === videoId);
   const vDir = video.path ? video.path : mediaLocation;
   const vPath = path.join(vDir, video.filename);
 
@@ -63,11 +63,11 @@ mediaItemRouter.get('/detail/:_id', function(req, res) {
 // Upload a media item
 mediaItemRouter.post('/upload', function(req, res) {
   const busboy = new Busboy({ headers: req.headers });
-  busboy.on('file', function(fieldname, file, filename) {
-    const serverConfig = serverConfigRepo.fetch();
+  busboy.on('file', async function(fieldname, file, filename) {
+    const serverConfig = await serverConfigRepo.fetch();
 
     // Enter media into database
-    const mediaItem = mediaRepo.add(filename);
+    const mediaItem = await mediaRepo.add(filename);
     file.pipe(
       fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
     );
@@ -93,34 +93,25 @@ mediaItemRouter.post('/upload', function(req, res) {
   return req.pipe(busboy);
 });
 
-mediaItemRouter.get('/', function(req, res) {
-  const media = mediaRepo.get();
+mediaItemRouter.get('/', async function(req, res) {
+  const media = await mediaRepo.get();
   res.json(media);
 });
 
-mediaItemRouter.get('/download/:_id', function(req, res) {
-  const id: string = req.params._id;
-  const media = mediaRepo.find(({ _id }) => _id === id);
-
-  const mediaPath = media.path ? media.path : mediaLocation;
-
-  const mediaItemPath = path.join(mediaPath, media.filename);
-
-  res.sendFile(mediaItemPath);
-});
-
-mediaItemRouter.get('/random', function(req, res) {
-  const media = mediaRepo.get();
+mediaItemRouter.get('/random', async function(req, res) {
+  const media = await mediaRepo.get();
   res.json(Chance.pickone(media));
 });
 
 mediaItemRouter.get('/:library', async function(req, res) {
   const id = req.params.library;
-  const library = await libraryRepo.find(({ _id }) => _id === id);
+  const library = await libraryRepo.find(id);
 
   if (!library) return res.status(500).json({ message: 'Library not found!' });
 
-  const media = mediaRepo.where(({ _id }) => R.contains(_id, library.items));
+  const media = await mediaRepo.where(({ _id }) =>
+    R.contains(_id, library.items)
+  );
   res.json({ media });
 });
 

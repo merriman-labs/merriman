@@ -15,19 +15,18 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(busboy());
 
-const { thumbLocation } = serverConfigRepo.fetch();
-const buildPath = path.join(__dirname, '../build');
+serverConfigRepo.fetch().then(({ thumbLocation }) => {
+  app.use(express.static(thumbLocation, { redirect: false }));
+  const buildPath = path.join(__dirname, '../build');
 
-app.use(
-  express.static(thumbLocation, { redirect: false }),
-  express.static(buildPath, { redirect: false })
-);
+  app.use(express.static(buildPath, { redirect: false }));
 
-app.use('/api', apiRouter);
+  app.use('/api', apiRouter);
 
-app.get('/*', (req, res, next) =>
-  res.sendFile(path.join(__dirname, '../build/index.html'))
-);
+  app.get('/*', (req, res, next) =>
+    res.sendFile(path.join(__dirname, '../build/index.html'))
+  );
+});
 
 export default () =>
   app.listen(80, function() {

@@ -20,7 +20,6 @@ type VideoLibrariesPageProps = {
 
 type VideoLibrariesPageState = {
   media: Array<MediaItem>;
-  videos: Array<MediaItem>;
   libraries: Array<Library>;
   dropdown: boolean;
   library: string | null;
@@ -35,7 +34,6 @@ class VideoLibrariesPage extends Component<
     super(props);
     this.state = {
       media: [],
-      videos: [],
       libraries: [],
       dropdown: false,
       library: null,
@@ -44,8 +42,6 @@ class VideoLibrariesPage extends Component<
     this._toggleLibraryPicker = this._toggleLibraryPicker.bind(this);
     this._fetchVideoList = this._fetchVideoList.bind(this);
     this._fetchLibraries = this._fetchLibraries.bind(this);
-    this._shuffle = this._shuffle.bind(this);
-    this._randomVideo = this._randomVideo.bind(this);
   }
 
   componentDidMount() {
@@ -74,23 +70,6 @@ class VideoLibrariesPage extends Component<
                   ? this.state.libraryDetails.name
                   : 'No Library Selected'}
               </Button>
-              {library ? (
-                <Button onClick={this._shuffle} color="dark">
-                  Shuffle
-                </Button>
-              ) : (
-                <div />
-              )}
-              {this.state.media.length ? (
-                <Link
-                  className="btn btn-dark"
-                  to={`/videos/${library}/${this._randomVideo()._id}`}
-                >
-                  Random
-                </Link>
-              ) : (
-                <div />
-              )}
               <ButtonGroup>
                 <Button
                   onClick={this._toggleLibraryPicker}
@@ -142,15 +121,6 @@ class VideoLibrariesPage extends Component<
       </Container>
     );
   }
-  _randomVideo() {
-    return chance.pickone(this.state.media);
-  }
-  _shuffle() {
-    if (this.state.media.length)
-      this.setState({
-        media: this.state.media.sort(() => Math.random() - 0.5)
-      });
-  }
   _dropdownSelected(library: string) {
     this.setState({ library, dropdown: false }, () => {
       this._fetchVideoList(library);
@@ -172,7 +142,7 @@ class VideoLibrariesPage extends Component<
   _fetchLibraries() {
     return fetch('/api/library')
       .then(response => response.json())
-      .then(({ libraries }) => this.setState({ libraries }));
+      .then(libraries => this.setState({ libraries }));
   }
   _toggleLibraryPicker() {
     this.setState({ dropdown: !this.state.dropdown });

@@ -36,6 +36,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
   };
   _getMediaItems = async () => {
     const mediaItems = await (await fetch('/api/media')).json();
+    console.log(mediaItems);
     this.setState({ mediaItems });
   };
   componentDidMount() {
