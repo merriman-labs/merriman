@@ -11,6 +11,7 @@ import {
 } from 'reactstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { MediaItem, Library } from '../../server/models';
+import Bluebird from 'bluebird';
 
 type SelectMediaProps = {
   match: {
@@ -77,10 +78,8 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
     const ids = R.pluck('_id', this.state.mediaItems as Array<
       MediaItem
     >) as Array<string>;
-    Promise.all(
-      ids
-        .filter(x => !this._isInLibrary(x))
-        .map(x => this._changeMediaItem('ADD', x))
+    Bluebird.mapSeries(ids.filter(x => !this._isInLibrary(x)), x =>
+      this._changeMediaItem('ADD', x)
     ).then(this._getLibraryInfo);
   };
   _unselectAll = async () => {

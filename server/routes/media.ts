@@ -8,6 +8,7 @@ import * as R from 'ramda';
 import MediaRepo from '../data/MediaRepo';
 import * as Busboy from 'busboy';
 import * as chance from 'chance';
+import moment = require('moment');
 
 const Chance = chance.Chance();
 const mediaItemRouter = Router();
@@ -113,6 +114,19 @@ mediaItemRouter.get('/:library', async function(req, res) {
     R.contains(_id, library.items)
   );
   res.json({ media });
+});
+
+mediaItemRouter.get('/latest/:count', async function(req, res) {
+  const count = +req.params.count;
+  const allItems = await mediaRepo.get();
+  const newest = allItems.sort((a, b) =>
+    moment(a.created).isBefore(b.created)
+      ? -1
+      : moment(b.created).isBefore(a.created)
+      ? 1
+      : 0
+  );
+  res.json(R.take(count, newest));
 });
 
 export default mediaItemRouter;

@@ -94,6 +94,8 @@ export default class MediaRepo {
       R.assoc('_id', id),
       R.assoc('views', 0),
       R.assoc('type', this._mapMediaType(originalName)),
+      R.assoc('created', new Date().toUTCString()),
+      R.assoc('updated', new Date().toUTCString()),
       x => (path ? R.assoc('path', path, x) : x)
     )({}) as MediaItem;
   }
