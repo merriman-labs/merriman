@@ -32,13 +32,15 @@ export default class LibraryRA {
       .collection<Library>('libraries')
       .insertOne(library);
   }
-  async addMediaToLibrary(media: string, library: string): Promise<void> {
+  async addMediaToLibrary(
+    media: string | Array<string>,
+    library: string
+  ): Promise<void> {
+    const ids = Array.isArray(media) ? media : [media];
+    const items = { $each: ids.map(id => new ObjectId(id)) };
     await MongoFactory.create()
       .collection<Library>('libraries')
-      .findOneAndUpdate(
-        { _id: new ObjectId(library) },
-        { $push: { items: new ObjectId(media) } }
-      );
+      .findOneAndUpdate({ _id: new ObjectId(library) }, { $push: { items } });
   }
   async removeMediaToLibrary(media: string, library: string) {
     return MongoFactory.create()

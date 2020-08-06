@@ -55,9 +55,9 @@ mediaItemRouter.get('/play/:video', async function(req, res) {
 });
 
 // Return the media item
-mediaItemRouter.get('/detail/:_id', function(req, res) {
+mediaItemRouter.get('/detail/:_id', async function(req, res) {
   const id: string = req.params._id;
-  const media = mediaManager.findById(id);
+  const media = await mediaManager.findById(id);
   return res.json(media);
 });
 

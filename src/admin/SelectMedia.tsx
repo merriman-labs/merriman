@@ -32,7 +32,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
   }
   _getLibraryInfo = async () => {
     const _id = this.props.match.params.library;
-    const library = await (await fetch(`/api/library/details/${_id}`)).json();
+    const library = await (await fetch(`/api/library/details/${_id.toString()}`)).json();
     this.setState({ library });
   };
   _getMediaItems = async () => {
@@ -121,7 +121,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
         {this.state.mediaItems && this.state.mediaItems.length ? (
           R.splitEvery(4, this.state.mediaItems).map(group =>
             group.map(({ _id, name, filename }) => (
-              <Col sm="6" lg="3" key={_id} className="video-cell">
+              <Col sm="6" lg="3" key={_id.toString()} className="video-cell">
                 <Card>
                   <img
                     src={`/${filename}.png`}
@@ -130,17 +130,17 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
 
                   <CardBody>
                     <CardText>{name}</CardText>
-                    {this._isInLibrary(_id) ? (
+                    {this._isInLibrary(_id.toString()) ? (
                       <div
                         className="btn btn-danger"
-                        onClick={this._removeMediaItem(_id)}
+                        onClick={this._removeMediaItem(_id.toString())}
                       >
                         <FaMinus />
                       </div>
                     ) : (
                       <div
                         className="btn btn-success"
-                        onClick={this._addMediaItem(_id)}
+                        onClick={this._addMediaItem(_id.toString())}
                       >
                         <FaPlus />
                       </div>

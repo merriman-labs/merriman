@@ -100,7 +100,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
           <ListGroup className="form">
             {this.state.libraries.length ? (
               this.state.libraries.map(({ _id, name, items }, i) => (
-                <ListGroupItem key={_id}>
+                <ListGroupItem key={_id.toString()}>
                   <ListGroupItemHeading>{name}</ListGroupItemHeading>
                   <span>{items.length} items</span>
                   <ButtonGroup className="float-right">
@@ -112,7 +112,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
                     </a>
                     <Button
                       color="danger"
-                      onClick={this._handleDropLibrary(_id)}
+                      onClick={this._handleDropLibrary(_id.toString())}
                     >
                       <FaTrash />
                     </Button>

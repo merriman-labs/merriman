@@ -87,8 +87,8 @@ class VideoLibrariesPage extends Component<
                     <Link
                       to={`/videos/${library._id}/`}
                       className="dropdown-item"
-                      onClick={() => this._dropdownSelected(library._id)}
-                      key={library._id}
+                      onClick={() => this._dropdownSelected(library._id.toString())}
+                      key={library._id.toString()}
                     >
                       {library.name}{' '}
                       <span className="badge badge-primary badge-pill">
