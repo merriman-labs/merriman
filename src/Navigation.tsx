@@ -32,6 +32,9 @@ class Navigation extends Component<NavigationProps, NavigationState> {
                 <NavLink href="/videos">Media</NavLink>
               </NavItem>
               <NavItem>
+                <NavLink href="/media/new">New</NavLink>
+              </NavItem>
+              <NavItem>
                 <NavLink href="/admin">Admin</NavLink>
               </NavItem>
               <NavItem>

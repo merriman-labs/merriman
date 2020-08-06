@@ -38,7 +38,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
   _getMediaItems = async () => {
     const mediaItems = await (await fetch('/api/media')).json();
     console.log(mediaItems);
-    this.setState({ mediaItems });
+    this.setState({ mediaItems: R.sortBy(x => x.created, mediaItems) });
   };
   componentDidMount() {
     const {

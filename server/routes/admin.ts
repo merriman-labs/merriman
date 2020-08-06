@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import LibraryRepo from '../data/LibraryRepo';
+import LibraryRA from '../ResourceAccess/LibraryRA';
 
 const adminRouter = Router();
-const libraryRepo = new LibraryRepo();
+const libraryRepo = new LibraryRA();
 
 adminRouter.post('/libraries/modify-media', async function(req, res) {
   const { library, media, action } = req.body;
