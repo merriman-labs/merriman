@@ -22,7 +22,7 @@ export class LibraryManager {
     return this._libraryRA.insert(newLibrary);
   }
 
-  addMediaToLibrary(mediaId: string, libraryId: string) {
+  addMediaToLibrary(mediaId: string | Array<string>, libraryId: string) {
     return this._libraryRA.addMediaToLibrary(mediaId, libraryId);
   }
 

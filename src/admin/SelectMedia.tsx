@@ -49,7 +49,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
     this._getLibraryInfo();
     this._getMediaItems();
   }
-  _changeMediaItem = (action: string, media: string) => {
+  _changeMediaItem = (action: string, media: string | Array<string>) => {
     const library = this.props.match.params.library;
     const data = {
       action,
@@ -78,9 +78,8 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
     const ids = R.pluck('_id', this.state.mediaItems as Array<
       MediaItem
     >) as Array<string>;
-    Bluebird.mapSeries(ids.filter(x => !this._isInLibrary(x)), x =>
-      this._changeMediaItem('ADD', x)
-    ).then(this._getLibraryInfo);
+    const items = ids.filter(x => !this._isInLibrary(x));
+    this._changeMediaItem('ADD', items).then(this._getLibraryInfo);
   };
   _unselectAll = async () => {
     const ids = R.pluck('_id', this.state.mediaItems as Array<
