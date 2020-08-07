@@ -6,7 +6,7 @@ export class MediaEngine {
   initializeMedia(filename: string, path?: string) {
     const ext = this._getExtension(filename);
     const id = new ObjectId();
-    const newName = `${id.toHexString()}.${ext}`;
+    const newName = path ? filename : `${id.toHexString()}.${ext}`; // only use created name if path wasn't specified
     const timestamp = new Date().toUTCString();
     return R.pipe(
       R.assoc('name', filename),

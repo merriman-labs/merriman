@@ -4,6 +4,7 @@ import * as path from 'path';
 import { ask, askProceed, eject, printHeader } from '../util';
 import pickFiles from './pick-files';
 import initFiles from './init-files';
+import { MongoFactory } from '../../Factories/MongoFactory';
 
 const getFiles = (dir: string): Array<string> => {
   return fs
@@ -12,6 +13,7 @@ const getFiles = (dir: string): Array<string> => {
 };
 
 async function main() {
+  await MongoFactory.init();
   printHeader();
 
   const initDir = await ask('Enter a path to init:\n');
