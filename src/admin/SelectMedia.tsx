@@ -11,6 +11,7 @@ import {
 } from 'reactstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { MediaItem, Library } from '../../server/models';
+import Bluebird from 'bluebird';
 
 type SelectMediaProps = {
   match: {
@@ -31,13 +32,13 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
   }
   _getLibraryInfo = async () => {
     const _id = this.props.match.params.library;
-    const library = await (await fetch(`/api/library/details/${_id}`)).json();
+    const library = await (await fetch(`/api/library/details/${_id.toString()}`)).json();
     this.setState({ library });
   };
   _getMediaItems = async () => {
     const mediaItems = await (await fetch('/api/media')).json();
     console.log(mediaItems);
-    this.setState({ mediaItems });
+    this.setState({ mediaItems: R.sortBy(x => x.created, mediaItems) });
   };
   componentDidMount() {
     const {
@@ -48,7 +49,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
     this._getLibraryInfo();
     this._getMediaItems();
   }
-  _changeMediaItem = (action: string, media: string) => {
+  _changeMediaItem = (action: string, media: string | Array<string>) => {
     const library = this.props.match.params.library;
     const data = {
       action,
@@ -77,11 +78,8 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
     const ids = R.pluck('_id', this.state.mediaItems as Array<
       MediaItem
     >) as Array<string>;
-    Promise.all(
-      ids
-        .filter(x => !this._isInLibrary(x))
-        .map(x => this._changeMediaItem('ADD', x))
-    ).then(this._getLibraryInfo);
+    const items = ids.filter(x => !this._isInLibrary(x));
+    this._changeMediaItem('ADD', items).then(this._getLibraryInfo);
   };
   _unselectAll = async () => {
     const ids = R.pluck('_id', this.state.mediaItems as Array<
@@ -122,7 +120,7 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
         {this.state.mediaItems && this.state.mediaItems.length ? (
           R.splitEvery(4, this.state.mediaItems).map(group =>
             group.map(({ _id, name, filename }) => (
-              <Col sm="6" lg="3" key={_id} className="video-cell">
+              <Col sm="6" lg="3" key={_id.toString()} className="video-cell">
                 <Card>
                   <img
                     src={`/${filename}.png`}
@@ -131,17 +129,17 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
 
                   <CardBody>
                     <CardText>{name}</CardText>
-                    {this._isInLibrary(_id) ? (
+                    {this._isInLibrary(_id.toString()) ? (
                       <div
                         className="btn btn-danger"
-                        onClick={this._removeMediaItem(_id)}
+                        onClick={this._removeMediaItem(_id.toString())}
                       >
                         <FaMinus />
                       </div>
                     ) : (
                       <div
                         className="btn btn-success"
-                        onClick={this._addMediaItem(_id)}
+                        onClick={this._addMediaItem(_id.toString())}
                       >
                         <FaPlus />
                       </div>

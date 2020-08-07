@@ -7,5 +7,5 @@ const rl = readline.createInterface({
 
 export const ask = (q: string) =>
   new Promise<string>(function(res) {
-    rl.question(q, res);
+    rl.question(q + '\n', res);
   });

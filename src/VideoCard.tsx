@@ -16,13 +16,6 @@ const VideoCard = ({
       <Link to={`/videos/${library}/${_id}`}>
         <CardImg
           src={`/${filename}.png`}
-          onError={() => {
-            // @ts-ignore
-            this.onerror = null;
-
-            // @ts-ignore
-            this.src = '/000000.png';
-          }}
         />
         <CardImgOverlay className="thumbnail-link">
           <CardText>{name}</CardText>

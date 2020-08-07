@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 export type ServerConfiguration = {
   mediaLocation: string;
   thumbLocation: string;
@@ -6,17 +8,19 @@ export type ServerConfiguration = {
 export type MediaType = 'video' | 'audio' | 'image' | 'binary';
 
 export type MediaItem = {
-  _id: string;
+  _id: string | ObjectId;
   filename: string;
   name: string;
   path?: string;
   type: MediaType;
   views: number;
+  created: string;
+  updated: string;
 };
 
 export type Library = {
-  _id: string;
-  items: Array<string>;
+  _id: string | ObjectId;
+  items: Array<string | ObjectId>;
   name: string;
 };
 

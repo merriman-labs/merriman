@@ -6,6 +6,9 @@ import * as cors from 'cors';
 import apiRouter from './routes/api';
 import ServerConfigRepo from './data/ServerConfigRepo';
 import { printHeader } from './cli/util';
+import './Factories/MongoFactory';
+import { MongoFactory } from './Factories/MongoFactory';
+import { configure } from './cli/configure';
 
 const app = express();
 const serverConfigRepo = new ServerConfigRepo();
@@ -15,7 +18,17 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(busboy());
 
-serverConfigRepo.fetch().then(({ thumbLocation }) => {
+export default async () => {
+  const { thumbLocation, isConfigured } = await serverConfigRepo.fetch();
+  if (!isConfigured) {
+    console.error(
+      'Server not configured yet! Running first time configuration wizard...'
+    );
+    await configure();
+    console.log('Server is now configured and can be started normally.');
+    process.exit(0);
+  }
+  await MongoFactory.init();
   app.use(express.static(thumbLocation, { redirect: false }));
   const buildPath = path.join(__dirname, '../build');
 
@@ -26,10 +39,9 @@ serverConfigRepo.fetch().then(({ thumbLocation }) => {
   app.get('/*', (req, res, next) =>
     res.sendFile(path.join(__dirname, '../build/index.html'))
   );
-});
 
-export default () =>
   app.listen(80, function() {
     printHeader();
     console.log('Listening on port 80!');
   });
+};

@@ -1,25 +1,26 @@
 import { Router } from 'express';
-import LibraryRepo from '../data/LibraryRepo';
 import ServerConfigRepo from '../data/ServerConfigRepo';
 import ThumbProvider from '../thumb-provider';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as R from 'ramda';
-import MediaRepo from '../data/MediaRepo';
 import * as Busboy from 'busboy';
 import * as chance from 'chance';
+import moment = require('moment');
+import { MediaManager } from '../Managers/MediaManager';
+import { LibraryManager } from '../Managers/LibraryManager';
 
 const Chance = chance.Chance();
 const mediaItemRouter = Router();
-const mediaRepo = new MediaRepo();
-const libraryRepo = new LibraryRepo();
+const mediaManager = new MediaManager();
+const libraryManager = new LibraryManager();
 const serverConfigRepo = new ServerConfigRepo();
 
 // Play a video in chunks
 mediaItemRouter.get('/play/:video', async function(req, res) {
   const { mediaLocation } = await serverConfigRepo.fetch();
   const videoId = req.params.video;
-  const video = await mediaRepo.find(({ _id }) => _id === videoId);
+  const video = await mediaManager.findById(videoId);
   const vDir = video.path ? video.path : mediaLocation;
   const vPath = path.join(vDir, video.filename);
 
@@ -54,9 +55,9 @@ mediaItemRouter.get('/play/:video', async function(req, res) {
 });
 
 // Return the media item
-mediaItemRouter.get('/detail/:_id', function(req, res) {
+mediaItemRouter.get('/detail/:_id', async function(req, res) {
   const id: string = req.params._id;
-  const media = mediaRepo.find(({ _id }) => _id === id);
+  const media = await mediaManager.findById(id);
   return res.json(media);
 });
 
@@ -67,7 +68,7 @@ mediaItemRouter.post('/upload', function(req, res) {
     const serverConfig = await serverConfigRepo.fetch();
 
     // Enter media into database
-    const mediaItem = await mediaRepo.add(filename);
+    const mediaItem = await mediaManager.add(filename);
     file.pipe(
       fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
     );
@@ -94,25 +95,40 @@ mediaItemRouter.post('/upload', function(req, res) {
 });
 
 mediaItemRouter.get('/', async function(req, res) {
-  const media = await mediaRepo.get();
+  const media = await mediaManager.get();
   res.json(media);
 });
 
 mediaItemRouter.get('/random', async function(req, res) {
-  const media = await mediaRepo.get();
+  const media = await mediaManager.get();
   res.json(Chance.pickone(media));
 });
 
 mediaItemRouter.get('/:library', async function(req, res) {
   const id = req.params.library;
-  const library = await libraryRepo.find(id);
+  const library = await libraryManager.findById(id);
 
   if (!library) return res.status(500).json({ message: 'Library not found!' });
 
-  const media = await mediaRepo.where(({ _id }) =>
+  const media = await mediaManager.where(({ _id }) =>
     R.contains(_id, library.items)
   );
   res.json({ media });
+});
+
+mediaItemRouter.get('/latest/:count', async function(req, res) {
+  const count = +req.params.count;
+  const allItems = await mediaManager.get();
+  const newest = allItems
+    .filter(x => x.created !== undefined)
+    .sort((a, b) =>
+      moment(a.created).isBefore(b.created)
+        ? -1
+        : moment(b.created).isBefore(a.created)
+        ? 1
+        : 0
+    );
+  res.json(R.take(count, R.reverse(newest)));
 });
 
 export default mediaItemRouter;

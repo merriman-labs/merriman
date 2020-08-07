@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import MediaItemRepo from '../data/MediaRepo';
+import { MediaManager } from '../Managers/MediaManager';
 
 const searchRouter = Router();
-const mediaRepo = new MediaItemRepo();
+const mediaManager = new MediaManager();
 
 searchRouter.get('/:term', async function(req, res) {
   const term = req.params.term;
-  const results = await mediaRepo.where(item =>
+  const results = await mediaManager.where(item =>
     JSON.stringify(item)
       .toLowerCase()
       .includes(term.toLowerCase())

@@ -16,7 +16,7 @@ const VideoList = ({ media, library }: VideoListProps) => {
             <Link
               className="list-group-item"
               to={`/videos/${library}/${mediaItem._id}`}
-              key={mediaItem._id}
+              key={mediaItem._id.toString()}
             >
               {mediaItem.name}
             </Link>
