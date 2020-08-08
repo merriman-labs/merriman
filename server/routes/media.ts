@@ -31,6 +31,7 @@ mediaItemRouter.get('/play/:video', async function(req, res) {
   if (range) {
     const parts = range.replace(/bytes=/, '').split('-');
     const start = parseInt(parts[0], 10);
+    if (start === 0) await mediaManager.incrementViewCount(videoId);
     const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
     const chunksize = end - start + 1;

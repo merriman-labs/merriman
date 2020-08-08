@@ -33,7 +33,8 @@ export default class RandomVideo extends Component<{}, VideoState> {
           <div>
             <strong>{this.state.current.name}</strong>
             <br />
-
+            <span>{this.state.current.views} views</span>
+            <br />
             <div className="btn-group">
               <button
                 className="btn btn-outline-primary btn-sm"

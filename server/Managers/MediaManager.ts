@@ -30,4 +30,8 @@ export class MediaManager {
   update(item: MediaItem) {
     return this._mediaRA.update(item);
   }
+
+  incrementViewCount(id: string) {
+    return this._mediaRA.incrementPlayCount(id);
+  }
 }

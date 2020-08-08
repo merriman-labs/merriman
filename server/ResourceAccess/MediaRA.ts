@@ -4,7 +4,8 @@ import * as uuid from 'uuid/v4';
 import { MediaItem, MediaType } from '../models/index';
 import { MongoFactory } from '../Factories/MongoFactory';
 import ServerConfigRepo from '../data/ServerConfigRepo';
-import { ObjectId } from 'mongodb';
+import { ObjectId, MongoClient } from 'mongodb';
+import Media from 'reactstrap/lib/Media';
 
 export default class MediaRA {
   /**
@@ -44,5 +45,10 @@ export default class MediaRA {
     await MongoFactory.create()
       .collection<MediaItem>('media')
       .findOneAndUpdate({ _id: new ObjectId(updatedVideo._id) }, updatedVideo);
+  }
+  async incrementPlayCount(id: string) {
+    await MongoFactory.create()
+      .collection<MediaItem>('media')
+      .findOneAndUpdate({ _id: new ObjectId(id) }, { $inc: { views: 1 } });
   }
 }

@@ -64,41 +64,11 @@ class VideoLibrariesPage extends Component<
       <Container>
         <Row>
           <Col>
-            <ButtonGroup>
-              <Button color="secondary">
-                {this.state.libraryDetails
-                  ? this.state.libraryDetails.name
-                  : 'No Library Selected'}
-              </Button>
-              <ButtonGroup>
-                <Button
-                  onClick={this._toggleLibraryPicker}
-                  className="dropdown-toggle"
-                  color="dark"
-                >
-                  Library
-                </Button>
-                <div
-                  className={
-                    'dropdown-menu' + (this.state.dropdown ? ' show' : '')
-                  }
-                >
-                  {this.state.libraries.map((library, i) => (
-                    <Link
-                      to={`/videos/${library._id}/`}
-                      className="dropdown-item"
-                      onClick={() => this._dropdownSelected(library._id.toString())}
-                      key={library._id.toString()}
-                    >
-                      {library.name}{' '}
-                      <span className="badge badge-primary badge-pill">
-                        {library.items.length}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </ButtonGroup>
-            </ButtonGroup>
+            <h2>
+              {this.state.libraryDetails
+                ? this.state.libraryDetails.name
+                : 'No Library Selected'}
+            </h2>
           </Col>
         </Row>
         <Row>

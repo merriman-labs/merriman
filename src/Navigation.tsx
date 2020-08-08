@@ -23,14 +23,11 @@ class Navigation extends Component<NavigationProps, NavigationState> {
   render() {
     return (
       <div>
-        <Navbar color="light" light expand="md">
+        <Navbar color="dark" expand="md">
           <NavbarBrand href="/">Merriman</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.open} className="ml-auto" navbar>
             <Nav>
-              <NavItem>
-                <NavLink href="/videos">Media</NavLink>
-              </NavItem>
               <NavItem>
                 <NavLink href="/media/new">New</NavLink>
               </NavItem>

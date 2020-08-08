@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Route, Switch } from 'react-router';
 import Navigation from './Navigation';
 import VideoLibrariesPage from './VideoLibrariesPage';
