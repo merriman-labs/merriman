@@ -23,7 +23,7 @@ class Navigation extends Component<NavigationProps, NavigationState> {
   render() {
     return (
       <div>
-        <Navbar color="dark" expand="md">
+        <Navbar color="dark" expand="md" dark >
           <NavbarBrand href="/">Merriman</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.open} className="ml-auto" navbar>
