@@ -64,6 +64,7 @@ export default class ServerConfigRepo {
     const config = configItems[0] || (await this._coll.read())[0];
     const isConfigured =
       config.mediaLocation !== '' &&
+      config.mongo !== undefined &&
       config.mongo.url !== '' &&
       config.thumbLocation !== '';
     return { ...config, isConfigured };

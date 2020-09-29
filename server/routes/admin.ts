@@ -33,4 +33,8 @@ adminRouter.delete('/libraries/:id', function(req, res) {
   if (id) libraryManager.delete(id).then(_ => res.sendStatus(200));
 });
 
+adminRouter.post(`/stop`, function(req, res) {
+  process.exit(0);
+});
+
 export default adminRouter;

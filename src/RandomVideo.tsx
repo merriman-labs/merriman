@@ -35,7 +35,7 @@ export default class RandomVideo extends Component<{}, VideoState> {
             <br />
             <span>{this.state.current.views} views</span>
             <br />
-            <div className="btn-group">
+            <div className="btn-group mb-1">
               <button
                 className="btn btn-outline-primary btn-sm"
                 disabled={this._currentQueuePosition === 0}

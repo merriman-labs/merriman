@@ -27,6 +27,7 @@
     "express": "^4.6",
     "figlet": "^1.2.1",
     "forever": "^0.15.3",
+    "inversify": "^5.0.1",
     "moment": "^2.24.0",
     "mongodb": "^3.6.0",
     "morgan": "^1.9.0",
@@ -40,7 +41,7 @@
     "react-router-dom": "^4.2.2",
     "react-scripts": "^2.1.2",
     "reactstrap": "^6.0.1",
-    "typescript": "^3.4.5",
+    "typescript": "^3.7",
     "uuid": "^3.2.1"
   },
   "scripts": {

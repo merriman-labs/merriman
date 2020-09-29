@@ -27,3 +27,17 @@ export type Library = {
 export type LibraryDatabase = {
   libraries: Array<Library>;
 };
+
+export enum ServerLogSeverity {
+  info,
+  warn,
+  err
+}
+
+export interface ServerLog {
+  severity: ServerLogSeverity;
+  source?: string;
+  createdAt: Date;
+  message: string;
+  additional?: any;
+}

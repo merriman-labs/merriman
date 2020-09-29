@@ -92,8 +92,12 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
       method: 'DELETE'
     }).then(this._getLibraryData);
   };
+  _handleStopServer = () => {
+    console.log('Stopping server');
+    fetch('/api/admin/stop', { method: 'POST' })
+  }
   render() {
-    return (
+    return <>
       <Row>
         <Col md="6">
           <h2>Libraries</h2>
@@ -178,7 +182,13 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
           </FormGroup>
         </Col>
       </Row>
-    );
+      <Row>
+        <Col md="6">
+          <h2>Server</h2>
+          <Button color="danger" onClick={this._handleStopServer}>Kill Server</Button>
+        </Col>
+      </Row>
+    </>
   }
 }
 
