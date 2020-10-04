@@ -11,15 +11,15 @@ import { MongoFactory } from './Factories/MongoFactory';
 import { configure } from './cli/configure';
 
 const app = express();
-const serverConfigRepo = new ServerConfigRepo();
 
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
 app.use(busboy());
 
-export default async () => {
-  const { thumbLocation, isConfigured } = await serverConfigRepo.fetch();
+export default async (config: string) => {
+  const serverConfigRepo = new ServerConfigRepo(config);
+  const { thumbLocation, isConfigured, port } = await serverConfigRepo.fetch();
   if (!isConfigured) {
     console.error(
       'Server not configured yet! Running first time configuration wizard...'
@@ -28,7 +28,7 @@ export default async () => {
     console.log('Server is now configured and can be started normally.');
     process.exit(0);
   }
-  await MongoFactory.init();
+  await MongoFactory.init(serverConfigRepo);
   app.use(express.static(thumbLocation, { redirect: false }));
   const buildPath = path.join(__dirname, '../build');
 
@@ -40,8 +40,8 @@ export default async () => {
     res.sendFile(path.join(__dirname, '../build/index.html'))
   );
 
-  app.listen(80, function() {
+  app.listen(port, function() {
     printHeader();
-    console.log('Listening on port 80!');
+    console.log(`Listening on port ${port}!`);
   });
 };

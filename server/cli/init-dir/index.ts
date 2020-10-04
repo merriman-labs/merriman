@@ -5,6 +5,7 @@ import { ask, askProceed, eject, printHeader } from '../util';
 import pickFiles from './pick-files';
 import initFiles from './init-files';
 import { MongoFactory } from '../../Factories/MongoFactory';
+import ServerConfigRepo from '../../data/ServerConfigRepo';
 
 const getFiles = (dir: string): Array<string> => {
   return fs
@@ -12,8 +13,9 @@ const getFiles = (dir: string): Array<string> => {
     .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
 };
 
-async function main() {
-  await MongoFactory.init();
+async function main(config: string) {
+  const serverConfigRepo = new ServerConfigRepo(config);
+  await MongoFactory.init(serverConfigRepo);
   printHeader();
 
   const initDir = await ask('Enter a path to init:\n');

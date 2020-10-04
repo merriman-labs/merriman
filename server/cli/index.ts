@@ -15,11 +15,15 @@ import { configure } from './configure';
       eject();
       break;
     case 'initdir':
-      await initDir();
+      const conf = argv[3];
+      if (!conf) throw new Error('Must provide config name');
+      await initDir(conf);
       eject();
       break;
     case 'run':
-      app();
+      const config = argv[3];
+      if (!config) throw new Error('Must provide config name');
+      app(config);
       break;
     case 'editconfig':
       editConfig();
