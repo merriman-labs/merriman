@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Video from './Video';
+import { Video } from './Video';
 import { Link } from 'react-router-dom';
 import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
 import Chance from 'chance';
