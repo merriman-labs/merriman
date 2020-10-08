@@ -16,6 +16,7 @@ export type MediaItem = {
   views: number;
   created: string;
   updated: string;
+  tags: Array<string>;
 };
 
 export type Library = {

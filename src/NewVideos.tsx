@@ -1,31 +1,21 @@
 import React, { Component } from 'react';
 import { Video } from './Video';
-import { Link } from 'react-router-dom';
 import {
-  Button,
-  ButtonGroup,
   Container,
   Row,
   Col,
   Card,
-  CardImg,
   CardImgOverlay,
   CardText,
   Form,
   Label
 } from 'reactstrap';
-import Chance from 'chance';
-import { MediaItem, Library } from '../server/models';
-import MediaListing from './MediaListing';
+import { MediaItem } from '../server/models';
 import { sortBy, splitEvery, reverse } from 'ramda';
-import ListGroup from 'reactstrap/lib/ListGroup';
-import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import moment from 'moment';
 import ReactImageFallback from 'react-image-fallback';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Input from 'reactstrap/lib/Input';
-
-const chance = Chance.Chance(Math.random);
 
 type VideoLibrariesPageProps = {
   match: {

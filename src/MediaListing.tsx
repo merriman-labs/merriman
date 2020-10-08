@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, ButtonGroup, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { MediaItem } from '../server/models';
 import VideoList from './VideoList';
 import VideoGrid from './VideoGrid';

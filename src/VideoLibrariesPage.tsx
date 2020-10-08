@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import { Video } from './Video';
-import { Link } from 'react-router-dom';
-import { Button, ButtonGroup, Container, Row, Col } from 'reactstrap';
-import Chance from 'chance';
+import { Container, Row, Col } from 'reactstrap';
 import { MediaItem, Library } from '../server/models';
 import MediaListing from './MediaListing';
 import { sortBy } from 'ramda';
-
-const chance = Chance.Chance(Math.random);
 
 type VideoLibrariesPageProps = {
   match: {

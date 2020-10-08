@@ -132,4 +132,9 @@ mediaItemRouter.get('/latest/:count', async function(req, res) {
   res.json(R.take(count, R.reverse(newest)));
 });
 
+mediaItemRouter.put('/', async function(req, res) {
+  await mediaManager.update(req.body);
+  return res.json({ status: 'OK' });
+});
+
 export default mediaItemRouter;

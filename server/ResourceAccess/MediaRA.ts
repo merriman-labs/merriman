@@ -44,7 +44,10 @@ export default class MediaRA {
     // @ts-ignore
     await MongoFactory.create()
       .collection<MediaItem>('media')
-      .findOneAndUpdate({ _id: new ObjectId(updatedVideo._id) }, updatedVideo);
+      .updateOne(
+        { _id: new ObjectId(updatedVideo._id) },
+        { $set: R.omit(['_id'], updatedVideo) }
+      );
   }
   async incrementPlayCount(id: string) {
     await MongoFactory.create()

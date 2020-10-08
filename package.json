@@ -45,7 +45,8 @@
     "uuid": "^3.2.1"
   },
   "scripts": {
-    "server-watch": "nodemon",
+    "server:watch": "nodemon",
+    "server:debug": "nodemon --inspect",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:server": "tsc -P .\\server\\tsconfig.json",
