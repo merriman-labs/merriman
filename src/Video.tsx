@@ -91,7 +91,7 @@ export const Video = (props: VideoProps) => {
       <Row>
         {details ? (
           <>
-            <Col>
+            <Col md="6" sm="12">
               {editing ? (
                 <div className="input-group">
                   <input
@@ -138,7 +138,7 @@ export const Video = (props: VideoProps) => {
                 </>
               )}
             </Col>
-            <Col>
+            <Col md="6" sm="12">
               {details.tags && details.tags.length ? (
                 <>
                   {details.tags.map(tag => (
