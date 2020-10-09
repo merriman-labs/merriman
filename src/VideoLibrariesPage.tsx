@@ -69,7 +69,7 @@ class VideoLibrariesPage extends Component<
         </Row>
         <Row>
           <Col>
-            {video ? <Video library={library} video={video} /> : <div />}
+            {video ? <Video video={video} /> : <div />}
           </Col>
         </Row>
         <Row>

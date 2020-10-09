@@ -74,7 +74,6 @@ class NewVideosPage extends Component<
           <Col>
             {this.state.video ? (
               <Video
-                library={'blank'}
                 video={this.state.video._id.toString()}
               />
             ) : (

@@ -11,7 +11,6 @@ import {
 
 type VideoProps = {
   video: string;
-  library: string;
 };
 type VideoState = MediaItem | null;
 
@@ -30,7 +29,7 @@ export const Video = (props: VideoProps) => {
   const [editing, setEdit] = useState(false);
   const [editingTags, setEditingTags] = useState(false);
   const [currentTag, setCurrentTag] = useState('');
-  const { library, video } = props;
+  const { video } = props;
   window.scrollTo({ top: 0 });
 
   const handleNameChange = (name: string) => {
@@ -77,7 +76,7 @@ export const Video = (props: VideoProps) => {
   return (
     <>
       <Col>
-        {video && library ? (
+        {video ? (
           <video
             className="video-player"
             id="video-player"

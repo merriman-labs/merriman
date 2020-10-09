@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
 import { MediaItem } from '../server/models';
+import { Video } from './Video';
 
 type VideoState = {
   current: MediaItem | null;
@@ -20,12 +21,7 @@ export default class RandomVideo extends Component<{}, VideoState> {
     return (
       <Col>
         {this.state.current ? (
-          <video
-            className="video-player"
-            id="video-player"
-            controls
-            src={`/api/media/play/${this.state.current._id}`}
-          />
+          <Video video={this.state.current._id.toString()} />
         ) : (
           <div />
         )}
