@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
 
 export type ServerConfiguration = {
   mediaLocation: string;
@@ -17,6 +18,7 @@ export type MediaItem = {
   created: string;
   updated: string;
   tags: Array<string>;
+  subs?: Array<Subtitle>;
 };
 
 export type Library = {

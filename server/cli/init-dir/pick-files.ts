@@ -1,6 +1,7 @@
 import { askProceed } from '../util/ask-proceed';
 import { ask } from '../util/ask';
 import initFiles from './init-files';
+import ServerConfigRepo from '../../data/ServerConfigRepo';
 
 /**
  * Generates a table of file names with indices, highlighting files in the queue.
@@ -39,7 +40,11 @@ const createFileMap = (files: Array<string>): Map<number, string> => {
   return new Map<number, string>(files.map<[number, string]>((v, i) => [i, v]));
 };
 
-export default async (files: Array<string>, source: string) => {
+export default async (
+  files: Array<string>,
+  source: string,
+  config: ServerConfigRepo
+) => {
   const fileMap = createFileMap(files);
   const queue = new Set<number>();
 
@@ -63,5 +68,5 @@ export default async (files: Array<string>, source: string) => {
   const fileIndices = Array.from(queue.values());
 
   const filePicks = fileIndices.map(key => fileMap.get(key));
-  await initFiles(filePicks, source);
+  await initFiles(filePicks, source, config);
 };

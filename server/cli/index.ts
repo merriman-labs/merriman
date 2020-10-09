@@ -7,27 +7,34 @@ import printOptions from './print-options';
 import { argv } from 'process';
 import { eject } from './util/eject';
 import { configure } from './configure';
+import { checkSubs } from './checkSubs';
 
 (async function main() {
+  let conf;
   switch (argv[2]) {
     case 'config':
       await configure();
       eject();
       break;
     case 'initdir':
-      const conf = argv[3];
+      conf = argv[3];
       if (!conf) throw new Error('Must provide config name');
       await initDir(conf);
       eject();
       break;
     case 'run':
-      const config = argv[3];
-      if (!config) throw new Error('Must provide config name');
-      app(config);
+      conf = argv[3];
+      if (!conf) throw new Error('Must provide config name');
+      app(conf);
       break;
     case 'editconfig':
       editConfig();
       eject();
+      break;
+    case 'checksubs':
+      conf = argv[3];
+      if (!conf) throw new Error('Must provide config name');
+      await checkSubs(conf);
       break;
     default:
       printOptions();

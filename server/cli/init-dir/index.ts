@@ -33,9 +33,9 @@ async function main(config: string) {
     'Init all files [all], or select which ones to init? [select]\n'
   );
   if (initMethod.includes('all')) {
-    await initFiles(files, initDir);
+    await initFiles(files, initDir, serverConfigRepo);
   } else if (initMethod.includes('select')) {
-    await pickFiles(files, initDir);
+    await pickFiles(files, initDir, serverConfigRepo);
   } else if (!initMethod.includes('all') && !initMethod.includes('select')) {
     eject();
   }
