@@ -31,7 +31,9 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
   }
   _getLibraryInfo = async () => {
     const _id = this.props.match.params.library;
-    const library = await (await fetch(`/api/library/details/${_id.toString()}`)).json();
+    const library = await (await fetch(
+      `/api/library/details/${_id.toString()}`
+    )).json();
     this.setState({ library });
   };
   _getMediaItems = async () => {

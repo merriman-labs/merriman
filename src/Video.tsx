@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row } from 'reactstrap';
 import { MediaItem } from '../server/models';
-import {
-  FaPencilAlt
-} from 'react-icons/fa';
+import { FaPencilAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 type VideoProps = {
@@ -67,7 +65,9 @@ export const Video = (props: VideoProps) => {
               {details.tags && details.tags.length ? (
                 <>
                   {details.tags.map(tag => (
-                    <span className="badge badge-pill badge-secondary mr-1">{tag}</span>
+                    <span className="badge badge-pill badge-secondary mr-1">
+                      {tag}
+                    </span>
                   ))}
                 </>
               ) : null}

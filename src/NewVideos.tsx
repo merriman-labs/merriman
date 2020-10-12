@@ -73,9 +73,7 @@ class NewVideosPage extends Component<
         <Row>
           <Col>
             {this.state.video ? (
-              <Video
-                video={this.state.video._id.toString()}
-              />
+              <Video video={this.state.video._id.toString()} />
             ) : (
               <div />
             )}

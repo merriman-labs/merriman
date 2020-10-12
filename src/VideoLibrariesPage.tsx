@@ -68,9 +68,7 @@ class VideoLibrariesPage extends Component<
           </Col>
         </Row>
         <Row>
-          <Col>
-            {video ? <Video video={video} /> : <div />}
-          </Col>
+          <Col>{video ? <Video video={video} /> : <div />}</Col>
         </Row>
         <Row>
           {this.state.media && this.state.media.length ? (

@@ -26,21 +26,15 @@ export class ServerLogManager {
     });
   }
 
-  info(message: string,
-    source?: string,
-    additional?: any) {
+  info(message: string, source?: string, additional?: any) {
     return this.add(message, ServerLogSeverity.info, source, additional);
   }
 
-  warn(message: string,
-    source?: string,
-    additional?: any) {
-      return this.add(message, ServerLogSeverity.warn, source, additional);
+  warn(message: string, source?: string, additional?: any) {
+    return this.add(message, ServerLogSeverity.warn, source, additional);
   }
 
-  error(message: string,
-    source?: string,
-    additional?: any) {
-      return this.add(message, ServerLogSeverity.err, source, additional);
+  error(message: string, source?: string, additional?: any) {
+    return this.add(message, ServerLogSeverity.err, source, additional);
   }
 }

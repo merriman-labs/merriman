@@ -21,6 +21,4 @@ export default class ServerLogRA {
       .insert(item);
     return item;
   }
-
-
 }

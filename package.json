@@ -55,7 +55,7 @@
     "eject": "react-scripts eject",
     "cli": "node .\\dist_server\\cli\\index.js",
     "precommit": "lint-staged",
-    "prettier": "prettier --write \"**/*.js\""
+    "prettier": "prettier --write \"**/*.{ts,tsx}\""
   },
   "lint-staged": {
     "*.js|*.ts": [

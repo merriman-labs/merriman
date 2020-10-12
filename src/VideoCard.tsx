@@ -14,9 +14,7 @@ const VideoCard = ({
   return (
     <Card>
       <Link to={`/videos/${library}/${_id}`}>
-        <CardImg
-          src={`/${filename}.png`}
-        />
+        <CardImg src={`/${filename}.png`} />
         <CardImgOverlay className="thumbnail-link">
           <CardText>{name}</CardText>
         </CardImgOverlay>
