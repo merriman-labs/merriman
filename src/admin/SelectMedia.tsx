@@ -11,7 +11,6 @@ import {
 } from 'reactstrap';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { MediaItem, Library } from '../../server/models';
-import Bluebird from 'bluebird';
 
 type SelectMediaProps = {
   match: {
@@ -32,7 +31,9 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
   }
   _getLibraryInfo = async () => {
     const _id = this.props.match.params.library;
-    const library = await (await fetch(`/api/library/details/${_id.toString()}`)).json();
+    const library = await (await fetch(
+      `/api/library/details/${_id.toString()}`
+    )).json();
     this.setState({ library });
   };
   _getMediaItems = async () => {
@@ -41,11 +42,6 @@ class SelectMedia extends Component<SelectMediaProps, SelectMediaState> {
     this.setState({ mediaItems: R.sortBy(x => x.created, mediaItems) });
   };
   componentDidMount() {
-    const {
-      match: {
-        params: { library }
-      }
-    } = this.props;
     this._getLibraryInfo();
     this._getMediaItems();
   }

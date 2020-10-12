@@ -31,11 +31,18 @@ class Home extends Component<any, HomeState> {
               <ListGroup>
                 {this.state.libraries
                   ? [
-                      <ListGroupItem><h4>Libraries</h4></ListGroupItem>,
+                      <ListGroupItem>
+                        <h4>Libraries</h4>
+                      </ListGroupItem>,
                       ...this.state.libraries.map(({ name, items, _id }) => (
-                        <Link to={`/videos/${_id.toString()}`} className="list-group-item">
+                        <Link
+                          to={`/videos/${_id.toString()}`}
+                          className="list-group-item"
+                        >
                           <h5 className="mb-1">{name}</h5>
-                          <small className="text-muted">{items.length} items</small>
+                          <small className="text-muted">
+                            {items.length} items
+                          </small>
                         </Link>
                       ))
                     ]

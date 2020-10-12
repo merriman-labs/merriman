@@ -1,47 +1,80 @@
-import React, { Component } from 'react';
-import { Col } from 'reactstrap';
+import React, { useState, useEffect } from 'react';
+import { Col, Row } from 'reactstrap';
 import { MediaItem } from '../server/models';
+import { FaPencilAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 type VideoProps = {
   video: string;
-  library: string;
 };
-type VideoState = {
-  details: MediaItem | null;
-};
+type VideoState = MediaItem | null;
 
-export default class Video extends Component<VideoProps, VideoState> {
-  constructor(props: VideoProps) {
-    super(props);
-    this.state = { details: null };
-  }
-  async componentDidMount() {
-    const details = await (await fetch(
-      `/api/media/detail/${this.props.video}`
-    )).json();
-    this.setState({ details });
-  }
-  render() {
-    const { library, video } = this.props;
-    window.scrollTo({ top: 0 });
-    return (
+export const Video = (props: VideoProps) => {
+  const [details, setDetails] = useState<VideoState>(null);
+  const { video } = props;
+  window.scrollTo({ top: 0 });
+
+  useEffect(
+    () => {
+      const effect = async () => {
+        const details = await (await fetch(
+          `/api/media/detail/${props.video}`
+        )).json();
+        setDetails(details);
+      };
+      effect();
+    },
+    [props.video]
+  );
+
+  return (
+    <>
       <Col>
-        {video && library ? (
+        {video ? (
           <video
             className="video-player"
             id="video-player"
             controls
             src={`/api/media/play/${video}`}
-          />
-        ) : (
-          <div />
-        )}
-        {this.state.details ? (
-          <strong>{this.state.details.name}</strong>
+          >
+            <track
+              label="English"
+              kind="subtitles"
+              srcLang="en"
+              src={`/api/media/captions/${video}`}
+              default
+            />
+          </video>
         ) : (
           <div />
         )}
       </Col>
-    );
-  }
-}
+      <Row>
+        {details ? (
+          <>
+            <Col md="6" sm="12">
+              <Link
+                to={`/media/edit/${details._id.toString()}`}
+                className="btn btn-outline-info btn-sm mr-2"
+              >
+                <FaPencilAlt />
+              </Link>
+              <strong>{details.name}</strong>
+            </Col>
+            <Col md="6" sm="12">
+              {details.tags && details.tags.length ? (
+                <>
+                  {details.tags.map(tag => (
+                    <span className="badge badge-pill badge-secondary mr-1">
+                      {tag}
+                    </span>
+                  ))}
+                </>
+              ) : null}
+            </Col>
+          </>
+        ) : null}
+      </Row>
+    </>
+  );
+};

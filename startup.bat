@@ -1,1 +1,1 @@
-node c:\development\merriman\dist_server\server.js
+node dist_server\server.js

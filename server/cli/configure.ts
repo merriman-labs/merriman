@@ -25,8 +25,11 @@ export async function configure() {
   const serverName = await configureInstanceName(config.name);
   if (serverName !== config.name) await configRepo.setServerName(serverName);
 
-  const mongoUrl = await configureMongo(config.mongo.url);
-  if (mongoUrl !== config.mongo.url) await configRepo.setMongoUrl(mongoUrl);
+  const mongoUrl = await configureMongo(
+    (config.mongo && config.mongo.url) || ''
+  );
+  if (!config.mongo || mongoUrl !== config.mongo.url)
+    await configRepo.setMongoUrl(mongoUrl);
 }
 
 async function configureMediaLocation(existingLocation: string, item: string) {

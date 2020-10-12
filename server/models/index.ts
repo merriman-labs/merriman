@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
 
 export type ServerConfiguration = {
   mediaLocation: string;
@@ -16,6 +17,12 @@ export type MediaItem = {
   views: number;
   created: string;
   updated: string;
+  tags: Array<string>;
+  subs?: Array<Subtitle>;
+  subtitles?: string;
+  meta?: string;
+  srt?: string;
+  webvtt?: string;
 };
 
 export type Library = {
@@ -27,3 +34,17 @@ export type Library = {
 export type LibraryDatabase = {
   libraries: Array<Library>;
 };
+
+export enum ServerLogSeverity {
+  info,
+  warn,
+  err
+}
+
+export interface ServerLog {
+  severity: ServerLogSeverity;
+  source?: string;
+  createdAt: Date;
+  message: string;
+  additional?: any;
+}

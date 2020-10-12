@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { MediaItem } from '../server/models';

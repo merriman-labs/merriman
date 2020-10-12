@@ -55,6 +55,12 @@ mediaItemRouter.get('/play/:video', async function(req, res) {
   }
 });
 
+mediaItemRouter.get('/captions/:id', async function(req, res) {
+  const item = await mediaManager.findById(req.params.id);
+  if (!item.webvtt) res.status(404).send('not found');
+  res.status(200).send(item.webvtt);
+});
+
 // Return the media item
 mediaItemRouter.get('/detail/:_id', async function(req, res) {
   const id: string = req.params._id;
@@ -130,6 +136,26 @@ mediaItemRouter.get('/latest/:count', async function(req, res) {
         : 0
     );
   res.json(R.take(count, R.reverse(newest)));
+});
+
+mediaItemRouter.post('/request-meta/:id', async function(req, res) {
+  const meta = await mediaManager.requestMeta(req.params.id);
+  return res.json({ meta });
+});
+
+mediaItemRouter.post('/request-srt/:id/:track', async function(req, res) {
+  const srt = await mediaManager.generateSubs(req.params.id, req.params.track);
+  return res.json({ srt });
+});
+
+mediaItemRouter.post('/request-webvtt/:id', async function(req, res) {
+  const webvtt = await mediaManager.generateWebVtt(req.params.id);
+  return res.json({ webvtt });
+});
+
+mediaItemRouter.put('/', async function(req, res) {
+  await mediaManager.update(req.body);
+  return res.json({ status: 'OK' });
 });
 
 export default mediaItemRouter;

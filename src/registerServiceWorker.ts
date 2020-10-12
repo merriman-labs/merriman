@@ -58,7 +58,7 @@ function registerValidSW(swUrl: string) {
     .then(registration => {
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
-        if (!installingWorker) throw 'installingWorker is undefined';
+        if (!installingWorker) throw new Error('installingWorker is undefined');
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {

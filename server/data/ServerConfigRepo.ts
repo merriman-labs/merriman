@@ -11,6 +11,7 @@ type ServerConfig = {
   };
   name: string;
   isConfigured: boolean;
+  port: number;
 };
 
 const _defaultObject: ServerConfig = {
@@ -18,12 +19,14 @@ const _defaultObject: ServerConfig = {
   thumbLocation: '',
   name: uuid(),
   mongo: { url: '' },
-  isConfigured: false
+  isConfigured: false,
+  port: 80
 };
 
 export default class ServerConfigRepo {
+  constructor(private _config?: string) {}
   private _coll = new Database('merriman').collection<ServerConfig>(
-    'server-config'
+    this._config ? 'server-config.' + this._config : 'server-config'
   );
 
   async setMediaLocation(location: string): Promise<void> {
@@ -64,6 +67,7 @@ export default class ServerConfigRepo {
     const config = configItems[0] || (await this._coll.read())[0];
     const isConfigured =
       config.mediaLocation !== '' &&
+      config.mongo !== undefined &&
       config.mongo.url !== '' &&
       config.thumbLocation !== '';
     return { ...config, isConfigured };

@@ -10,6 +10,7 @@ import AdminPanel from './admin/AdminPanel';
 import StandaloneMedia from './StandaloneMedia';
 import RandomVideo from './RandomVideo';
 import NewVideosPage from './NewVideos';
+import { MediaEdit } from './Media/Edit';
 
 class App extends Component<{}> {
   render() {
@@ -20,6 +21,7 @@ class App extends Component<{}> {
           <Switch>
             <Route path="/random" component={RandomVideo} />
             <Route path="/media/new" component={NewVideosPage} exact />
+            <Route path="/media/edit/:id" component={MediaEdit} exact />
             <Route path="/media/:media" component={StandaloneMedia} exact />
           </Switch>
         </Row>

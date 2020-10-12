@@ -1,31 +1,21 @@
 import React, { Component } from 'react';
-import Video from './Video';
-import { Link } from 'react-router-dom';
+import { Video } from './Video';
 import {
-  Button,
-  ButtonGroup,
   Container,
   Row,
   Col,
   Card,
-  CardImg,
   CardImgOverlay,
   CardText,
   Form,
   Label
 } from 'reactstrap';
-import Chance from 'chance';
-import { MediaItem, Library } from '../server/models';
-import MediaListing from './MediaListing';
+import { MediaItem } from '../server/models';
 import { sortBy, splitEvery, reverse } from 'ramda';
-import ListGroup from 'reactstrap/lib/ListGroup';
-import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import moment from 'moment';
 import ReactImageFallback from 'react-image-fallback';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Input from 'reactstrap/lib/Input';
-
-const chance = Chance.Chance(Math.random);
 
 type VideoLibrariesPageProps = {
   match: {
@@ -59,8 +49,8 @@ class NewVideosPage extends Component<
     this._fetchVideoList();
   }
   handleCountChange = (val: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ count: parseInt(val.target.value) }, this._fetchVideoList)
-  }
+    this.setState({ count: parseInt(val.target.value) }, this._fetchVideoList);
+  };
   render() {
     return (
       <Container>
@@ -83,36 +73,37 @@ class NewVideosPage extends Component<
         <Row>
           <Col>
             {this.state.video ? (
-              <Video library={'blank'} video={this.state.video._id.toString()} />
+              <Video video={this.state.video._id.toString()} />
             ) : (
               <div />
             )}
           </Col>
         </Row>
         {this.state.media && this.state.media.length
-          ? splitEvery(3, reverse(sortBy(x => moment(x.created).unix(), this.state.media))).map(
-              group => (
-                <Row>
-                  {group.map(item => (
-                    <Col>
-                      <Card onClick={() => this.setState({ video: item })}>
-                        <ReactImageFallback
-                          className="card-image"
-                          src={`/${item.filename}.png`}
-                          fallbackImage="/blank.png"
-                        />
-                        <CardImgOverlay className="thumbnail-link">
-                          <CardText>
-                            {item.name}{' '}
-                            {moment(item.created).format('MM/DD/YYYY HH:mm')}
-                          </CardText>
-                        </CardImgOverlay>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
-              )
-            )
+          ? splitEvery(
+              3,
+              reverse(sortBy(x => moment(x.created).unix(), this.state.media))
+            ).map(group => (
+              <Row>
+                {group.map(item => (
+                  <Col>
+                    <Card onClick={() => this.setState({ video: item })}>
+                      <ReactImageFallback
+                        className="card-image"
+                        src={`/${item.filename}.png`}
+                        fallbackImage="/blank.png"
+                      />
+                      <CardImgOverlay className="thumbnail-link">
+                        <CardText>
+                          {item.name}{' '}
+                          {moment(item.created).format('MM/DD/YYYY HH:mm')}
+                        </CardText>
+                      </CardImgOverlay>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            ))
           : null}
       </Container>
     );
