@@ -19,6 +19,10 @@ export type MediaItem = {
   updated: string;
   tags: Array<string>;
   subs?: Array<Subtitle>;
+  subtitles?: string;
+  meta?: string;
+  srt?: string;
+  webvtt?: string;
 };
 
 export type Library = {

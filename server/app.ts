@@ -29,12 +29,12 @@ export default async (config: string) => {
     process.exit(0);
   }
   await MongoFactory.init(serverConfigRepo);
-  app.use(express.static(thumbLocation, { redirect: false }));
-  const buildPath = path.join(__dirname, '../build');
-
-  app.use(express.static(buildPath, { redirect: false }));
 
   app.use('/api', apiRouter);
+
+  app.use(express.static(thumbLocation, { redirect: false }));
+  const buildPath = path.join(__dirname, '../build');
+  app.use(express.static(buildPath, { redirect: false }));
 
   app.get('/*', (req, res, next) =>
     res.sendFile(path.join(__dirname, '../build/index.html'))

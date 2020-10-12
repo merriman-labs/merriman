@@ -13,7 +13,7 @@ export async function checkSubs(config: string) {
   const mediaManager = new MediaManager();
   const items = await mediaManager.get();
   items.forEach(async item => {
-    if (Array.isArray(item.subs)) return;
+    if (Array.isArray(item.subtitles)) return;
     const path = item.path || mediaLocation;
     const name = item.filename
       .split('.')

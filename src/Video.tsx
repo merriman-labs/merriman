@@ -8,6 +8,7 @@ import {
   FaTimesCircle,
   FaTimes
 } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 type VideoProps = {
   video: string;
@@ -82,7 +83,15 @@ export const Video = (props: VideoProps) => {
             id="video-player"
             controls
             src={`/api/media/play/${video}`}
-          />
+          >
+            <track
+              label="English"
+              kind="subtitles"
+              srcLang="en"
+              src={`/api/media/captions/${video}`}
+              default
+            />
+          </video>
         ) : (
           <div />
         )}
@@ -123,16 +132,12 @@ export const Video = (props: VideoProps) => {
                 </div>
               ) : (
                 <>
-                  <Button
-                    color="info"
-                    outline
-                    size="sm"
-                    className="mr-2"
-                    title="edit title"
-                    onClick={() => setEdit(true)}
+                  <Link
+                    to={`/media/edit/${details._id.toString()}`}
+                    className="btn btn-outline-info btn-sm mr-2"
                   >
                     <FaPencilAlt />
-                  </Button>
+                  </Link>
                   <strong>{details.name}</strong>
                 </>
               )}

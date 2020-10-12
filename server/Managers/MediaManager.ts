@@ -1,6 +1,8 @@
 import MediaRA from '../ResourceAccess/MediaRA';
 import { MediaEngine } from '../Engines/MediaEngine';
 import { MediaItem } from '../models';
+import { requestMeta, generateSubs } from '../ffmpeg';
+import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
 
 export class MediaManager {
   private _mediaRA: MediaRA;
@@ -33,5 +35,36 @@ export class MediaManager {
 
   incrementViewCount(id: string) {
     return this._mediaRA.incrementPlayCount(id);
+  }
+
+  async requestMeta(id: string) {
+    const media = await this._mediaRA.findById(id);
+    const { stdout, stderr } = await requestMeta(
+      `${media.path}\\${media.filename}`
+    );
+    const meta = stdout === '' ? stderr : stdout;
+    media.meta = meta;
+    await this._mediaRA.update(media);
+    return meta;
+  }
+
+  async generateSubs(id: string, track: string) {
+    const media = await this._mediaRA.findById(id);
+    const subs = await generateSubs(`${media.path}\\${media.filename}`, track);
+    media.srt = subs;
+
+    await this._mediaRA.update(media);
+    return subs;
+  }
+
+  async generateWebVtt(id: string) {
+    const media = await this._mediaRA.findById(id);
+    if (!media.srt) throw new Error('No SRT subs found');
+    const jsubs = fromSrt(media.srt);
+    const webvtt = toWebVTT(jsubs);
+    media.webvtt = webvtt;
+
+    await this._mediaRA.update(media);
+    return webvtt;
   }
 }
