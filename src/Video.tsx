@@ -37,13 +37,13 @@ export const Video = (props: VideoProps) => {
             controls
             src={`/api/media/play/${video}`}
           >
-            <track
+            {details && details.webvtt ? <track
               label="English"
               kind="subtitles"
               srcLang="en"
               src={`/api/media/captions/${video}`}
               default
-            />
+            /> : null}
           </video>
         ) : (
           <div />

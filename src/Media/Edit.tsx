@@ -148,6 +148,7 @@ export const MediaEdit = (props: MediaEditProps) => {
                 id="name"
                 rows={10}
                 value={media.srt || 'No subtitles available'}
+                readOnly
               />
             </div>
             <div className="input-group mb-3">
@@ -200,6 +201,40 @@ export const MediaEdit = (props: MediaEditProps) => {
             <button className="btn btn-outline-success" onClick={handleSave}>
               Save Changes
             </button>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-md-4" />
+          <div className="col-md-8">
+            <p>
+              <strong>Burn new video</strong>
+            </p>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <button
+                  className="btn btn-outline-info"
+                  type="button"
+                  onClick={() => handleGetSrt(media._id.toString(), srtTrack)}
+                >
+                  Generate from tracks:
+                </button>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                value={srtTrack}
+                placeholder="video track, e.g. 0:0"
+                onChange={evt => setSrtTrack(evt.target.value)}
+              />
+              <input
+                type="text"
+                className="form-control"
+                value={srtTrack}
+                placeholder="audio track, e.g. 0:2"
+                onChange={evt => setSrtTrack(evt.target.value)}
+              />
+            </div>
           </div>
         </div>
       </div>
