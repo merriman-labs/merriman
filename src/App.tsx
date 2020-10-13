@@ -16,34 +16,23 @@ class App extends Component<{}> {
   render() {
     return [
       <Navigation />,
-      <Container>
-        <Row>
-          <Switch>
-            <Route path="/random" component={RandomVideo} />
-            <Route path="/media/new" component={NewVideosPage} exact />
-            <Route path="/media/edit/:id" component={MediaEdit} exact />
-            <Route path="/media/:media" component={StandaloneMedia} exact />
-          </Switch>
-        </Row>
-        <Row />
-        <Row>
-          <Route
-            path="/videos/:library?/:video?"
-            component={VideoLibrariesPage}
-          />
-        </Row>
-        <Row>
-          <Col>
-            <Route exact path="/" component={Home} />
-          </Col>
-        </Row>
+      <Switch>
+        <Route path="/random" component={RandomVideo} />
+        <Route path="/media/new" component={NewVideosPage} exact />
+        <Route path="/media/edit/:id" component={MediaEdit} exact />
+        <Route path="/media/:media" component={StandaloneMedia} exact />
+        <Route
+          path="/videos/:library?/:video?"
+          component={VideoLibrariesPage}
+        />
+        <Route exact path="/" component={Home} />
         <Route exact path="/admin" component={AdminPanel} />
         <Route
           exact
           path="/admin/select-media/:library"
           component={SelectMedia}
         />
-      </Container>
+      </Switch>
     ];
   }
 }
