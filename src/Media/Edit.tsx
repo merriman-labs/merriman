@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { MediaItem } from '../../server/models';
 import MediaManager from '../managers/MediaManager';
 import { FaTimesCircle } from 'react-icons/fa';
+import { RouterProps } from 'react-router';
 
-type MediaEditProps = {
+type MediaEditProps = RouterProps & {
   match: {
     params: {
       id: string;
@@ -16,6 +17,7 @@ export const MediaEdit = (props: MediaEditProps) => {
   const [media, setMedia] = useState<MediaItem | null>(null);
   const [currentTag, setCurrentTag] = useState('');
   const [srtTrack, setSrtTrack] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   useEffect(
     () => {
       const effect = async () => {
@@ -26,6 +28,15 @@ export const MediaEdit = (props: MediaEditProps) => {
     },
     [props.match.params.id]
   );
+
+  const handleDelete = async (hard: boolean) => {
+    if (media === null) return;
+    const { result } = await mediaManager.deleteById(
+      media._id.toString(),
+      hard
+    );
+    if (result) props.history.goBack();
+  };
 
   const handleGetMeta = async (id: string) => {
     if (media === null) return;
@@ -198,9 +209,40 @@ export const MediaEdit = (props: MediaEditProps) => {
         </div>
         <div className="row">
           <div className="col-md">
-            <button className="btn btn-outline-success" onClick={handleSave}>
-              Save Changes
-            </button>
+            {isDeleting ? (
+              <>
+                <button className="btn btn-outline-danger" onClick={() => handleDelete(true)}>
+                  Hard Delete
+                </button>
+                <button
+                  className="btn btn-outline-warning"
+                  onClick={() => handleDelete(false)}
+                >
+                  Soft Delete
+                </button>
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => setIsDeleting(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="btn btn-outline-success mr-1"
+                  onClick={handleSave}
+                >
+                  Save Changes
+                </button>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => setIsDeleting(true)}
+                >
+                  Delete
+                </button>
+              </>
+            )}
           </div>
         </div>
 

@@ -8,8 +8,19 @@ class MediaManager {
   latest(count: number): Promise<Array<MediaItem>> {
     return MediaRA.latest(count);
   }
+  tags() {
+    return MediaRA.tags();
+  }
   details(id: string): Promise<MediaItem> {
     return MediaRA.details(id);
+  }
+
+  deleteById(id: string, hard: boolean = false) {
+    return MediaRA.deleteById(id, hard);
+  }
+
+  getByTag(tag: string) {
+    return MediaRA.getByTag(tag);
   }
 
   requestMeta(id: string): Promise<{ meta: string }> {

@@ -3,6 +3,8 @@ import { MediaEngine } from '../Engines/MediaEngine';
 import { MediaItem } from '../models';
 import { requestMeta, generateSubs } from '../ffmpeg';
 import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
+import { MediaUtils } from '../Utilities/MediaUtils';
+import { AppContext } from '../appContext';
 
 export class MediaManager {
   private _mediaRA: MediaRA;
@@ -16,6 +18,10 @@ export class MediaManager {
     return this._mediaRA.get();
   }
 
+  getByTag(tag: string) {
+    return this._mediaRA.getByTag(tag);
+  }
+
   add(filename: string, path?: string) {
     const newMediaItem = this._mediaEngine.initializeMedia(filename, path);
     return this._mediaRA.add(newMediaItem);
@@ -23,6 +29,18 @@ export class MediaManager {
 
   findById(id: string) {
     return this._mediaRA.findById(id);
+  }
+
+  async deleteById(id: string, hardDelete: boolean = false) {
+    const configMgr = AppContext.get(AppContext.WellKnown.Config);
+    const config = await configMgr.fetch();
+    const media = await this._mediaRA.findById(id);
+    if (!media) return false;
+    if (hardDelete) {
+      const path = media.path ? media.path : config.mediaLocation;
+      MediaUtils.deleteMedia(path, media.filename);
+    }
+    return this._mediaRA.deleteById(id);
   }
 
   async where(predicate: ((x: MediaItem) => boolean)) {
@@ -35,6 +53,10 @@ export class MediaManager {
 
   incrementViewCount(id: string) {
     return this._mediaRA.incrementPlayCount(id);
+  }
+
+  getTags(): Promise<Array<string>> {
+    return this._mediaRA.getTags();
   }
 
   async requestMeta(id: string) {

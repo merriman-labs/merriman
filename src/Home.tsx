@@ -5,6 +5,7 @@ import SearchPage from './SearchPage';
 import ListGroup from 'reactstrap/lib/ListGroup';
 import { Library } from '../server/models';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
+import { TagsList } from './Media/TagsList';
 
 type HomeState = {
   libraries: Array<Library> | null;
@@ -48,6 +49,16 @@ class Home extends Component<any, HomeState> {
                     ]
                   : null}
               </ListGroup>
+            </Col>
+            <Col md="6">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">Tags</h5>
+                  <p className="card-text">
+                    <TagsList />
+                  </p>
+                </div>
+              </div>
             </Col>
           </Row>
         </Container>

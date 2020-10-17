@@ -24,7 +24,7 @@ const _defaultObject: ServerConfig = {
 };
 
 export default class ServerConfigRepo {
-  constructor(private _config?: string) {}
+  constructor(private _config: string) {}
   private _coll = new Database('merriman').collection<ServerConfig>(
     this._config ? 'server-config.' + this._config : 'server-config'
   );

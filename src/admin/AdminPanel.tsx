@@ -13,6 +13,8 @@ import {
   Label
 } from 'reactstrap';
 import { Library } from '../../server/models';
+import Container from 'reactstrap/lib/Container';
+import LibraryManager from '../managers/LibraryManager';
 
 type FileInfo = { uploaded: boolean; file: File };
 type AdminPanelProps = {};
@@ -36,8 +38,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
     this._getLibraryData();
   }
   _getLibraryData = () => {
-    fetch('/api/library')
-      .then(response => response.json())
+    LibraryManager.list()
       .then(libraries => this.setState({ libraries }))
       .catch(console.log);
   };
@@ -98,7 +99,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
   };
   render() {
     return (
-      <>
+      <Container className="mt-2">
         <Row>
           <Col md="6">
             <h2>Libraries</h2>
@@ -191,7 +192,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
             </Button>
           </Col>
         </Row>
-      </>
+      </Container>
     );
   }
 }

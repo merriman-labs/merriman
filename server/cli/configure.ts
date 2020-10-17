@@ -2,8 +2,8 @@ import { ask, askBoolean } from './util';
 import ServerConfigRepo from '../data/ServerConfigRepo';
 import { existsSync, mkdirSync } from 'fs';
 
-export async function configure() {
-  const configRepo = new ServerConfigRepo();
+export async function configure(configName: string) {
+  const configRepo = new ServerConfigRepo(configName);
   const config = await configRepo.fetch();
 
   console.log('This guide will help you configure your server');

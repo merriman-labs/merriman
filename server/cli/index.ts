@@ -13,7 +13,9 @@ import { checkSubs } from './checkSubs';
   let conf;
   switch (argv[2]) {
     case 'config':
-      await configure();
+      conf = argv[3];
+      if (!conf) throw new Error('Must provide config name');
+      await configure(conf);
       eject();
       break;
     case 'initdir':

@@ -9,6 +9,7 @@ import { printHeader } from './cli/util';
 import './Factories/MongoFactory';
 import { MongoFactory } from './Factories/MongoFactory';
 import { configure } from './cli/configure';
+import { AppContext } from './appContext';
 
 const app = express();
 
@@ -19,12 +20,13 @@ app.use(busboy());
 
 export default async (config: string) => {
   const serverConfigRepo = new ServerConfigRepo(config);
+  AppContext.set(AppContext.WellKnown.Config, serverConfigRepo);
   const { thumbLocation, isConfigured, port } = await serverConfigRepo.fetch();
   if (!isConfigured) {
     console.error(
       'Server not configured yet! Running first time configuration wizard...'
     );
-    await configure();
+    await configure(config);
     console.log('Server is now configured and can be started normally.');
     process.exit(0);
   }

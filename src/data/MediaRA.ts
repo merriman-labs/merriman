@@ -13,8 +13,19 @@ class MediaRA {
   latest(count: number): Promise<Array<MediaItem>> {
     return fetch(`/api/media/latest/${count}`).then(x => x.json());
   }
+  tags(): Promise<{ tags: Array<string> }> {
+    return fetch(`/api/media/tags`).then(x => x.json());
+  }
+  getByTag(tag: string): Promise<{ items: Array<MediaItem> }> {
+    return fetch(`/api/media/list/byTag/${tag}`).then(x => x.json());
+  }
   details(id: string): Promise<MediaItem> {
     return fetch(`/api/media/detail/${id}`).then(x => x.json());
+  }
+  deleteById(id: string, hard: boolean = false): Promise<{ result: boolean }> {
+    return fetch(`/api/media/${id}?hard=${hard}`, {
+      method: 'DELETE'
+    }).then(x => x.json());
   }
   requestMeta(id: string): Promise<{ meta: string }> {
     return fetch(`/api/media/request-meta/${id}`, { method: 'POST' }).then(x =>

@@ -18,6 +18,37 @@ export default class MediaRA {
       .toArray();
   }
 
+  getByTag(tag: string): Promise<Array<MediaItem>> {
+    return MongoFactory.create()
+      .collection<MediaItem>('media')
+      .find({ tags: tag })
+      .toArray();
+  }
+  /**
+   * Get all unique tags from the server.
+   */
+  async getTags(): Promise<Array<string>> {
+    const [{ items }] = await MongoFactory.create()
+      .collection<MediaItem>('media')
+      .aggregate<{ items: Array<string> }>([
+        {
+          $project: {
+            tagList: {
+              $reduce: {
+                input: '$tags',
+                initialValue: [],
+                in: { $concatArrays: ['$$value', ['$$this']] }
+              }
+            }
+          }
+        },
+        { $unwind: '$tagList' },
+        { $group: { _id: null, items: { $addToSet: '$tagList' } } }
+      ])
+      .toArray();
+    return R.sort((a, b) => a.codePointAt(0) - b.codePointAt(0), items);
+  }
+
   /**
    *
    */
@@ -35,6 +66,16 @@ export default class MediaRA {
     return MongoFactory.create()
       .collection<MediaItem>('media')
       .findOne({ _id: new ObjectId(id) });
+  }
+
+  /**
+   *
+   */
+  async deleteById(id: string): Promise<boolean> {
+    const result = await MongoFactory.create()
+      .collection<MediaItem>('media')
+      .deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount === 1;
   }
 
   /**

@@ -9,15 +9,16 @@ import * as chance from 'chance';
 import moment = require('moment');
 import { MediaManager } from '../Managers/MediaManager';
 import { LibraryManager } from '../Managers/LibraryManager';
+import { AppContext } from '../appContext';
 
 const Chance = chance.Chance();
 const mediaItemRouter = Router();
 const mediaManager = new MediaManager();
 const libraryManager = new LibraryManager();
-const serverConfigRepo = new ServerConfigRepo();
 
 // Play a video in chunks
 mediaItemRouter.get('/play/:video', async function(req, res) {
+  const serverConfigRepo = AppContext.get(AppContext.WellKnown.Config);
   const { mediaLocation } = await serverConfigRepo.fetch();
   const videoId = req.params.video;
   const video = await mediaManager.findById(videoId);
@@ -70,6 +71,7 @@ mediaItemRouter.get('/detail/:_id', async function(req, res) {
 
 // Upload a media item
 mediaItemRouter.post('/upload', function(req, res) {
+  const serverConfigRepo = AppContext.get(AppContext.WellKnown.Config);
   const busboy = new Busboy({ headers: req.headers });
   busboy.on('file', async function(fieldname, file, filename) {
     const serverConfig = await serverConfigRepo.fetch();
@@ -109,6 +111,17 @@ mediaItemRouter.get('/', async function(req, res) {
 mediaItemRouter.get('/random', async function(req, res) {
   const media = await mediaManager.get();
   res.json(Chance.pickone(media));
+});
+
+mediaItemRouter.get('/list/byTag/:tag', async function(req, res) {
+  const tag = req.params.tag;
+  const items = await mediaManager.getByTag(tag);
+  res.json({ items });
+});
+
+mediaItemRouter.get('/tags', async function(req, res) {
+  const tags = await mediaManager.getTags();
+  res.json({ tags });
 });
 
 mediaItemRouter.get('/:library', async function(req, res) {
@@ -156,6 +169,12 @@ mediaItemRouter.post('/request-webvtt/:id', async function(req, res) {
 mediaItemRouter.put('/', async function(req, res) {
   await mediaManager.update(req.body);
   return res.json({ status: 'OK' });
+});
+
+mediaItemRouter.delete('/:id', async function(req, res) {
+  const hardDelete = req.query.hard === 'true';
+  const result = await mediaManager.deleteById(req.params.id, hardDelete);
+  res.json({ result });
 });
 
 export default mediaItemRouter;

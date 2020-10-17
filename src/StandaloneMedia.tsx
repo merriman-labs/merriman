@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { MediaItem } from '../server/models';
+import { Video } from './Video';
 
 type StandaloneMediaProps = {
   match: {
@@ -34,16 +35,7 @@ export default class StandaloneMedia extends Component<
       <Container>
         <Row>
           <Col>
-            {media ? (
-              <video
-                className="video-player"
-                id="video-player"
-                controls
-                src={`/api/media/play/${media}`}
-              />
-            ) : (
-              <div />
-            )}
+            {media ? <Video video={media} /> : <div />}
             {this.state.details ? (
               <strong>{this.state.details.name}</strong>
             ) : (
