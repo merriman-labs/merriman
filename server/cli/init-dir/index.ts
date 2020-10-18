@@ -6,6 +6,7 @@ import pickFiles from './pick-files';
 import initFiles from './init-files';
 import { MongoFactory } from '../../Factories/MongoFactory';
 import ServerConfigRepo from '../../data/ServerConfigRepo';
+import { MediaManager } from '../../Managers/MediaManager';
 
 const getFiles = (dir: string): Array<string> => {
   return fs
@@ -16,6 +17,8 @@ const getFiles = (dir: string): Array<string> => {
 async function main(config: string) {
   const serverConfigRepo = new ServerConfigRepo(config);
   await MongoFactory.init(serverConfigRepo);
+  const mediaManager = new MediaManager();
+
   printHeader();
 
   const initDir = await ask('Enter a path to init:\n');
@@ -23,8 +26,11 @@ async function main(config: string) {
   if (!fs.existsSync(initDir) || !fs.statSync(initDir).isDirectory()) {
     throw `Not a directory: [${initDir}]`;
   }
-  const files = getFiles(initDir);
-  console.log('Found the following files:');
+  const existingMedia = await mediaManager.get();
+  const files = getFiles(initDir).filter(
+    filename => !existingMedia.some(media => media.filename === filename)
+  );
+  console.log('Found the following new files:');
   console.log(files.join('\r\n'));
 
   await askProceed();
