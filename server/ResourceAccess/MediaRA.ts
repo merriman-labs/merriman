@@ -1,27 +1,24 @@
-import * as fs from 'fs';
 import * as R from 'ramda';
-import * as uuid from 'uuid/v4';
-import { MediaItem, MediaType } from '../models/index';
+import { MediaItem } from '../models/index';
 import { MongoFactory } from '../Factories/MongoFactory';
-import ServerConfigRepo from '../data/ServerConfigRepo';
-import { ObjectId, MongoClient } from 'mongodb';
-import Media from 'reactstrap/lib/Media';
+import { ObjectId } from 'mongodb';
 
 export default class MediaRA {
   /**
    *
    */
-  get(): Promise<Array<MediaItem>> {
+  get(includeHidden: boolean = false): Promise<Array<MediaItem>> {
+    const query = includeHidden ? {} : { isHidden: false };
     return MongoFactory.create()
       .collection<MediaItem>('media')
-      .find()
+      .find(query)
       .toArray();
   }
 
   getByTag(tag: string): Promise<Array<MediaItem>> {
     return MongoFactory.create()
       .collection<MediaItem>('media')
-      .find({ tags: tag })
+      .find({ tags: tag, isHidden: false })
       .toArray();
   }
   /**
@@ -55,7 +52,7 @@ export default class MediaRA {
   async add(item: MediaItem): Promise<MediaItem> {
     await MongoFactory.create()
       .collection<MediaItem>('media')
-      .insert(item);
+      .insertOne(item);
     return item;
   }
 

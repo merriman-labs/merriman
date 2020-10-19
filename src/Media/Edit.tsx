@@ -86,6 +86,12 @@ export const MediaEdit = (props: MediaEditProps) => {
     await mediaManager.update(media);
   };
 
+  const handleCheckChange = (val: boolean) => {
+    setMedia(item =>
+      item === null ? item : { ...item, isHidden: val }
+    );
+  };
+
   return media === null ? null : (
     <div className="col md-12">
       <div className="mt-2 mb-5 form">
@@ -182,7 +188,21 @@ export const MediaEdit = (props: MediaEditProps) => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-4" />
+          <div className="col-md-4">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                name="name"
+                id="name"
+                type="checkbox"
+                checked={!media.isHidden}
+                onChange={(evt) => handleCheckChange(!evt.target.checked)}
+              />
+              <label htmlFor="name" className="form-check-label">
+                Show
+              </label>
+            </div>
+          </div>
           <div className="col-md-8">
             <div className="form-group">
               <label htmlFor="name">Subtitles (WebVTT)</label>
@@ -192,6 +212,7 @@ export const MediaEdit = (props: MediaEditProps) => {
                 id="name"
                 rows={10}
                 value={media.webvtt || 'No WebVTT subtitles available'}
+                readOnly
               />
             </div>
             <div className="input-group mb-3">
@@ -211,7 +232,10 @@ export const MediaEdit = (props: MediaEditProps) => {
           <div className="col-md">
             {isDeleting ? (
               <>
-                <button className="btn btn-outline-danger" onClick={() => handleDelete(true)}>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => handleDelete(true)}
+                >
                   Hard Delete
                 </button>
                 <button

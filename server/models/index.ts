@@ -23,6 +23,7 @@ export type MediaItem = {
   meta?: string;
   srt?: string;
   webvtt?: string;
+  isHidden: boolean;
 };
 
 export type Library = {
