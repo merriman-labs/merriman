@@ -7,7 +7,7 @@ export class MediaEngine {
     const ext = this._getExtension(filename);
     const id = new ObjectId();
     const newName = path ? filename : `${id.toHexString()}.${ext}`; // only use created name if path wasn't specified
-    const timestamp = new Date().toUTCString();
+    const timestamp = new Date();
     return R.pipe(
       R.assoc('name', filename),
       R.assoc('filename', newName),
@@ -16,6 +16,7 @@ export class MediaEngine {
       R.assoc('type', this._mapMediaType(filename)),
       R.assoc('created', timestamp),
       R.assoc('updated', timestamp),
+      R.assoc('isHidden', false),
       x => (path ? R.assoc('path', path, x) : x)
     )({}) as MediaItem;
   }

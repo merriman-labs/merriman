@@ -15,8 +15,8 @@ export type MediaItem = {
   path?: string;
   type: MediaType;
   views: number;
-  created: string;
-  updated: string;
+  created: Date;
+  updated: Date;
   tags: Array<string>;
   subs?: Array<Subtitle>;
   subtitles?: string;

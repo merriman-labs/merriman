@@ -14,8 +14,8 @@ export class MediaManager {
     this._mediaEngine = new MediaEngine();
   }
 
-  get() {
-    return this._mediaRA.get();
+  get(includeHidden: boolean = false) {
+    return this._mediaRA.get(includeHidden);
   }
 
   getByTag(tag: string) {
@@ -44,7 +44,7 @@ export class MediaManager {
   }
 
   async where(predicate: ((x: MediaItem) => boolean)) {
-    return (await this._mediaRA.get()).filter(predicate);
+    return (await this._mediaRA.get(true)).filter(predicate);
   }
 
   update(item: MediaItem) {

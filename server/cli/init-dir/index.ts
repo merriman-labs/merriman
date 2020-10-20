@@ -26,7 +26,7 @@ async function main(config: string) {
   if (!fs.existsSync(initDir) || !fs.statSync(initDir).isDirectory()) {
     throw `Not a directory: [${initDir}]`;
   }
-  const existingMedia = await mediaManager.get();
+  const existingMedia = await mediaManager.get(true);
   const files = getFiles(initDir).filter(
     filename => !existingMedia.some(media => media.filename === filename)
   );
