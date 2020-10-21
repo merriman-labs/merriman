@@ -36,6 +36,9 @@ class MediaRA {
   getByTag(tag: string): Promise<{ items: Array<MediaItem> }> {
     return fetch(`/api/media/list/byTag/${tag}`).then(x => x.json());
   }
+  getByLibrary(library: string): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/list/byLibrary/${library}`).then(x => x.json());
+  }
   details(id: string): Promise<MediaItem> {
     return fetch(`/api/media/detail/${id}`).then(x => x.json());
   }

@@ -35,6 +35,10 @@ class MediaManager {
     return MediaRA.getByTag(tag);
   }
 
+  getByLibrary(libraryId: string) {
+    return MediaRA.getByLibrary(libraryId);
+  }
+
   requestMeta(id: string): Promise<{ meta: string }> {
     return MediaRA.requestMeta(id);
   }

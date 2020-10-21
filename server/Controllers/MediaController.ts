@@ -27,7 +27,7 @@ export class MediaController implements IController {
     this.router.get('/random', this.getRandom);
     this.router.get('/list/byTag/:tag', this.getByTag);
     this.router.get('/tags', this.listTags);
-    this.router.get('/:library', this.getMediaForLibrary);
+    this.router.get('/list/byLibrary/:library', this.getMediaForLibrary);
     this.router.get('/latest/:count', this.latest);
     this.router.post('/upload', this.upload);
     this.router.post('/request-meta/:id', this.requestMeta);
@@ -171,9 +171,9 @@ export class MediaController implements IController {
       return res.status(500).json({ message: 'Library not found!' });
 
     const media = await mediaManager.where(({ _id }) =>
-      R.contains(_id, library.items)
+      R.contains(_id.toString(), library.items)
     );
-    res.json({ media });
+    res.json(media);
   };
 
   latest = async (req, res) => {
