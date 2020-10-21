@@ -3,7 +3,6 @@ import './App.css';
 import { Route, Switch } from 'react-router';
 import Navigation from './Navigation';
 import VideoLibrariesPage from './VideoLibrariesPage';
-import { Container, Row, Col } from 'reactstrap';
 import Home from './Home';
 import SelectMedia from './admin/SelectMedia';
 import AdminPanel from './admin/AdminPanel';

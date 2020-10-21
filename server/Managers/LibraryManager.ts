@@ -13,13 +13,18 @@ export class LibraryManager {
     return this._libraryRA.get();
   }
 
+  update(library: Library) {
+    return this._libraryRA.update(library);
+  }
+
   findById(id: string) {
     return this._libraryRA.findById(id);
   }
 
-  insert(library: Library) {
+  async insert(library: Library) {
     const newLibrary = this._libraryEngine.initializeLibrary(library);
-    return this._libraryRA.insert(newLibrary);
+    const result = await this._libraryRA.insert(newLibrary);
+    return newLibrary;
   }
 
   addMediaToLibrary(mediaId: string | Array<string>, libraryId: string) {

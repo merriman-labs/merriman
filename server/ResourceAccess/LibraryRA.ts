@@ -16,6 +16,17 @@ export default class LibraryRA {
       .toArray();
   }
 
+  async update(library: Library) {
+    const result = await MongoFactory.create()
+      .collection<Library>('libraries')
+      .findOneAndUpdate(
+        { _id: new ObjectId(library._id) },
+        { $set: R.omit(['_id'], library) }
+      );
+
+    return result.value;
+  }
+
   /**
    * Finds a library matching the predicate
    */

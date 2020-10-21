@@ -15,14 +15,12 @@ type MediaByTagProps = {
   };
 };
 
-const mediaManager = new MediaManager();
-
 export const MediaByTag = (props: MediaByTagProps) => {
   const [media, setMedia] = useState<Array<MediaItem>>([]);
   useEffect(
     () => {
       const effect = async () => {
-        const { items: media } = await mediaManager.getByTag(
+        const { items: media } = await MediaManager.getByTag(
           props.match.params.tag
         );
         setMedia(media);

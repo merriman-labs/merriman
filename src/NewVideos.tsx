@@ -16,7 +16,7 @@ import moment from 'moment';
 import ReactImageFallback from 'react-image-fallback';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Input from 'reactstrap/lib/Input';
-
+import MediaManager from './managers/MediaManager';
 type VideoLibrariesPageProps = {
   match: {
     params: {
@@ -109,8 +109,8 @@ class NewVideosPage extends Component<
     );
   }
   _fetchVideoList = () => {
-    return fetch(`/api/media/latest/${this.state.count}`)
-      .then(response => response.json())
+    return MediaManager
+      .latest(this.state.count)
       .then(response => this.setState({ media: response }));
   };
 }

@@ -3,13 +3,13 @@ import { Col, Row } from 'reactstrap';
 import { MediaItem, Library } from '../server/models';
 import { FaPencilAlt, FaFolderPlus, FaTimes, FaPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import Button from 'reactstrap/lib/Button';
 import Dropdown from 'reactstrap/lib/Dropdown';
 import DropdownItem from 'reactstrap/lib/DropdownItem';
 import DropdownMenu from 'reactstrap/lib/DropdownMenu';
 import DropdownToggle from 'reactstrap/lib/DropdownToggle';
 import * as R from 'ramda';
 import LibraryManager from './managers/LibraryManager';
+import MediaManager from './managers/MediaManager';
 
 type VideoProps = {
   video: string;
@@ -24,32 +24,36 @@ export const Video = (props: VideoProps) => {
   const { video } = props;
   window.scrollTo({ top: 0 });
 
-  const handleAddLibrary = async (library: string) => {
-    await LibraryManager.addMedia(props.video, library);
+  const getLibraries = async () => {
+    const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
+      lib => ({
+        ...lib,
+        isMember: lib.items.includes(props.video)
+      })
+    );
+    setLibraries(libs);
+  };
 
+  const handleAddLibrary = async (library: Library) => {
+    if (library === null || details === null) return;
+    const items = library.items.includes(details._id.toString())
+      ? library.items.filter(item => item !== details._id.toString())
+      : library.items.concat(details._id.toString());
+    await LibraryManager.update({
+      ...library,
+      items
+    }).then(getLibraries);
   };
 
   useEffect(
     () => {
       const effect = async () => {
-        if (!libraries.length) {
-          const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
-            lib => ({
-              ...lib,
-              isMember: lib.items.includes(props.video)
-            })
-          );
-          setLibraries(libs);
-        }
-
-        const details = await (await fetch(
-          `/api/media/detail/${props.video}`
-        )).json();
+        const details = await MediaManager.details(props.video);
         setDetails(details);
       };
       effect();
     },
-    [props.video, libraries.length]
+    [props.video]
   );
 
   return (
@@ -92,7 +96,10 @@ export const Video = (props: VideoProps) => {
               {details.tags && details.tags.length ? (
                 <>
                   {details.tags.map(tag => (
-                    <Link to={`/media/tag/${tag}`} className="badge badge-pill badge-secondary mr-1">
+                    <Link
+                      to={`/media/tag/${tag}`}
+                      className="badge badge-pill badge-secondary mr-1"
+                    >
                       {tag}
                     </Link>
                   ))}
@@ -109,13 +116,10 @@ export const Video = (props: VideoProps) => {
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Add to library</DropdownItem>
-                  {libraries.map(({ name, isMember, _id }) => (
-                    <DropdownItem
-                      onClick={() =>
-                        handleAddLibrary(_id.toString())
-                      }
-                    >
-                      {isMember ? <FaTimes /> : <FaPlus />} {name}
+                  {libraries.map(library => (
+                    <DropdownItem onClick={() => handleAddLibrary(library)}>
+                      {library.isMember ? <FaTimes /> : <FaPlus />}{' '}
+                      {library.name}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>

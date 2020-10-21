@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { MediaItem } from '../server/models';
+import MediaManager from './managers/MediaManager';
 import { Video } from './Video';
 
 type StandaloneMediaProps = {
@@ -23,9 +24,7 @@ export default class StandaloneMedia extends Component<
     this.state = { details: null };
   }
   async componentDidMount() {
-    const details = await (await fetch(
-      `/api/media/detail/${this.props.match.params.media}`
-    )).json();
+    const details = await MediaManager.details(this.props.match.params.media);
     this.setState({ details });
   }
   render() {

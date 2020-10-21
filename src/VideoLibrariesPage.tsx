@@ -4,6 +4,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { MediaItem, Library } from '../server/models';
 import MediaListing from './MediaListing';
 import { sortBy } from 'ramda';
+import LibraryManager from './managers/LibraryManager';
 
 type VideoLibrariesPageProps = {
   match: {
@@ -92,8 +93,7 @@ class VideoLibrariesPage extends Component<
     });
   }
   _getLibraryDetails(id: string) {
-    fetch(`/api/library/details/${id}`)
-      .then(response => response.json())
+    LibraryManager.getById(id)
       .then(libraryDetails => this.setState({ libraryDetails }));
   }
   _fetchVideoList(id: string) {

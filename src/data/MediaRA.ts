@@ -1,6 +1,10 @@
 import { MediaItem } from '../../server/models';
 
 class MediaRA {
+  list(): Promise<Array<MediaItem>> {
+    return fetch('/api/media').then(x => x.json());
+  }
+
   update(item: MediaItem): Promise<{ status: 'OK' }> {
     return fetch('/api/media/', {
       method: 'PUT',
@@ -12,6 +16,19 @@ class MediaRA {
   }
   latest(count: number): Promise<Array<MediaItem>> {
     return fetch(`/api/media/latest/${count}`).then(x => x.json());
+  }
+  random(): Promise<MediaItem> {
+    return fetch(`/api/media/random`).then(x => x.json());
+  }
+
+  search(term: string): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/search/:term`).then(x => x.json());
+  }
+  async upload(data: FormData) {
+    await fetch('/api/media/upload', {
+      method: 'POST',
+      body: data
+    });
   }
   tags(): Promise<{ tags: Array<string> }> {
     return fetch(`/api/media/tags`).then(x => x.json());

@@ -6,6 +6,7 @@ import ListGroup from 'reactstrap/lib/ListGroup';
 import { Library } from '../server/models';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import { TagsList } from './Media/TagsList';
+import LibraryManager from './managers/LibraryManager';
 
 type HomeState = {
   libraries: Array<Library> | null;
@@ -32,13 +33,14 @@ class Home extends Component<any, HomeState> {
               <ListGroup>
                 {this.state.libraries
                   ? [
-                      <ListGroupItem>
+                      <ListGroupItem key="0">
                         <h4>Libraries</h4>
                       </ListGroupItem>,
                       ...this.state.libraries.map(({ name, items, _id }) => (
                         <Link
                           to={`/videos/${_id.toString()}`}
                           className="list-group-item"
+                          key={_id.toString()}
                         >
                           <h5 className="mb-1">{name}</h5>
                           <small className="text-muted">
@@ -66,8 +68,7 @@ class Home extends Component<any, HomeState> {
     );
   }
   private _fetchLibraries() {
-    return fetch('/api/library')
-      .then(response => response.json())
+    return LibraryManager.list()
       .then(libraries => this.setState({ libraries }));
   }
 }

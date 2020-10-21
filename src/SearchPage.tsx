@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Search from './Search';
 import { MediaItem } from '../server/models';
 import SearchResults from './SearchResults';
+import MediaManager from './managers/MediaManager';
 
 type SearchPageProps = {};
 type SearchPageState = {
@@ -27,11 +28,9 @@ class SearchPage extends Component<SearchPageProps, SearchPageState> {
     if (!term) {
       return this.setState({ results: [] });
     }
-    const results = (await fetch(`/api/search/${term}`).then(res =>
-      res.json()
-    )) as { results: Array<MediaItem> };
+    const results = await MediaManager.search(term);
 
-    this.setState(results);
+    this.setState({ results });
   };
 }
 

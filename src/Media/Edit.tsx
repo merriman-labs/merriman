@@ -11,7 +11,6 @@ type MediaEditProps = RouterProps & {
     };
   };
 };
-const mediaManager = new MediaManager();
 
 export const MediaEdit = (props: MediaEditProps) => {
   const [media, setMedia] = useState<MediaItem | null>(null);
@@ -21,7 +20,7 @@ export const MediaEdit = (props: MediaEditProps) => {
   useEffect(
     () => {
       const effect = async () => {
-        const media = await mediaManager.details(props.match.params.id);
+        const media = await MediaManager.details(props.match.params.id);
         setMedia(media);
       };
       effect();
@@ -31,7 +30,7 @@ export const MediaEdit = (props: MediaEditProps) => {
 
   const handleDelete = async (hard: boolean) => {
     if (media === null) return;
-    const { result } = await mediaManager.deleteById(
+    const { result } = await MediaManager.deleteById(
       media._id.toString(),
       hard
     );
@@ -40,21 +39,21 @@ export const MediaEdit = (props: MediaEditProps) => {
 
   const handleGetMeta = async (id: string) => {
     if (media === null) return;
-    const { meta } = await mediaManager.requestMeta(id);
+    const { meta } = await MediaManager.requestMeta(id);
 
     setMedia({ ...media, meta });
   };
 
   const handleGetSrt = async (id: string, track: string) => {
     if (media === null || track.length < 3) return;
-    const { srt } = await mediaManager.generateSrt(id, track);
+    const { srt } = await MediaManager.generateSrt(id, track);
 
     setMedia({ ...media, srt });
   };
 
   const handleGenerateWebvtt = async (id: string) => {
     if (media === null) return;
-    const { webvtt } = await mediaManager.generateWebVtt(id);
+    const { webvtt } = await MediaManager.generateWebVtt(id);
 
     setMedia({ ...media, webvtt });
   };
@@ -83,7 +82,7 @@ export const MediaEdit = (props: MediaEditProps) => {
 
   const handleSave = async () => {
     if (media === null) return;
-    await mediaManager.update(media);
+    await MediaManager.update(media);
   };
 
   const handleCheckChange = (val: boolean) => {
