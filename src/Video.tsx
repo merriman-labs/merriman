@@ -48,6 +48,7 @@ export const Video = (props: VideoProps) => {
   useEffect(
     () => {
       const effect = async () => {
+        await getLibraries();
         const details = await MediaManager.details(props.video);
         setDetails(details);
       };
