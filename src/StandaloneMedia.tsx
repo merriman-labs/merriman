@@ -35,11 +35,6 @@ export default class StandaloneMedia extends Component<
         <Row>
           <Col>
             {media ? <Video video={media} /> : <div />}
-            {this.state.details ? (
-              <strong>{this.state.details.name}</strong>
-            ) : (
-              <div />
-            )}
           </Col>
         </Row>
       </Container>
