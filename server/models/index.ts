@@ -15,14 +15,15 @@ export type MediaItem = {
   path?: string;
   type: MediaType;
   views: number;
-  created: string;
-  updated: string;
+  created: Date;
+  updated: Date;
   tags: Array<string>;
   subs?: Array<Subtitle>;
   subtitles?: string;
   meta?: string;
   srt?: string;
   webvtt?: string;
+  isHidden: boolean;
 };
 
 export type Library = {

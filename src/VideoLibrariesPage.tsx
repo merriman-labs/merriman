@@ -4,6 +4,8 @@ import { Container, Row, Col } from 'reactstrap';
 import { MediaItem, Library } from '../server/models';
 import MediaListing from './MediaListing';
 import { sortBy } from 'ramda';
+import LibraryManager from './managers/LibraryManager';
+import MediaManager from './managers/MediaManager';
 
 type VideoLibrariesPageProps = {
   match: {
@@ -85,22 +87,16 @@ class VideoLibrariesPage extends Component<
       </Container>
     );
   }
-  _dropdownSelected(library: string) {
-    this.setState({ library, dropdown: false }, () => {
-      this._fetchVideoList(library);
-      this._getLibraryDetails(library);
-    });
-  }
   _getLibraryDetails(id: string) {
-    fetch(`/api/library/details/${id}`)
-      .then(response => response.json())
-      .then(libraryDetails => this.setState({ libraryDetails }));
+    LibraryManager.getById(id).then(libraryDetails =>
+      this.setState({ libraryDetails })
+    );
   }
   _fetchVideoList(id: string) {
     if (id) {
-      return fetch(`/api/media/${id}`)
-        .then(response => response.json())
-        .then(response => this.setState(response));
+      return MediaManager.getByLibrary(id).then(media =>
+        this.setState({ media })
+      );
     }
   }
   _fetchLibraries() {

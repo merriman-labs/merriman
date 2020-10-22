@@ -13,6 +13,9 @@ import {
   Label
 } from 'reactstrap';
 import { Library } from '../../server/models';
+import Container from 'reactstrap/lib/Container';
+import LibraryManager from '../managers/LibraryManager';
+import MediaManager from '../managers/MediaManager';
 
 type FileInfo = { uploaded: boolean; file: File };
 type AdminPanelProps = {};
@@ -36,8 +39,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
     this._getLibraryData();
   }
   _getLibraryData = () => {
-    fetch('/api/library')
-      .then(response => response.json())
+    LibraryManager.list()
       .then(libraries => this.setState({ libraries }))
       .catch(console.log);
   };
@@ -57,10 +59,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
     const data = new FormData();
     data.append('file', file);
 
-    return fetch('/api/media/upload', {
-      method: 'POST',
-      body: data
-    }).then(_ =>
+    return MediaManager.upload(data).then(_ =>
       this.setState(({ files }) => ({
         files: files.map(f =>
           f.file.name === file.name ? R.assoc('uploaded', true, f) : f
@@ -79,18 +78,12 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
       name: this.state.newLibraryName
     };
 
-    fetch('/api/admin/libraries/add', {
-      method: 'POST',
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify(data)
-    })
+    LibraryManager.create(data)
       .then(this._getLibraryData)
       .then(() => this.setState({ newLibraryName: '' }));
   };
   _handleDropLibrary = (_id: string) => () => {
-    fetch(`/api/admin/libraries/${_id}`, {
-      method: 'DELETE'
-    }).then(this._getLibraryData);
+    LibraryManager.delete(_id).then(this._getLibraryData);
   };
   _handleStopServer = () => {
     console.log('Stopping server');
@@ -98,7 +91,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
   };
   render() {
     return (
-      <>
+      <Container className="mt-2">
         <Row>
           <Col md="6">
             <h2>Libraries</h2>
@@ -191,7 +184,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
             </Button>
           </Col>
         </Row>
-      </>
+      </Container>
     );
   }
 }

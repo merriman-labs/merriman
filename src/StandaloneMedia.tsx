@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { MediaItem } from '../server/models';
+import MediaManager from './managers/MediaManager';
+import { Video } from './Video';
 
 type StandaloneMediaProps = {
   match: {
@@ -22,9 +24,7 @@ export default class StandaloneMedia extends Component<
     this.state = { details: null };
   }
   async componentDidMount() {
-    const details = await (await fetch(
-      `/api/media/detail/${this.props.match.params.media}`
-    )).json();
+    const details = await MediaManager.details(this.props.match.params.media);
     this.setState({ details });
   }
   render() {
@@ -34,16 +34,7 @@ export default class StandaloneMedia extends Component<
       <Container>
         <Row>
           <Col>
-            {media ? (
-              <video
-                className="video-player"
-                id="video-player"
-                controls
-                src={`/api/media/play/${media}`}
-              />
-            ) : (
-              <div />
-            )}
+            {media ? <Video video={media} /> : <div />}
             {this.state.details ? (
               <strong>{this.state.details.name}</strong>
             ) : (

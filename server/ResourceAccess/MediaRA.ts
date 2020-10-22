@@ -1,30 +1,59 @@
-import * as fs from 'fs';
 import * as R from 'ramda';
-import * as uuid from 'uuid/v4';
-import { MediaItem, MediaType } from '../models/index';
-import { MongoFactory } from '../Factories/MongoFactory';
-import ServerConfigRepo from '../data/ServerConfigRepo';
-import { ObjectId, MongoClient } from 'mongodb';
-import Media from 'reactstrap/lib/Media';
+import { MediaItem } from '../models/index';
+import { Db, ObjectId } from 'mongodb';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
+@injectable()
 export default class MediaRA {
+  constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
   /**
    *
    */
-  get(): Promise<Array<MediaItem>> {
-    return MongoFactory.create()
+  get(includeHidden: boolean = false): Promise<Array<MediaItem>> {
+    const query = includeHidden ? {} : { isHidden: false };
+    return this._db
       .collection<MediaItem>('media')
-      .find()
+      .find(query)
       .toArray();
+  }
+
+  getByTag(tag: string): Promise<Array<MediaItem>> {
+    return this._db
+      .collection<MediaItem>('media')
+      .find({ tags: tag, isHidden: false })
+      .toArray();
+  }
+  /**
+   * Get all unique tags from the server.
+   */
+  async getTags(): Promise<Array<string>> {
+    const [{ items }] = await this._db
+      .collection<MediaItem>('media')
+      .aggregate<{ items: Array<string> }>([
+        {
+          $project: {
+            tagList: {
+              $reduce: {
+                input: '$tags',
+                initialValue: [],
+                in: { $concatArrays: ['$$value', ['$$this']] }
+              }
+            }
+          }
+        },
+        { $unwind: '$tagList' },
+        { $group: { _id: null, items: { $addToSet: '$tagList' } } }
+      ])
+      .toArray();
+    return R.sort((a, b) => a.codePointAt(0) - b.codePointAt(0), items);
   }
 
   /**
    *
    */
   async add(item: MediaItem): Promise<MediaItem> {
-    await MongoFactory.create()
-      .collection<MediaItem>('media')
-      .insert(item);
+    await this._db.collection<MediaItem>('media').insertOne(item);
     return item;
   }
 
@@ -32,7 +61,7 @@ export default class MediaRA {
    *
    */
   findById(id: string): Promise<MediaItem> {
-    return MongoFactory.create()
+    return this._db
       .collection<MediaItem>('media')
       .findOne({ _id: new ObjectId(id) });
   }
@@ -40,9 +69,19 @@ export default class MediaRA {
   /**
    *
    */
+  async deleteById(id: string): Promise<boolean> {
+    const result = await this._db
+      .collection<MediaItem>('media')
+      .deleteOne({ _id: new ObjectId(id) });
+    return result.deletedCount === 1;
+  }
+
+  /**
+   *
+   */
   async update(updatedVideo: MediaItem): Promise<void> {
     // @ts-ignore
-    await MongoFactory.create()
+    await this._db
       .collection<MediaItem>('media')
       .updateOne(
         { _id: new ObjectId(updatedVideo._id) },
@@ -50,7 +89,7 @@ export default class MediaRA {
       );
   }
   async incrementPlayCount(id: string) {
-    await MongoFactory.create()
+    await this._db
       .collection<MediaItem>('media')
       .findOneAndUpdate({ _id: new ObjectId(id) }, { $inc: { views: 1 } });
   }

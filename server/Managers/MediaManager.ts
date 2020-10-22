@@ -3,17 +3,26 @@ import { MediaEngine } from '../Engines/MediaEngine';
 import { MediaItem } from '../models';
 import { requestMeta, generateSubs } from '../ffmpeg';
 import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
+import { MediaUtils } from '../Utilities/MediaUtils';
+import { AppContext } from '../appContext';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
+@injectable()
 export class MediaManager {
-  private _mediaRA: MediaRA;
-  private _mediaEngine: MediaEngine;
-  constructor() {
-    this._mediaRA = new MediaRA();
-    this._mediaEngine = new MediaEngine();
+  constructor(
+    @inject(DependencyType.ResourceAccess.Media)
+    private _mediaRA: MediaRA,
+    @inject(DependencyType.Engines.Media)
+    private _mediaEngine: MediaEngine
+  ) {}
+
+  get(includeHidden: boolean = false) {
+    return this._mediaRA.get(includeHidden);
   }
 
-  get() {
-    return this._mediaRA.get();
+  getByTag(tag: string) {
+    return this._mediaRA.getByTag(tag);
   }
 
   add(filename: string, path?: string) {
@@ -25,8 +34,19 @@ export class MediaManager {
     return this._mediaRA.findById(id);
   }
 
+  async deleteById(id: string, hardDelete: boolean = false) {
+    const config = AppContext.get(AppContext.WellKnown.Config);
+    const media = await this._mediaRA.findById(id);
+    if (!media) return false;
+    if (hardDelete) {
+      const path = media.path ? media.path : config.mediaLocation;
+      MediaUtils.deleteMedia(path, media.filename);
+    }
+    return this._mediaRA.deleteById(id);
+  }
+
   async where(predicate: ((x: MediaItem) => boolean)) {
-    return (await this._mediaRA.get()).filter(predicate);
+    return (await this._mediaRA.get(true)).filter(predicate);
   }
 
   update(item: MediaItem) {
@@ -35,6 +55,10 @@ export class MediaManager {
 
   incrementViewCount(id: string) {
     return this._mediaRA.incrementPlayCount(id);
+  }
+
+  getTags(): Promise<Array<string>> {
+    return this._mediaRA.getTags();
   }
 
   async requestMeta(id: string) {

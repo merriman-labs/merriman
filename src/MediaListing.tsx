@@ -19,7 +19,7 @@ export default class MediaListing extends Component<
 > {
   constructor(props: MediaListingProps) {
     super(props);
-    this.state = { selectedView: 'LIST' };
+    this.state = { selectedView: 'GRID' };
   }
 
   render() {

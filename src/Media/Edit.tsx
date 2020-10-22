@@ -2,24 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { MediaItem } from '../../server/models';
 import MediaManager from '../managers/MediaManager';
 import { FaTimesCircle } from 'react-icons/fa';
+import { RouterProps } from 'react-router';
 
-type MediaEditProps = {
+type MediaEditProps = RouterProps & {
   match: {
     params: {
       id: string;
     };
   };
 };
-const mediaManager = new MediaManager();
 
 export const MediaEdit = (props: MediaEditProps) => {
   const [media, setMedia] = useState<MediaItem | null>(null);
   const [currentTag, setCurrentTag] = useState('');
   const [srtTrack, setSrtTrack] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   useEffect(
     () => {
       const effect = async () => {
-        const media = await mediaManager.details(props.match.params.id);
+        const media = await MediaManager.details(props.match.params.id);
         setMedia(media);
       };
       effect();
@@ -27,23 +28,32 @@ export const MediaEdit = (props: MediaEditProps) => {
     [props.match.params.id]
   );
 
+  const handleDelete = async (hard: boolean) => {
+    if (media === null) return;
+    const { result } = await MediaManager.deleteById(
+      media._id.toString(),
+      hard
+    );
+    if (result) props.history.goBack();
+  };
+
   const handleGetMeta = async (id: string) => {
     if (media === null) return;
-    const { meta } = await mediaManager.requestMeta(id);
+    const { meta } = await MediaManager.requestMeta(id);
 
     setMedia({ ...media, meta });
   };
 
   const handleGetSrt = async (id: string, track: string) => {
     if (media === null || track.length < 3) return;
-    const { srt } = await mediaManager.generateSrt(id, track);
+    const { srt } = await MediaManager.generateSrt(id, track);
 
     setMedia({ ...media, srt });
   };
 
   const handleGenerateWebvtt = async (id: string) => {
     if (media === null) return;
-    const { webvtt } = await mediaManager.generateWebVtt(id);
+    const { webvtt } = await MediaManager.generateWebVtt(id);
 
     setMedia({ ...media, webvtt });
   };
@@ -72,7 +82,11 @@ export const MediaEdit = (props: MediaEditProps) => {
 
   const handleSave = async () => {
     if (media === null) return;
-    await mediaManager.update(media);
+    await MediaManager.update(media);
+  };
+
+  const handleCheckChange = (val: boolean) => {
+    setMedia(item => (item === null ? item : { ...item, isHidden: val }));
   };
 
   return media === null ? null : (
@@ -171,7 +185,21 @@ export const MediaEdit = (props: MediaEditProps) => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-4" />
+          <div className="col-md-4">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                name="name"
+                id="name"
+                type="checkbox"
+                checked={!media.isHidden}
+                onChange={evt => handleCheckChange(!evt.target.checked)}
+              />
+              <label htmlFor="name" className="form-check-label">
+                Show
+              </label>
+            </div>
+          </div>
           <div className="col-md-8">
             <div className="form-group">
               <label htmlFor="name">Subtitles (WebVTT)</label>
@@ -181,6 +209,7 @@ export const MediaEdit = (props: MediaEditProps) => {
                 id="name"
                 rows={10}
                 value={media.webvtt || 'No WebVTT subtitles available'}
+                readOnly
               />
             </div>
             <div className="input-group mb-3">
@@ -198,9 +227,43 @@ export const MediaEdit = (props: MediaEditProps) => {
         </div>
         <div className="row">
           <div className="col-md">
-            <button className="btn btn-outline-success" onClick={handleSave}>
-              Save Changes
-            </button>
+            {isDeleting ? (
+              <>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => handleDelete(true)}
+                >
+                  Hard Delete
+                </button>
+                <button
+                  className="btn btn-outline-warning"
+                  onClick={() => handleDelete(false)}
+                >
+                  Soft Delete
+                </button>
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => setIsDeleting(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="btn btn-outline-success mr-1"
+                  onClick={handleSave}
+                >
+                  Save Changes
+                </button>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => setIsDeleting(true)}
+                >
+                  Delete
+                </button>
+              </>
+            )}
           </div>
         </div>
 

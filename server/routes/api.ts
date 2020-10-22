@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import LibraryRouter from './library';
-import AdminRouter from './admin';
-import MediaRouter from './media';
-import SearchRouter from './search';
+import { Container } from 'inversify';
+import { Controllers } from '../Controllers';
 
-const apiRouter = Router();
+const getApiRouter = (container: Container) => {
+  const apiRouter = Router();
 
-apiRouter.use('/admin', AdminRouter);
-apiRouter.use('/library', LibraryRouter);
-apiRouter.use('/search', SearchRouter);
-apiRouter.use('/media', MediaRouter);
+  Controllers(container).forEach(({ path, router }) =>
+    apiRouter.use(path, router)
+  );
+  return apiRouter;
+};
 
-export default apiRouter;
+export default getApiRouter;

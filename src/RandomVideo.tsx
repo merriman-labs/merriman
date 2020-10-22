@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
 import { MediaItem } from '../server/models';
+import MediaManager from './managers/MediaManager';
 import { Video } from './Video';
 
 type VideoState = {
@@ -57,7 +58,7 @@ export default class RandomVideo extends Component<{}, VideoState> {
   fetchNext = async () => {
     const position = this._currentQueuePosition;
     if (position === this.state.history.length - 1) {
-      const details = await (await fetch(`/api/media/random`)).json();
+      const details = await MediaManager.random();
       this.setState(s => ({
         current: details,
         history: s.history.concat(details)
@@ -70,11 +71,8 @@ export default class RandomVideo extends Component<{}, VideoState> {
   fetchPrevious = async () => {
     if (this.state.current && this.state.history.length > 1) {
       const current = this._currentQueuePosition;
-      const prev = this.state.history[current - 1];
-      const details = await (await fetch(
-        `/api/media/detail/${prev._id}`
-      )).json();
-      this.setState({ current: details });
+      const previous = this.state.history[current - 1];
+      this.setState({ current: previous });
     }
   };
 
