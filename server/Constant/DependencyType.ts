@@ -1,11 +1,13 @@
 export const DependencyType = {
   Managers: {
     Media: Symbol('MediaManager'),
-    Library: Symbol('LibraryManager')
+    Library: Symbol('LibraryManager'),
+    ServerLog: Symbol('ServerLogManager')
   },
   ResourceAccess: {
     Media: Symbol('MediaResourceAccess'),
-    Library: Symbol('LibraryResourceAccess')
+    Library: Symbol('LibraryResourceAccess'),
+    ServerLog: Symbol('ServerLogResourceAccess')
   },
   Engines: {
     Media: Symbol('MediaEngine'),

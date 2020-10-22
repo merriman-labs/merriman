@@ -1,11 +1,13 @@
 import ServerLogRA from '../ResourceAccess/ServerLogRA';
 import { ServerLogSeverity } from '../models';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
+@injectable()
 export class ServerLogManager {
-  private _logRA: ServerLogRA;
-  constructor() {
-    this._logRA = new ServerLogRA();
-  }
+  constructor(
+    @inject(DependencyType.ResourceAccess.ServerLog) private _logRA: ServerLogRA
+  ) {}
 
   get() {
     return this._logRA.get();

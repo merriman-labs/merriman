@@ -1,11 +1,12 @@
 import { program, Command } from 'commander';
+import app from '../app';
 program.name('merriman');
 
 program
   .command('run <config>')
   .description('start server using config')
   .action((config: string) => {
-    console.log('run', config);
+    app(config);
   });
 
 program

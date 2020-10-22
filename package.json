@@ -50,7 +50,7 @@
     "build:server": "tsc -P .\\server\\tsconfig.json",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "cli": "node .\\dist_server\\cli\\index.js",
+    "cli": "node .\\dist_server\\cli\\cli.js",
     "precommit": "lint-staged",
     "prettier": "prettier --write \"**/*.{ts,tsx}\""
   },

@@ -5,7 +5,7 @@ import * as busboy from 'connect-busboy';
 import * as morgan from 'morgan';
 import * as cors from 'cors';
 import getApiRouter from './routes/api';
-import { printHeader } from './cli/util';
+import { printHeader } from './cli/util/print-header';
 import './Factories/MongoFactory';
 import { AppContext } from './appContext';
 import { ConfigUtil } from './Utilities/ConfigUtil';
