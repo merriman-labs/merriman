@@ -1,2 +1,3 @@
 import app from './app';
-app('Movies');
+const [, , config] = process.argv;
+app(config);

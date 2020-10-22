@@ -2,6 +2,7 @@ import ThumbProvider from '../../thumb-provider';
 import ServerConfigRepo from '../../data/ServerConfigRepo';
 import * as Bluebird from 'bluebird';
 import { MediaManager } from '../../Managers/MediaManager';
+import { Configuration } from '../../Utilities/ConfigUtil';
 
 /**
  * Add a list of files to the database
@@ -12,9 +13,9 @@ import { MediaManager } from '../../Managers/MediaManager';
 export default async (
   files: Array<string>,
   source: string,
-  config: ServerConfigRepo
+  config: Configuration
 ) => {
-  const { thumbLocation } = await config.fetch();
+  const { thumbLocation } = config;
   const mediaManager = new MediaManager();
 
   await ThumbProvider.ensureThumbs(files, source, thumbLocation);

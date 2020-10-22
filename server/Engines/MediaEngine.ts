@@ -1,7 +1,9 @@
 import * as R from 'ramda';
 import { MediaType, MediaItem } from '../models';
 import { ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 
+@injectable()
 export class MediaEngine {
   initializeMedia(filename: string, path?: string) {
     const ext = this._getExtension(filename);

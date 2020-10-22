@@ -10,15 +10,20 @@ import { MediaManager } from '../Managers/MediaManager';
 import { LibraryManager } from '../Managers/LibraryManager';
 import { AppContext } from '../appContext';
 import { IController } from './IController';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
 const Chance = chance.Chance();
-const mediaManager = new MediaManager();
-const libraryManager = new LibraryManager();
 
+@injectable()
 export class MediaController implements IController {
   public router = Router();
   public path = '/media';
-  constructor() {
+  constructor(
+    @inject(DependencyType.Managers.Library)
+    private _libraryManager: LibraryManager,
+    @inject(DependencyType.Managers.Media) private _mediaManager: MediaManager
+  ) {
     this.router.get('/search/:term', this.searchByTerm);
     this.router.get('/play/:video', this.streamMedia);
     this.router.get('/captions/:id', this.getCaptions);
@@ -39,31 +44,34 @@ export class MediaController implements IController {
 
   searchByTerm = async (req, res) => {
     const term = req.params.term;
-    const results = await mediaManager.where(item =>
+    if (!term || term === '') return res.json([]);
+    const results = await this._mediaManager.where(item =>
       JSON.stringify(item)
         .toLowerCase()
         .includes(term.toLowerCase())
     );
 
-    res.json({ results });
+    res.json(results);
   };
 
-  async update(req, res) {
-    await mediaManager.update(req.body);
+  update = async (req, res) => {
+    await this._mediaManager.update(req.body);
     return res.json({ status: 'OK' });
-  }
+  };
 
-  async delete(req, res) {
+  delete = async (req, res) => {
     const hardDelete = req.query.hard === 'true';
-    const result = await mediaManager.deleteById(req.params.id, hardDelete);
+    const result = await this._mediaManager.deleteById(
+      req.params.id,
+      hardDelete
+    );
     res.json({ result });
-  }
+  };
 
   streamMedia = async (req, res) => {
-    const serverConfigRepo = AppContext.get(AppContext.WellKnown.Config);
-    const { mediaLocation } = await serverConfigRepo.fetch();
+    const { mediaLocation } = AppContext.get(AppContext.WellKnown.Config);
     const videoId = req.params.video;
-    const video = await mediaManager.findById(videoId);
+    const video = await this._mediaManager.findById(videoId);
     const vDir = video.path ? video.path : mediaLocation;
     const vPath = path.join(vDir, video.filename);
 
@@ -74,7 +82,7 @@ export class MediaController implements IController {
     if (range) {
       const parts = range.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
-      if (start === 0) await mediaManager.incrementViewCount(videoId);
+      if (start === 0) await this._mediaManager.incrementViewCount(videoId);
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
       const chunksize = end - start + 1;
@@ -99,25 +107,23 @@ export class MediaController implements IController {
   };
 
   getCaptions = async (req, res) => {
-    const item = await mediaManager.findById(req.params.id);
+    const item = await this._mediaManager.findById(req.params.id);
     if (!item.webvtt) res.status(404).send('not found');
     res.status(200).send(item.webvtt);
   };
 
   getById = async (req, res) => {
     const id: string = req.params._id;
-    const media = await mediaManager.findById(id);
+    const media = await this._mediaManager.findById(id);
     return res.json(media);
   };
 
   upload = (req, res) => {
-    const serverConfigRepo = AppContext.get(AppContext.WellKnown.Config);
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     const busboy = new Busboy({ headers: req.headers });
     busboy.on('file', async function(fieldname, file, filename) {
-      const serverConfig = await serverConfigRepo.fetch();
-
       // Enter media into database
-      const mediaItem = await mediaManager.add(filename);
+      const mediaItem = await this._mediaManager.add(filename);
       file.pipe(
         fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
       );
@@ -144,33 +150,33 @@ export class MediaController implements IController {
   };
 
   list = async (req, res) => {
-    const media = await mediaManager.get();
+    const media = await this._mediaManager.get();
     res.json(media);
   };
   getRandom = async (req, res) => {
-    const media = await mediaManager.get();
+    const media = await this._mediaManager.get();
     res.json(Chance.pickone(media));
   };
 
   getByTag = async (req, res) => {
     const tag = req.params.tag;
-    const items = await mediaManager.getByTag(tag);
+    const items = await this._mediaManager.getByTag(tag);
     res.json({ items });
   };
 
   listTags = async (req, res) => {
-    const tags = await mediaManager.getTags();
+    const tags = await this._mediaManager.getTags();
     res.json({ tags });
   };
 
   getMediaForLibrary = async (req, res) => {
     const id = req.params.library;
-    const library = await libraryManager.findById(id);
+    const library = await this._libraryManager.findById(id);
 
     if (!library)
       return res.status(500).json({ message: 'Library not found!' });
 
-    const media = await mediaManager.where(({ _id }) =>
+    const media = await this._mediaManager.where(({ _id }) =>
       R.contains(_id.toString(), library.items)
     );
     res.json(media);
@@ -178,7 +184,7 @@ export class MediaController implements IController {
 
   latest = async (req, res) => {
     const count = +req.params.count;
-    const allItems = await mediaManager.get();
+    const allItems = await this._mediaManager.get();
     const newest = allItems
       .filter(x => x.created !== undefined)
       .sort((a, b) =>
@@ -192,12 +198,12 @@ export class MediaController implements IController {
   };
 
   requestMeta = async (req, res) => {
-    const meta = await mediaManager.requestMeta(req.params.id);
+    const meta = await this._mediaManager.requestMeta(req.params.id);
     return res.json({ meta });
   };
 
   requestSrt = async (req, res) => {
-    const srt = await mediaManager.generateSubs(
+    const srt = await this._mediaManager.generateSubs(
       req.params.id,
       req.params.track
     );
@@ -205,7 +211,7 @@ export class MediaController implements IController {
   };
 
   requestWebVTT = async (req, res) => {
-    const webvtt = await mediaManager.generateWebVtt(req.params.id);
+    const webvtt = await this._mediaManager.generateWebVtt(req.params.id);
     return res.json({ webvtt });
   };
 }

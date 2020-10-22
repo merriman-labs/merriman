@@ -2,7 +2,9 @@ import * as R from 'ramda';
 import { MediaItem } from '../models/index';
 import { MongoFactory } from '../Factories/MongoFactory';
 import { ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 
+@injectable()
 export default class MediaRA {
   /**
    *

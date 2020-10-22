@@ -5,7 +5,9 @@ import { requestMeta, generateSubs } from '../ffmpeg';
 import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
 import { MediaUtils } from '../Utilities/MediaUtils';
 import { AppContext } from '../appContext';
+import { injectable } from 'inversify';
 
+@injectable()
 export class MediaManager {
   private _mediaRA: MediaRA;
   private _mediaEngine: MediaEngine;
@@ -32,8 +34,7 @@ export class MediaManager {
   }
 
   async deleteById(id: string, hardDelete: boolean = false) {
-    const configMgr = AppContext.get(AppContext.WellKnown.Config);
-    const config = await configMgr.fetch();
+    const config = AppContext.get(AppContext.WellKnown.Config);
     const media = await this._mediaRA.findById(id);
     if (!media) return false;
     if (hardDelete) {

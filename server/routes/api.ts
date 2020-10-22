@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { Controllers } from '../Controllers';
 
-const apiRouter = Router();
+const getApiRouter = () => {
+  const apiRouter = Router();
 
-Controllers.forEach(({ path, router }) => apiRouter.use(path, router));
+  Controllers().forEach(({ path, router }) => apiRouter.use(path, router));
+  return apiRouter;
+};
 
-export default apiRouter;
+export default getApiRouter;

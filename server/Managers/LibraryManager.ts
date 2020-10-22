@@ -1,14 +1,17 @@
 import LibraryRA from '../ResourceAccess/LibraryRA';
 import { LibraryEngine } from '../Engines/LibraryEngine';
 import { Library } from '../models';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
+@injectable()
 export class LibraryManager {
-  private _libraryRA: LibraryRA;
-  private _libraryEngine: LibraryEngine;
-  constructor() {
-    this._libraryRA = new LibraryRA();
-    this._libraryEngine = new LibraryEngine();
-  }
+  constructor(
+    @inject(DependencyType.ResourceAccess.Library)
+    private _libraryRA: LibraryRA,
+    @inject(DependencyType.Engines.Library)
+    private _libraryEngine: LibraryEngine
+  ) {}
   get() {
     return this._libraryRA.get();
   }

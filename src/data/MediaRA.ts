@@ -22,7 +22,7 @@ class MediaRA {
   }
 
   search(term: string): Promise<Array<MediaItem>> {
-    return fetch(`/api/media/search/:term`).then(x => x.json());
+    return fetch(`/api/media/search/${term}`).then(x => x.json());
   }
   async upload(data: FormData) {
     await fetch('/api/media/upload', {

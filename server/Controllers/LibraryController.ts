@@ -3,14 +3,18 @@ import * as R from 'ramda';
 import { MediaManager } from '../Managers/MediaManager';
 import { LibraryManager } from '../Managers/LibraryManager';
 import { IController } from './IController';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
-const libraryManager = new LibraryManager();
-const mediaManager = new MediaManager();
-
+@injectable()
 export class LibraryController implements IController {
   router: Router = Router();
   path: string = '/library';
-  constructor() {
+  constructor(
+    @inject(DependencyType.Managers.Library)
+    private _libraryManager: LibraryManager,
+    @inject(DependencyType.Managers.Media) private _mediaManager: MediaManager
+  ) {
     this.router.get('/', this.list);
     this.router.post('/', this.create);
     this.router.put('/', this.update);
@@ -19,30 +23,30 @@ export class LibraryController implements IController {
     this.router.patch('/', this.modifyMedia);
     this.router.delete('/:id', this.deleteLibrary);
   }
-  async create(req, res) {
+  create = async (req, res) => {
     const library = req.body;
-    const result = await libraryManager.insert(library);
+    const result = await this._libraryManager.insert(library);
     res.json(result);
-  }
-  async update(req, res) {
+  };
+  update = async (req, res) => {
     const library = req.body;
-    const result = await libraryManager.update(library);
+    const result = await this._libraryManager.update(library);
     return res.json(result);
-  }
+  };
 
-  deleteLibrary(req, res) {
+  deleteLibrary = (req, res) => {
     const id = req.params.id;
-    if (id) libraryManager.delete(id).then(_ => res.sendStatus(200));
-  }
+    if (id) this._libraryManager.delete(id).then(_ => res.sendStatus(200));
+  };
 
   list: RequestHandler = async (req, res) => {
-    const response = await libraryManager.get();
+    const response = await this._libraryManager.get();
     res.json(response);
   };
 
   getById: RequestHandler = async (req, res) => {
     const { id } = req.params;
-    const library = await libraryManager.findById(id);
+    const library = await this._libraryManager.findById(id);
 
     if (!library)
       return res.status(500).json({ message: 'Library not found!' });
@@ -51,9 +55,9 @@ export class LibraryController implements IController {
 
   getMediaForLibrary: RequestHandler = async (req, res) => {
     const id = req.params.library;
-    const library = await libraryManager.findById(id);
+    const library = await this._libraryManager.findById(id);
 
-    const media = await mediaManager.where(({ _id }) =>
+    const media = await this._mediaManager.where(({ _id }) =>
       R.contains(_id, library.items)
     );
 
@@ -66,12 +70,12 @@ export class LibraryController implements IController {
     const { library, media, action } = req.body;
     if (library && media && action) {
       if (action === 'ADD') {
-        libraryManager
+        this._libraryManager
           .addMediaToLibrary(media, library)
           .then(() => res.sendStatus(200));
       }
       if (action === 'DROP') {
-        libraryManager
+        this._libraryManager
           .removeMediaFromLibrary(media, library)
           .then(() => res.sendStatus(200));
       }

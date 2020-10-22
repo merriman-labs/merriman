@@ -7,6 +7,7 @@ import initFiles from './init-files';
 import { MongoFactory } from '../../Factories/MongoFactory';
 import ServerConfigRepo from '../../data/ServerConfigRepo';
 import { MediaManager } from '../../Managers/MediaManager';
+import { ConfigUtil } from '../../Utilities/ConfigUtil';
 
 const getFiles = (dir: string): Array<string> => {
   return fs
@@ -14,9 +15,9 @@ const getFiles = (dir: string): Array<string> => {
     .filter(file => !fs.statSync(path.join(dir, file)).isDirectory());
 };
 
-async function main(config: string) {
-  const serverConfigRepo = new ServerConfigRepo(config);
-  await MongoFactory.init(serverConfigRepo);
+async function main(configFile: string) {
+  const config = ConfigUtil.readConfig(configFile);
+  await MongoFactory.init(config);
   const mediaManager = new MediaManager();
 
   printHeader();
@@ -39,9 +40,9 @@ async function main(config: string) {
     'Init all files [all], or select which ones to init? [select]\n'
   );
   if (initMethod.includes('all')) {
-    await initFiles(files, initDir, serverConfigRepo);
+    await initFiles(files, initDir, config);
   } else if (initMethod.includes('select')) {
-    await pickFiles(files, initDir, serverConfigRepo);
+    await pickFiles(files, initDir, config);
   } else if (!initMethod.includes('all') && !initMethod.includes('select')) {
     eject();
   }

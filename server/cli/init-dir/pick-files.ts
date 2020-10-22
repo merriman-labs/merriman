@@ -2,6 +2,7 @@ import { askProceed } from '../util/ask-proceed';
 import { ask } from '../util/ask';
 import initFiles from './init-files';
 import ServerConfigRepo from '../../data/ServerConfigRepo';
+import { Configuration } from '../../Utilities/ConfigUtil';
 
 /**
  * Generates a table of file names with indices, highlighting files in the queue.
@@ -43,7 +44,7 @@ const createFileMap = (files: Array<string>): Map<number, string> => {
 export default async (
   files: Array<string>,
   source: string,
-  config: ServerConfigRepo
+  config: Configuration
 ) => {
   const fileMap = createFileMap(files);
   const queue = new Set<number>();
