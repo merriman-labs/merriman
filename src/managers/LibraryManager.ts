@@ -1,5 +1,5 @@
 import { Library } from '../../server/models';
-import LibraryRA from '../data/LibraryRA';
+import LibraryRA from '../ResourceAccess/LibraryRA';
 
 class LibraryManager {
   getById(id: string): Promise<Library> {

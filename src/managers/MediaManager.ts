@@ -1,5 +1,5 @@
 import { MediaItem } from '../../server/models';
-import MediaRA from '../data/MediaRA';
+import MediaRA from '../ResourceAccess/MediaRA';
 
 class MediaManager {
   list(): Promise<Array<MediaItem>> {

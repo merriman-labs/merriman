@@ -170,15 +170,8 @@ export class MediaController implements IController {
   };
 
   getMediaForLibrary: RequestHandler = async (req, res) => {
-    const id = req.params.library;
-    const library = await this._libraryManager.findById(id);
-
-    if (!library)
-      return res.status(500).json({ message: 'Library not found!' });
-
-    const media = await this._mediaManager.where(({ _id }) =>
-      R.contains(_id.toString(), library.items)
-    );
+    const libraryId = req.params.library;
+    const media = await this._mediaManager.getByLibraryId(libraryId);
     res.json(media);
   };
 

@@ -25,6 +25,10 @@ export class MediaManager {
     return this._mediaRA.getByTag(tag);
   }
 
+  getByLibraryId(libraryId: string) {
+    return this._mediaRA.getByLibraryId(libraryId);
+  }
+
   add(filename: string, path?: string) {
     const newMediaItem = this._mediaEngine.initializeMedia(filename, path);
     return this._mediaRA.add(newMediaItem);

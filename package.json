@@ -89,7 +89,7 @@
     "ts-node": "^7.0.1"
   },
   "bin": {
-    "merriman": ".\\dist_server\\cli\\index.js"
+    "merriman": ".\\dist_server\\cli\\cli.js"
   },
   "browserslist": [
     ">0.2%",

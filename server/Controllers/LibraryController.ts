@@ -19,31 +19,41 @@ export class LibraryController implements IController {
     this.router.post('/', this.create);
     this.router.put('/', this.update);
     this.router.get('/:id', this.getById);
-    this.router.get('/:library', this.getMediaForLibrary);
-    this.router.patch('/', this.modifyMedia);
     this.router.delete('/:id', this.deleteLibrary);
   }
+  /**
+   * Create a new libary.
+   */
   create: RequestHandler = async (req, res) => {
     const library = req.body;
     const result = await this._libraryManager.insert(library);
     res.json(result);
   };
+  /**
+   * Update a library.
+   */
   update: RequestHandler = async (req, res) => {
     const library = req.body;
     const result = await this._libraryManager.update(library);
     return res.json(result);
   };
-
+  /**
+   * Delete a library by _id.
+   */
   deleteLibrary: RequestHandler = (req, res) => {
     const id = req.params.id;
     if (id) this._libraryManager.delete(id).then(_ => res.sendStatus(200));
   };
-
+  /**
+   * List all libraries.
+   */
   list: RequestHandler = async (req, res) => {
     const response = await this._libraryManager.get();
     res.json(response);
   };
-
+  /**
+   * Get a library object by _id.
+   */
   getById: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const library = await this._libraryManager.findById(id);
@@ -51,36 +61,5 @@ export class LibraryController implements IController {
     if (!library)
       return res.status(500).json({ message: 'Library not found!' });
     res.json(library);
-  };
-
-  getMediaForLibrary: RequestHandler = async (req, res) => {
-    const id = req.params.library;
-    const library = await this._libraryManager.findById(id);
-
-    const media = await this._mediaManager.where(({ _id }) =>
-      R.contains(_id, library.items)
-    );
-
-    if (!library)
-      return res.status(500).json({ message: 'Library not found!' });
-    res.json({ media });
-  };
-
-  modifyMedia: RequestHandler = async (req, res) => {
-    const { library, media, action } = req.body;
-    if (library && media && action) {
-      if (action === 'ADD') {
-        this._libraryManager
-          .addMediaToLibrary(media, library)
-          .then(() => res.sendStatus(200));
-      }
-      if (action === 'DROP') {
-        this._libraryManager
-          .removeMediaFromLibrary(media, library)
-          .then(() => res.sendStatus(200));
-      }
-    } else {
-      res.sendStatus(500);
-    }
   };
 }

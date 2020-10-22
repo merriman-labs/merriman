@@ -1,4 +1,6 @@
-import { program, Command } from 'commander';
+#!/usr/bin/env node
+
+import { program } from 'commander';
 import app from '../app';
 program.name('merriman');
 

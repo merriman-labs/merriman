@@ -14,6 +14,7 @@ export const DependencyType = {
     Library: Symbol('LibraryEngine')
   },
   Controller: {
+    Admin: Symbol('AdminController'),
     Media: Symbol('MediaController'),
     Library: Symbol('LibraryController')
   },

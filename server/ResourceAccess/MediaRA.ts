@@ -24,6 +24,24 @@ export default class MediaRA {
       .find({ tags: tag, isHidden: false })
       .toArray();
   }
+  getByLibraryId(libraryId: string): Promise<Array<MediaItem>> {
+    return this._db
+      .collection('libraries')
+      .aggregate([
+        { $match: { _id: new ObjectId(libraryId) } },
+        {
+          $lookup: {
+            from: 'media',
+            let: { items: '$items' },
+            pipeline: [{ $match: { $expr: { $in: ['$_id', '$$items'] } } }],
+            as: 'items'
+          }
+        },
+        { $unwind: '$items' },
+        { $replaceRoot: { newRoot: '$items' } }
+      ])
+      .toArray();
+  }
   /**
    * Get all unique tags from the server.
    */
@@ -46,7 +64,7 @@ export default class MediaRA {
         { $group: { _id: null, items: { $addToSet: '$tagList' } } }
       ])
       .toArray();
-    return R.sort((a, b) => a.codePointAt(0) - b.codePointAt(0), items);
+    return items.sort();
   }
 
   /**

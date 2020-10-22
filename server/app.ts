@@ -23,14 +23,20 @@ export default async (configPath: string) => {
   AppContext.set(AppContext.WellKnown.Config, config);
   const { thumbLocation, port } = config;
 
+  // Set up dependency-injection container, make the MongoDB connection injectable
   const container = await setupIoc(config);
 
+  // Use the DI container to resolve controllers
   app.use('/api', getApiRouter(container));
 
+  // resolve thumbnails
   app.use(express.static(thumbLocation, { redirect: false }));
+
+  // resolve the React app
   const buildPath = path.join(__dirname, '../build');
   app.use(express.static(buildPath, { redirect: false }));
 
+  // Serve up the React app for routes not resolved by API or resources
   app.get('/*', (req, res, next) =>
     res.sendFile(path.join(__dirname, '../build/index.html'))
   );
