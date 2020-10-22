@@ -4,11 +4,13 @@ import { Configuration } from '../Utilities/ConfigUtil';
 export class MongoFactory {
   private static db: Db;
   static async init(config: Configuration) {
-    const { mongo, name } = config;
+    const { mongo } = config;
 
-    MongoFactory.db = await (await MongoClient.connect(
-      mongo.connectionString
-    )).db(`merriman_${name}`);
+    const db = await (await MongoClient.connect(mongo.connectionString)).db(
+      mongo.database
+    );
+    MongoFactory.db = db;
+    return db;
   }
   static create() {
     return MongoFactory.db;

@@ -68,8 +68,9 @@ class Home extends Component<any, HomeState> {
     );
   }
   private _fetchLibraries() {
-    return LibraryManager.list()
-      .then(libraries => this.setState({ libraries }));
+    return LibraryManager.list().then(libraries =>
+      this.setState({ libraries })
+    );
   }
 }
 

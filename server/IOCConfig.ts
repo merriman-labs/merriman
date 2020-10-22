@@ -15,6 +15,9 @@ import { Configuration } from './Utilities/ConfigUtil';
 const container = new Container();
 
 async function setupIoc(config: Configuration) {
+  const mongo = await MongoFactory.init(config);
+  container.bind<Db>(DependencyType.External.MongoDB).toConstantValue(mongo);
+
   container.bind(DependencyType.ResourceAccess.Library).to(LibraryRA);
   container.bind(DependencyType.ResourceAccess.Media).to(MediaRA);
 
@@ -27,9 +30,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.Controller.Library).to(LibraryController);
   container.bind(DependencyType.Controller.Media).to(MediaController);
 
-  await MongoFactory.init(config);
-  const mongo = await MongoFactory.create();
-  container.bind<Db>(DependencyType.External.MongoDB).toConstantValue(mongo);
+  return container;
 }
 
-export { container, setupIoc };
+export { setupIoc };

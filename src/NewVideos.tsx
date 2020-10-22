@@ -109,9 +109,9 @@ class NewVideosPage extends Component<
     );
   }
   _fetchVideoList = () => {
-    return MediaManager
-      .latest(this.state.count)
-      .then(response => this.setState({ media: response }));
+    return MediaManager.latest(this.state.count).then(response =>
+      this.setState({ media: response })
+    );
   };
 }
 

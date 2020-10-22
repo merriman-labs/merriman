@@ -15,7 +15,13 @@ export const TagsList = () => {
   return (
     <>
       {tags.map(tag => (
-        <Link key={tag} to={`media/tag/${tag}`} className="badge badge-pill badge-secondary mr-1">{tag}</Link>
+        <Link
+          key={tag}
+          to={`media/tag/${tag}`}
+          className="badge badge-pill badge-secondary mr-1"
+        >
+          {tag}
+        </Link>
       ))}
     </>
   );

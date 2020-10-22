@@ -23,9 +23,9 @@ export default async (configPath: string) => {
   AppContext.set(AppContext.WellKnown.Config, config);
   const { thumbLocation, port } = config;
 
-  await setupIoc(config);
+  const container = await setupIoc(config);
 
-  app.use('/api', getApiRouter());
+  app.use('/api', getApiRouter(container));
 
   app.use(express.static(thumbLocation, { redirect: false }));
   const buildPath = path.join(__dirname, '../build');

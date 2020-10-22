@@ -86,9 +86,7 @@ export const MediaEdit = (props: MediaEditProps) => {
   };
 
   const handleCheckChange = (val: boolean) => {
-    setMedia(item =>
-      item === null ? item : { ...item, isHidden: val }
-    );
+    setMedia(item => (item === null ? item : { ...item, isHidden: val }));
   };
 
   return media === null ? null : (
@@ -195,7 +193,7 @@ export const MediaEdit = (props: MediaEditProps) => {
                 id="name"
                 type="checkbox"
                 checked={!media.isHidden}
-                onChange={(evt) => handleCheckChange(!evt.target.checked)}
+                onChange={evt => handleCheckChange(!evt.target.checked)}
               />
               <label htmlFor="name" className="form-check-label">
                 Show

@@ -5,16 +5,17 @@ import { requestMeta, generateSubs } from '../ffmpeg';
 import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
 import { MediaUtils } from '../Utilities/MediaUtils';
 import { AppContext } from '../appContext';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
 
 @injectable()
 export class MediaManager {
-  private _mediaRA: MediaRA;
-  private _mediaEngine: MediaEngine;
-  constructor() {
-    this._mediaRA = new MediaRA();
-    this._mediaEngine = new MediaEngine();
-  }
+  constructor(
+    @inject(DependencyType.ResourceAccess.Media)
+    private _mediaRA: MediaRA,
+    @inject(DependencyType.Engines.Media)
+    private _mediaEngine: MediaEngine
+  ) {}
 
   get(includeHidden: boolean = false) {
     return this._mediaRA.get(includeHidden);

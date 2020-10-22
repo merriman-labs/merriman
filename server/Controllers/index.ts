@@ -1,9 +1,11 @@
 import { IController } from './IController';
 import { AdminController } from './AdminController';
-import { container } from '../IOCConfig';
 import { DependencyType } from '../Constant/DependencyType';
+import { Container } from 'inversify';
 
-export const Controllers: () => Array<IController> = () => [
+export const Controllers: (container: Container) => Array<IController> = (
+  container: Container
+) => [
   new AdminController(),
   container.get(DependencyType.Controller.Media),
   container.get(DependencyType.Controller.Library)

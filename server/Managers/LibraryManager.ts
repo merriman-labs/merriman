@@ -3,6 +3,7 @@ import { LibraryEngine } from '../Engines/LibraryEngine';
 import { Library } from '../models';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
+import Validator from '../Validation/Validator';
 
 @injectable()
 export class LibraryManager {
@@ -17,6 +18,7 @@ export class LibraryManager {
   }
 
   update(library: Library) {
+    const item = Validator.Library.Update(library);
     return this._libraryRA.update(library);
   }
 
@@ -25,7 +27,8 @@ export class LibraryManager {
   }
 
   async insert(library: Library) {
-    const newLibrary = this._libraryEngine.initializeLibrary(library);
+    const item = Validator.Library.Create(library);
+    const newLibrary = this._libraryEngine.initializeLibrary(item);
     const result = await this._libraryRA.insert(newLibrary);
     return newLibrary;
   }
