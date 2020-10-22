@@ -1,12 +1,15 @@
 import { ServerLog } from '../models/index';
-import { MongoFactory } from '../Factories/MongoFactory';
+import { inject } from 'inversify';
+import { DependencyType } from '../Constant/DependencyType';
+import { Db } from 'mongodb';
 
 export default class ServerLogRA {
+  constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
   /**
    *
    */
   get(): Promise<Array<ServerLog>> {
-    return MongoFactory.create()
+    return this._db
       .collection<ServerLog>('logs')
       .find()
       .toArray();
@@ -16,9 +19,7 @@ export default class ServerLogRA {
    *
    */
   async add(item: ServerLog): Promise<ServerLog> {
-    await MongoFactory.create()
-      .collection<ServerLog>('logs')
-      .insert(item);
+    await this._db.collection<ServerLog>('logs').insert(item);
     return item;
   }
 }

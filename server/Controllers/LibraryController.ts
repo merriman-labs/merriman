@@ -23,18 +23,18 @@ export class LibraryController implements IController {
     this.router.patch('/', this.modifyMedia);
     this.router.delete('/:id', this.deleteLibrary);
   }
-  create = async (req, res) => {
+  create: RequestHandler = async (req, res) => {
     const library = req.body;
     const result = await this._libraryManager.insert(library);
     res.json(result);
   };
-  update = async (req, res) => {
+  update: RequestHandler = async (req, res) => {
     const library = req.body;
     const result = await this._libraryManager.update(library);
     return res.json(result);
   };
 
-  deleteLibrary = (req, res) => {
+  deleteLibrary: RequestHandler = (req, res) => {
     const id = req.params.id;
     if (id) this._libraryManager.delete(id).then(_ => res.sendStatus(200));
   };
