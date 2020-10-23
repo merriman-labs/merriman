@@ -5,7 +5,7 @@ import { IController } from './IController';
 @injectable()
 export class AdminController implements IController {
   router: Router = Router();
-  path: string = 'admin';
+  path: string = '/admin';
   constructor() {
     this.router.post(`/stop`, this.stopServer);
   }

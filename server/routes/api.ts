@@ -5,9 +5,10 @@ import { Controllers } from '../Controllers';
 const getApiRouter = (container: Container) => {
   const apiRouter = Router();
 
-  Controllers(container).forEach(({ path, router }) =>
-    apiRouter.use(path, router)
-  );
+  Controllers(container).forEach(({ path, router }) => {
+    console.info(`Binding to /api${path}`);
+    apiRouter.use(path, router);
+  });
   return apiRouter;
 };
 

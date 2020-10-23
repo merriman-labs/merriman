@@ -11,6 +11,7 @@ import RandomVideo from './RandomVideo';
 import NewVideosPage from './NewVideos';
 import { MediaEdit } from './Media/Edit';
 import { MediaByTag } from './Media/MediaByTag';
+import { RegisterMedia } from './admin/RegisterMedia';
 
 class App extends Component<{}> {
   render() {
@@ -33,6 +34,7 @@ class App extends Component<{}> {
           path="/admin/select-media/:library"
           component={SelectMedia}
         />
+        <Route path="/admin/register-media" component={RegisterMedia} />
       </Switch>
     ];
   }
