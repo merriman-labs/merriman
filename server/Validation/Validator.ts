@@ -1,3 +1,4 @@
+import { UserCreatePayload } from '../Managers/UserManager';
 import { Library } from '../models';
 import ValidationEngine from './ValidationEngine';
 
@@ -11,6 +12,11 @@ class Validator {
     },
     Update(item: any) {
       return ValidationEngine.validate<Library>(item, 'library.update');
+    }
+  };
+  User = {
+    Create(item: any) {
+      return ValidationEngine.validate<UserCreatePayload>(item, 'user.create');
     }
   };
 }

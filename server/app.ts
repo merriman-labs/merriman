@@ -10,6 +10,11 @@ import './Factories/MongoFactory';
 import { AppContext } from './appContext';
 import { ConfigUtil } from './Utilities/ConfigUtil';
 import { setupIoc } from './IOCConfig';
+import * as passport from 'passport';
+import { UserInfo } from './models/User/UserInfo';
+import { doesNotMatch } from 'assert';
+import { DependencyType } from './Constant/DependencyType';
+import { UserManager } from './Managers/UserManager';
 
 const app = express();
 
@@ -25,6 +30,21 @@ export default async (configPath: string) => {
 
   // Set up dependency-injection container, make the MongoDB connection injectable
   const container = await setupIoc(config);
+
+  passport.serializeUser(function(user: UserInfo, cb) {
+    cb(null, user._id);
+  });
+
+  passport.deserializeUser(async function(id: string, cb) {
+    const userManager = container.get<UserManager>(
+      DependencyType.Managers.User
+    );
+    const user = await userManager.getById(id);
+    if (!user) return cb('NOTFOUND');
+    cb(null, user);
+  });
+
+  app.use(passport.initialize());
 
   // Use the DI container to resolve controllers
   app.use('/api', getApiRouter(container));

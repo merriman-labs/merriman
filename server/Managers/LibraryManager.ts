@@ -19,7 +19,7 @@ export class LibraryManager {
 
   update(library: Library) {
     const item = Validator.Library.Update(library);
-    return this._libraryRA.update(library);
+    return this._libraryRA.update(item);
   }
 
   findById(id: string) {

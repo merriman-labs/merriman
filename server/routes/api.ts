@@ -1,13 +1,22 @@
 import { Router } from 'express';
 import { Container } from 'inversify';
-import { Controllers } from '../Controllers';
+import {
+  AuthenticatedControllers,
+  UnauthenticatedControllers
+} from '../Controllers';
+import { ensureLoggedIn } from 'connect-ensure-login';
 
 const getApiRouter = (container: Container) => {
   const apiRouter = Router();
 
-  Controllers(container).forEach(({ path, router }) => {
-    console.info(`Binding to /api${path}`);
+  UnauthenticatedControllers(container).forEach(({ path, router }) => {
+    console.info(`Binding unauthenticated controller to /api${path}`);
     apiRouter.use(path, router);
+  });
+
+  AuthenticatedControllers(container).forEach(({ path, router }) => {
+    console.info(`Binding authenticated controller to /api${path}`);
+    apiRouter.use(path, ensureLoggedIn(), router);
   });
   return apiRouter;
 };
