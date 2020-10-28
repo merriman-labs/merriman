@@ -8,6 +8,9 @@ class AuthRA {
       body: JSON.stringify(creds)
     }).then(x => x.json());
   }
+  logout() {
+    return fetch('/api/auth/logout');
+  }
 }
 
 export default new AuthRA();
