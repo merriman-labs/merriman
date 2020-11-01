@@ -121,7 +121,7 @@ export class MediaController implements IController {
   upload: RequestHandler = (req, res) => {
     const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     const busboy = new Busboy({ headers: req.headers });
-    busboy.on('file', async function(fieldname, file, filename) {
+    busboy.on('file', async (fieldname, file, filename) => {
       // Enter media into database
       const mediaItem = await this._mediaManager.add(filename);
       file.pipe(
