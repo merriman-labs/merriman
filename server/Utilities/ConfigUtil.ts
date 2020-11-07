@@ -10,6 +10,7 @@ export class Configuration {
   };
   name: string;
   port: number;
+  allowUnsafeFileAccess: boolean = false;
   constructor(data: any) {
     if (!this._isvalid(data)) throw new Error('Configuration must be complete');
     this.mediaLocation = data.mediaLocation;

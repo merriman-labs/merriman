@@ -13,10 +13,11 @@ import StandaloneMedia from './StandaloneMedia';
 import VideoLibrariesPage from './VideoLibrariesPage';
 import UserContext from './UserContext';
 import { UserInfo } from '../server/models/User/UserInfo';
+import { Logout } from './Logout';
 
 export const AuthenticatedApp = (props: { user: UserInfo }) => (
   <UserContext.Provider value={props.user}>
-    <Navigation />,
+    <Navigation />
     <Switch>
       <Route path="/random" component={RandomVideo} />
       <Route path="/media/new" component={NewVideosPage} exact />
@@ -24,6 +25,7 @@ export const AuthenticatedApp = (props: { user: UserInfo }) => (
       <Route path="/media/tag/:tag" component={MediaByTag} exact />
       <Route path="/media/:media" component={StandaloneMedia} exact />
       <Route path="/videos/:library?/:video?" component={VideoLibrariesPage} />
+      <Route path="/logout" component={Logout} />
       <Route exact path="/" component={Home} />
       <Route exact path="/admin" component={AdminPanel} />
       <Route

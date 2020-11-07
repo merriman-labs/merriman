@@ -14,7 +14,11 @@ export class ServerController implements IController {
     @inject(DependencyType.Managers.FileSystem)
     private _fsManager: FileSystemManager
   ) {
-    this.router.get('/:path?', this.listDirectory);
+    const config = AppContext.get(AppContext.WellKnown.Config);
+    if (config.allowUnsafeFileAccess) {
+      console.warn('Unsafe file access is being allowed!');
+      this.router.get('/:path?', this.listDirectory);
+    }
   }
 
   listDirectory: RequestHandler = (req, res) => {

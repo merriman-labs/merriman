@@ -38,7 +38,7 @@ class Navigation extends Component<NavigationProps, NavigationState> {
                 <NavLink href="/random">Random</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="/api/logout">Logout</NavLink>
+                <NavLink href="/logout">Logout</NavLink>
               </NavItem>
             </Nav>
           </Collapse>

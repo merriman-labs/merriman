@@ -7,8 +7,6 @@ class AuthManager {
   }
   async logout() {
     await AuthRA.logout();
-    const [, setAuth] = useAuth();
-    setAuth({ initializing: true });
   }
 }
 

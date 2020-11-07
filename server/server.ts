@@ -1,3 +1,4 @@
-import app from './app';
+import { Merriman } from './app';
 const [, , config] = process.argv;
-app(config);
+const app = new Merriman(config);
+app.start();
