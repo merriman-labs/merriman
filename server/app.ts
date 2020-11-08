@@ -28,17 +28,25 @@ export class Merriman {
   }
 
   private _setupMiddleware() {
+    this._app.use(function(req, res, next) {
+      // @ts-ignore
+      res.header('Access-Control-Allow-Credentials', true);
+      res.header('Access-Control-Allow-Origin', req.headers.origin);
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept'
+      );
+      if ('OPTIONS' == req.method) {
+        res.send(200);
+      } else {
+        next();
+      }
+    });
     this._app.use(express.json({ limit: '5mb' }));
     this._app.use(morgan('dev'));
     this._app.use(cors());
     this._app.use(busboy());
-    this._app.use(
-      session({
-        secret: 'bigsecretword',
-        resave: false,
-        saveUninitialized: false
-      })
-    );
   }
 
   private _setupApi(container: Container) {
@@ -63,6 +71,7 @@ export class Merriman {
   }
 
   private _setupAuth(container: Container) {
+    passport.use(AuthenticationStrategy(container));
     passport.serializeUser(function(user: UserInfo, cb) {
       cb(null, user._id);
     });
@@ -75,9 +84,9 @@ export class Merriman {
       if (!user) return cb('NOTFOUND');
       cb(null, user);
     });
-
-    passport.use(AuthenticationStrategy(container));
+    this._app.use(session({ secret: 'bigsecret' }));
     this._app.use(passport.initialize());
+    this._app.use(passport.session());
   }
 
   public async start() {

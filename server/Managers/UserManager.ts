@@ -22,7 +22,6 @@ export class UserManager {
     if (existingUser) throw new ConflictError('User already exists');
 
     const newUser = new User(user);
-    newUser.hashPassword();
     const results = await this._userRA.create(newUser);
     return results.toApiResponse();
   }

@@ -31,7 +31,9 @@ class MediaRA {
     });
   }
   tags(): Promise<{ tags: Array<string> }> {
-    return fetch(`/api/media/tags`).then(x => x.json());
+    return fetch(`/api/media/tags`, { credentials: 'include' }).then(x =>
+      x.json()
+    );
   }
   getByTag(tag: string): Promise<{ items: Array<MediaItem> }> {
     return fetch(`/api/media/list/byTag/${tag}`).then(x => x.json());

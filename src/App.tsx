@@ -1,16 +1,17 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import './App.css';
 import { AuthenticatedApp } from './AuthenticatedApp';
-import { useAuth } from './hooks/useAuth';
+import { useAuth, useAuth1 } from './hooks/useAuth';
 import { UnauthenticatedApp } from './UnauthenticatedApp';
 
 const App = () => {
-  const [user] = useAuth();
+  const [user] = useAuth1();
 
-  return user.initializing ? (
-    <UnauthenticatedApp />
+  return user ? (
+    <AuthenticatedApp user={user} />
   ) : (
-    <AuthenticatedApp user={user.user} />
+    <UnauthenticatedApp />
   );
 };
 

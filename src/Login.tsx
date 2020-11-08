@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { useAuth } from './hooks/useAuth';
+import { Redirect, useHistory, withRouter } from 'react-router';
+import { useAuth, useAuth1 } from './hooks/useAuth';
 import AuthManager from './managers/AuthManager';
 
-export const Login = () => {
+export const Login = withRouter(props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [, setUser] = useAuth();
+  const [, setUser] = useAuth1();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // send the username and password to the server
     const response = await AuthManager.login({ username, password });
-    setUser({ user: response, initializing: false });
-  }
+    setUser({ user: response, action: 'LOGIN' });
+    props.history.push('/');
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -35,4 +36,4 @@ export const Login = () => {
       <button type="submit">Login</button>
     </form>
   );
-};
+});

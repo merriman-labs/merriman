@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
-import { Redirect } from 'react-router';
-import { useAuth } from './hooks/useAuth';
+import { withRouter } from 'react-router';
+import { useAuth1 } from './hooks/useAuth';
 import AuthManager from './managers/AuthManager';
 
-export const Logout = () => {
-  const [, set] = useAuth();
+export const Logout = withRouter((props) => {
+  const [, set] = useAuth1();
   useEffect(() => {
     const effect = async () => {
       await AuthManager.logout();
-      set({ initializing: true });
+      set({ action: 'LOGOUT' });
+      props.history.push('/login');
     };
     effect();
   });
-  return <Redirect to="/login" />;
-};
+  return <h1>Logging out...</h1>;
+});

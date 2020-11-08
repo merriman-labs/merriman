@@ -4,7 +4,6 @@ import {
   AuthenticatedControllers,
   UnauthenticatedControllers
 } from '../Controllers';
-import { ensureLoggedIn } from 'connect-ensure-login';
 
 const getApiRouter = (container: Container) => {
   const apiRouter = Router();
@@ -16,7 +15,19 @@ const getApiRouter = (container: Container) => {
 
   AuthenticatedControllers(container).forEach(({ path, router }) => {
     console.info(`Binding authenticated controller to /api${path}`);
-    apiRouter.use(path, ensureLoggedIn(), router);
+    apiRouter.use(
+      path,
+      function(req, res, next) {
+        if (!req.isAuthenticated || !req.isAuthenticated()) {
+          if (req.session) {
+            req.session.returnTo = req.originalUrl || req.url;
+          }
+          return res.redirect('/login');
+        }
+        next();
+      },
+      router
+    );
   });
   return apiRouter;
 };

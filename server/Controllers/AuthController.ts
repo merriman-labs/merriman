@@ -13,9 +13,29 @@ export class AuthController implements IController {
   constructor(@inject(DependencyType.Managers.Auth) _authManager: AuthManager) {
     this.router.post(
       '/login',
-      passport.authenticate('local', { failureRedirect: '/login' }),
-      function(req, res) {
-        res.redirect('/');
+      function(req, res, next) {
+        passport.authenticate('local', function(err, user) {
+          if (err) {
+            return res
+              .status(401)
+              .json({ success: false, errorDetails: err.message });
+          }
+          if (!user) {
+            return res.status(401).json({
+              success: false,
+              errorDetails: 'Wrong email or password.'
+            });
+          }
+          return req.logIn(user, function(err) {
+            if (err) {
+              return next(err);
+            }
+            return next();
+          });
+        })(req, res, next);
+      },
+      (req, res) => {
+        return res.json(req.user);
       }
     );
     this.router.get('/logout', this.logout);

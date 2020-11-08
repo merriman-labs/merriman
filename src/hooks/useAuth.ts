@@ -1,5 +1,12 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useReducer,
+  useState
+} from 'react';
 import { UserInfo } from '../../server/models/User/UserInfo';
+import AuthManager from '../managers/AuthManager';
 
 type useAuthState =
   | {
@@ -10,6 +17,33 @@ type useAuthState =
       user: UserInfo;
       initializing: false;
     };
+
+type Credentials = { username: string; password: string };
+type LoginMessage = { user: UserInfo; action: 'LOGIN' };
+type LogoutMessage = { action: 'LOGOUT' };
+
+export const useAuth1 = (): [
+  UserInfo | undefined,
+  Dispatch<LoginMessage | LogoutMessage>
+] => {
+  const savedUser = localStorage.getItem('user-info');
+  const user = savedUser ? (JSON.parse(savedUser) as UserInfo) : undefined;
+  const [state, setState] = useReducer<
+    UserInfo | undefined,
+    LoginMessage | LogoutMessage
+  >((state, update) => {
+    switch (update.action) {
+      case 'LOGIN':
+        localStorage.setItem('user-info', JSON.stringify(update.user));
+        return update.user;
+      case 'LOGOUT':
+        localStorage.removeItem('user-info');
+        return;
+    }
+  }, user);
+
+  return [state, setState];
+};
 
 export const useAuth = (): [
   useAuthState,
