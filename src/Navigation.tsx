@@ -40,7 +40,7 @@ const Navigation = () => {
               <NavLink href="/random">Random</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/logout">Logout</NavLink>
+            <NavLink href="/logout">{user?.username} (Logout)</NavLink>
             </NavItem>
           </Nav>
         </Collapse>

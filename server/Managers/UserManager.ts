@@ -1,3 +1,4 @@
+import R from 'ramda';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import { ConflictError } from '../Errors/ConflictError';
@@ -16,6 +17,10 @@ export class UserManager {
   constructor(
     @inject(DependencyType.ResourceAccess.User) private _userRA: UserRA
   ) {}
+  async list() {
+    const users = await this._userRA.list();
+    return users.map(R.omit(['password']));
+  }
   async create(user: UserCreatePayload) {
     const payload = Validator.User.Create(user);
     const existingUser = await this._userRA.getByEmail(payload.username);

@@ -10,7 +10,12 @@
     "sourceMap": true,
     "target": "es5",
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "typeRoots": ["./server/typings", "./node_modules/@types"]
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts"],
+  "files": ["index.d.ts"],
+  "ts-node": {
+    "files": true
+  }
 }

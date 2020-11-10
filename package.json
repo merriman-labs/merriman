@@ -10,6 +10,7 @@
     "url": "https://github.com/jreina/merriman"
   },
   "dependencies": {
+    "@johnny.reina/ajv-types": "^0.1.0",
     "@johnny.reina/convert-srt": "^0.2.1",
     "@johnny.reina/json-db": "^2.0.5",
     "ajv": "^6.12.6",

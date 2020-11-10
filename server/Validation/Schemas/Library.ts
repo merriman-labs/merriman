@@ -1,12 +1,17 @@
-export const LibrarySchema = {
+import { ObjectSchema } from '@johnny.reina/ajv-types';
+export const LibrarySchema: Record<string, ObjectSchema> = {
   create: {
     type: 'object',
-    required: ['name'],
+    required: ['name', 'userId'],
     additionalProperties: false,
     properties: {
       name: {
         type: 'string',
         minLength: 1
+      },
+      userId: {
+        type: 'string',
+        pattern: '[a-f0-9]{24}'
       }
     }
   },

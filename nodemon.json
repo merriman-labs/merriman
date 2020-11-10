@@ -2,5 +2,5 @@
   "ignore": [".git", "node_modules", "dist_server", "build", ".cache"],
   "watch": ["server/**/*.ts"],
   "ext": "ts",
-  "exec": "ts-node -P ./server/tsconfig.json ./server/server.ts C:\\Users\\Johnny\\.merriman\\server-config.Movies.json"
+  "exec": "ts-node --files -P ./server/tsconfig.json ./server/server.ts C:\\Users\\Johnny\\.merriman\\server-config.Movies.json"
 }

@@ -7,6 +7,11 @@ import { User } from '../models/User/User';
 @injectable()
 export class UserRA {
   constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
+
+  list(): Promise<Array<MongoUser>> {
+    return this._db.collection('users').find<MongoUser>().toArray();
+  }
+
   getByEmail(username: string): Promise<User> {
     return this._db.collection('users').findOne({ username });
   }

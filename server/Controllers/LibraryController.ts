@@ -12,8 +12,7 @@ export class LibraryController implements IController {
   path: string = '/library';
   constructor(
     @inject(DependencyType.Managers.Library)
-    private _libraryManager: LibraryManager,
-    @inject(DependencyType.Managers.Media) private _mediaManager: MediaManager
+    private _libraryManager: LibraryManager
   ) {
     this.router.get('/', this.list);
     this.router.post('/', this.create);
@@ -25,7 +24,7 @@ export class LibraryController implements IController {
    * Create a new libary.
    */
   create: RequestHandler = async (req, res) => {
-    const library = req.body;
+    const library = { ...req.body, userId: req.user._id };
     const result = await this._libraryManager.insert(library);
     res.json(result);
   };
@@ -42,7 +41,7 @@ export class LibraryController implements IController {
    */
   deleteLibrary: RequestHandler = (req, res) => {
     const id = req.params.id;
-    if (id) this._libraryManager.delete(id).then(_ => res.sendStatus(200));
+    if (id) this._libraryManager.delete(id).then((_) => res.sendStatus(200));
   };
   /**
    * List all libraries.

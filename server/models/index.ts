@@ -28,6 +28,7 @@ export type MediaItem = {
 
 export type Library = {
   _id: string | ObjectId;
+  userId: string | ObjectId;
   items: Array<string | ObjectId>;
   name: string;
 };

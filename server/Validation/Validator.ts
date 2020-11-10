@@ -5,7 +5,7 @@ import ValidationEngine from './ValidationEngine';
 class Validator {
   Library = {
     Create(item: any) {
-      return ValidationEngine.validate<{ name: string }>(
+      return ValidationEngine.validate<{ name: string; userId: string }>(
         item,
         'library.create'
       );
