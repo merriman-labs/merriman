@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import { AuthManager } from '../Managers/AuthManager';
 import { IController } from './IController';
-import * as passport from 'passport';
+import passport from 'passport';
 
 @injectable()
 export class AuthController implements IController {
@@ -13,8 +13,8 @@ export class AuthController implements IController {
   constructor(@inject(DependencyType.Managers.Auth) _authManager: AuthManager) {
     this.router.post(
       '/login',
-      function(req, res, next) {
-        passport.authenticate('local', function(err, user) {
+      function (req, res, next) {
+        passport.authenticate('local', function (err, user) {
           if (err) {
             return res
               .status(401)
@@ -26,7 +26,7 @@ export class AuthController implements IController {
               errorDetails: 'Wrong email or password.'
             });
           }
-          return req.logIn(user, function(err) {
+          return req.logIn(user, function (err) {
             if (err) {
               return next(err);
             }

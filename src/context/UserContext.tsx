@@ -29,7 +29,6 @@ export const AuthReducer = (
 
 export const AuthProvider = (props: Props<any>) => {
   const [user, dispatch] = useReducer(AuthReducer, initialUser);
-  console.log(user);
   return (
     <UserContext.Provider value={user}>
       <UserDispatchContext.Provider value={dispatch}>

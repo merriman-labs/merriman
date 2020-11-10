@@ -17,8 +17,7 @@ export const RegisterMedia = () => {
         setResult(response);
       };
       effect();
-    },
-    [null]
+    }
   );
 
   const isInSelected = (file: DirectoryItem) =>

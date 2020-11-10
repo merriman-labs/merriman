@@ -3,7 +3,7 @@ import ThumbProvider from '../thumb-provider';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as R from 'ramda';
-import * as Busboy from 'busboy';
+import Busboy from 'busboy';
 import * as chance from 'chance';
 import moment = require('moment');
 import { MediaManager } from '../Managers/MediaManager';
@@ -45,10 +45,8 @@ export class MediaController implements IController {
   searchByTerm: RequestHandler = async (req, res) => {
     const term = req.params.term;
     if (!term || term === '') return res.json([]);
-    const results = await this._mediaManager.where(item =>
-      JSON.stringify(item)
-        .toLowerCase()
-        .includes(term.toLowerCase())
+    const results = await this._mediaManager.where((item) =>
+      JSON.stringify(item).toLowerCase().includes(term.toLowerCase())
     );
 
     res.json(results);
@@ -128,7 +126,7 @@ export class MediaController implements IController {
         fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
       );
 
-      busboy.on('finish', function() {
+      busboy.on('finish', function () {
         if (filename.toLowerCase().indexOf('.mp4')) {
           // Make sure media has a thumbnail
           ThumbProvider.ensureThumbs(
@@ -140,7 +138,7 @@ export class MediaController implements IController {
       });
     });
 
-    busboy.on('finish', function() {
+    busboy.on('finish', function () {
       console.log('Upload complete');
       res.writeHead(200, { Connection: 'close' });
       res.end("That's all folks!");
@@ -179,7 +177,7 @@ export class MediaController implements IController {
     const count = +req.params.count;
     const allItems = await this._mediaManager.get();
     const newest = allItems
-      .filter(x => x.created !== undefined)
+      .filter((x) => x.created !== undefined)
       .sort((a, b) =>
         moment(a.created).isBefore(b.created)
           ? -1

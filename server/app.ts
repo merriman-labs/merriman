@@ -1,22 +1,23 @@
 import 'reflect-metadata';
-import * as express from 'express';
-import * as session from 'express-session';
+import express from 'express';
+import session from 'express-session';
 import * as path from 'path';
-import * as busboy from 'connect-busboy';
-import * as morgan from 'morgan';
-import * as cors from 'cors';
+import busboy from 'connect-busboy';
+import morgan from 'morgan';
+import cors from 'cors';
 import getApiRouter from './routes/api';
 import { printHeader } from './cli/util/print-header';
 import './Factories/MongoFactory';
 import { AppContext } from './appContext';
 import { Configuration, ConfigUtil } from './Utilities/ConfigUtil';
 import { setupIoc } from './IOCConfig';
-import * as passport from 'passport';
+import passport from 'passport';
 import { UserInfo } from './models/User/UserInfo';
 import { DependencyType } from './Constant/DependencyType';
 import { UserManager } from './Managers/UserManager';
 import { Container } from 'inversify';
 import AuthenticationStrategy from './Middleware/AuthenticationStrategy';
+import mongoSession from 'connect-mongodb-session';
 
 export class Merriman {
   private _app = express();
@@ -28,7 +29,7 @@ export class Merriman {
   }
 
   private _setupMiddleware() {
-    this._app.use(function(req, res, next) {
+    this._app.use(function (req, res, next) {
       // @ts-ignore
       res.header('Access-Control-Allow-Credentials', true);
       res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -71,12 +72,18 @@ export class Merriman {
   }
 
   private _setupAuth(container: Container) {
+    const MongoSessionStore = mongoSession(session);
+    const sessionStore = new MongoSessionStore({
+      uri: this._config.mongo.connectionString,
+      databaseName: this._config.mongo.database,
+      collection: 'sessions'
+    });
     passport.use(AuthenticationStrategy(container));
-    passport.serializeUser(function(user: UserInfo, cb) {
+    passport.serializeUser(function (user: UserInfo, cb) {
       cb(null, user._id);
     });
 
-    passport.deserializeUser(async function(id: string, cb) {
+    passport.deserializeUser(async function (id: string, cb) {
       const userManager = container.get<UserManager>(
         DependencyType.Managers.User
       );
@@ -84,7 +91,17 @@ export class Merriman {
       if (!user) return cb('NOTFOUND');
       cb(null, user);
     });
-    this._app.use(session({ secret: 'bigsecret' }));
+    this._app.use(
+      session({
+        secret: this._config.session.secret,
+        cookie: {
+          maxAge: 604800000
+        },
+        store: sessionStore,
+        resave: true,
+        saveUninitialized: true
+      })
+    );
     this._app.use(passport.initialize());
     this._app.use(passport.session());
   }

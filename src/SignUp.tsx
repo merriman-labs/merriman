@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { useAuth } from './hooks/useAuth';
-import { useUserDispatchContext } from './hooks/useUserDispatchContext';
 import UserManager from './managers/UserManager';
 
 export const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useUserDispatchContext();
   const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
