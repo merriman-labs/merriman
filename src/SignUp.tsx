@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { useAuth } from './hooks/useAuth';
+import { useUserDispatchContext } from './hooks/useUserDispatchContext';
 import UserManager from './managers/UserManager';
 
 export const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [, setUser] = useAuth();
+  const dispatch = useUserDispatchContext();
+  const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // send the username and password to the server
-    const response = await UserManager.create({ username, password });
-    setUser({ user: response, initializing: false });
+    await UserManager.create({ username, password });
+    history.push('/signin');
   };
 
   return (

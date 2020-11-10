@@ -23,24 +23,28 @@ type LoginMessage = { user: UserInfo; action: 'LOGIN' };
 type LogoutMessage = { action: 'LOGOUT' };
 
 export const useAuth1 = (): [
-  UserInfo | undefined,
+  { user?: UserInfo },
   Dispatch<LoginMessage | LogoutMessage>
 ] => {
   const savedUser = localStorage.getItem('user-info');
   const user = savedUser ? (JSON.parse(savedUser) as UserInfo) : undefined;
   const [state, setState] = useReducer<
-    UserInfo | undefined,
+    { user?: UserInfo },
     LoginMessage | LogoutMessage
-  >((state, update) => {
-    switch (update.action) {
-      case 'LOGIN':
-        localStorage.setItem('user-info', JSON.stringify(update.user));
-        return update.user;
-      case 'LOGOUT':
-        localStorage.removeItem('user-info');
-        return;
-    }
-  }, user);
+  >(
+    (state, update) => {
+      console.log(update);
+      switch (update.action) {
+        case 'LOGIN':
+          localStorage.setItem('user-info', JSON.stringify(update.user));
+          return { user: update.user };
+        case 'LOGOUT':
+          localStorage.removeItem('user-info');
+          return { user: undefined };
+      }
+    },
+    { user: undefined }
+  );
 
   return [state, setState];
 };

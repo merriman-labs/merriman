@@ -1,18 +1,14 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { withRouter } from 'react-router';
 import './App.css';
 import { AuthenticatedApp } from './AuthenticatedApp';
-import { useAuth, useAuth1 } from './hooks/useAuth';
+import { useUserContext } from './hooks/useUserContext';
 import { UnauthenticatedApp } from './UnauthenticatedApp';
 
-const App = () => {
-  const [user] = useAuth1();
+const App = withRouter(() => {
+  const user = useUserContext();
 
-  return user ? (
-    <AuthenticatedApp user={user} />
-  ) : (
-    <UnauthenticatedApp />
-  );
-};
+  return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
+});
 
 export default App;

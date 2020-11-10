@@ -49,7 +49,7 @@
   },
   "scripts": {
     "cli": "ts-node -P .\\server\\tsconfig.json server/cli/cli.ts run C:\\Users\\Johnny\\.merriman\\server-config.Movies.json",
-    "server:watch": "nodemon",
+    "server:watch": "nodemon --verbose",
     "server:debug": "nodemon --inspect",
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -1,39 +1,56 @@
 import React, { useState } from 'react';
-import { Redirect, useHistory, withRouter } from 'react-router';
-import { useAuth, useAuth1 } from './hooks/useAuth';
+import { withRouter } from 'react-router';
+import { useUserDispatchContext } from './hooks/useUserDispatchContext';
 import AuthManager from './managers/AuthManager';
 
 export const Login = withRouter(props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [, setUser] = useAuth1();
+  const dispatch = useUserDispatchContext();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await AuthManager.login({ username, password });
-    setUser({ user: response, action: 'LOGIN' });
+    dispatch({ user: response, action: 'LOGIN' });
     props.history.push('/');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="username">Username: </label>
-      <input
-        type="text"
-        value={username}
-        placeholder="enter a username"
-        onChange={({ target }) => setUsername(target.value)}
-      />
-      <div>
-        <label htmlFor="password">password: </label>
-        <input
-          type="password"
-          value={password}
-          placeholder="enter a password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
+    <div className="container">
+      <div className="row justify-content-md-center">
+        <div className="col col-md-4">
+          <div className="card">
+            <div className="card-body">
+              <div className="card-title">Please log in</div>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="username">Username</label>
+                  <input
+                    type="text"
+                    value={username}
+                    placeholder="enter your username"
+                    className="form-control"
+                    onChange={({ target }) => setUsername(target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    placeholder="enter your password"
+                    className="form-control"
+                    onChange={({ target }) => setPassword(target.value)}
+                  />
+                </div>
+                <button className="btn btn-outline-primary" type="submit">
+                  Login
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-      <button type="submit">Login</button>
-    </form>
+    </div>
   );
 });
