@@ -12,6 +12,8 @@ import { AppContext } from '../appContext';
 import { IController } from './IController';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
+import Validator from '../Validation/Validator';
+import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
 
 const Chance = chance.Chance();
 
@@ -20,8 +22,6 @@ export class MediaController implements IController {
   public router = Router();
   public path = '/media';
   constructor(
-    @inject(DependencyType.Managers.Library)
-    private _libraryManager: LibraryManager,
     @inject(DependencyType.Managers.Media) private _mediaManager: MediaManager
   ) {
     this.router.get('/search/:term', this.searchByTerm);
@@ -38,6 +38,7 @@ export class MediaController implements IController {
     this.router.post('/request-meta/:id', this.requestMeta);
     this.router.post('/request-srt/:id/:track', this.requestSrt);
     this.router.post('/request-webvtt/:id', this.requestWebVTT);
+    this.router.post('/registerLocal', ensureSuperadmin, this.registerLocal);
     this.router.put('/', this.update);
     this.router.delete('/:id', this.delete);
   }
@@ -50,6 +51,14 @@ export class MediaController implements IController {
     );
 
     res.json(results);
+  };
+
+  registerLocal: RequestHandler = async (req, res) => {
+    const userId = Validator.Utility.ObjectId(req.user._id);
+    const body = { ...req.body, userId };
+    const payload = Validator.Media.RegisterLocal(body);
+    const item = await this._mediaManager.registerLocal(payload);
+    return res.json(item);
   };
 
   update: RequestHandler = async (req, res) => {
@@ -117,11 +126,12 @@ export class MediaController implements IController {
   };
 
   upload: RequestHandler = (req, res) => {
+    const userId = Validator.Utility.ObjectId(req.user._id);
     const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     const busboy = new Busboy({ headers: req.headers });
     busboy.on('file', async (fieldname, file, filename) => {
       // Enter media into database
-      const mediaItem = await this._mediaManager.add(filename);
+      const mediaItem = await this._mediaManager.add(filename, userId);
       file.pipe(
         fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
       );

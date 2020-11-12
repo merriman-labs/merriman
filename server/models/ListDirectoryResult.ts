@@ -3,6 +3,7 @@ export interface DirectoryItem {
   isDirectory: boolean;
   fullPath: string;
   isAccessible?: boolean;
+  directoryPath: string;
 }
 
 export interface ListDirectoryResult {

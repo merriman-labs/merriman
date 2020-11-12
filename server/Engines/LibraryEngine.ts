@@ -11,7 +11,8 @@ export class LibraryEngine {
       R.assoc('_id', new ObjectId()),
       R.assoc('items', []),
       R.assoc('userId', new ObjectId(library.userId)),
-      R.assoc('createdAt', new Date())
+      R.assoc('createdAt', new Date()),
+      R.assoc('updatedAt', new Date())
     )(library) as Library;
   }
 }

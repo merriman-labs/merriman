@@ -26,7 +26,9 @@ class ValidationEngine {
       // @ts-ignore
       throw new Error(
         this._ajv.errors
-          ? this._ajv.errors.map((error) => `body ${error.message}`).join('\n')
+          ? this._ajv.errors
+              .map((error) => `body${error.dataPath} ${error.message}`)
+              .join('\n')
           : 'VALIDATION_ERROR'
       );
     }

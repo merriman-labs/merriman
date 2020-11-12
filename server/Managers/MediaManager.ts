@@ -7,6 +7,10 @@ import { MediaUtils } from '../Utilities/MediaUtils';
 import { AppContext } from '../appContext';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
+import { RegisterLocalPayload } from '../models/RegisterLocalPayload';
+import ThumbProvider from '../thumb-provider';
+import LibraryRA from '../ResourceAccess/LibraryRA';
+import { ObjectId } from 'mongodb';
 
 @injectable()
 export class MediaManager {
@@ -14,8 +18,46 @@ export class MediaManager {
     @inject(DependencyType.ResourceAccess.Media)
     private _mediaRA: MediaRA,
     @inject(DependencyType.Engines.Media)
-    private _mediaEngine: MediaEngine
+    private _mediaEngine: MediaEngine,
+    @inject(DependencyType.ResourceAccess.Library)
+    private _libraryRA: LibraryRA
   ) {}
+
+  async registerLocal(payload: RegisterLocalPayload) {
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
+    // register item
+    const mediaItem = await this._mediaRA.add({
+      _id: new ObjectId(),
+      created: new Date(),
+      filename: payload.filename,
+      isHidden: false,
+      name: payload.filename,
+      tags: payload.tags,
+      type: 'video',
+      updated: new Date(),
+      userId: new ObjectId(payload.userId),
+      views: 0,
+      path: payload.path
+    });
+
+    // create thumbnail
+    await ThumbProvider.ensureThumbs(
+      [payload.filename],
+      payload.path,
+      serverConfig.thumbLocation
+    ).catch(console.error);
+
+    // add to libraries
+    await Promise.all(
+      payload.libraries.map((library) =>
+        this._libraryRA.addMediaToLibrary(
+          mediaItem._id.toString(),
+          library._id.toString()
+        )
+      )
+    );
+    return mediaItem;
+  }
 
   get(includeHidden: boolean = false) {
     return this._mediaRA.get(includeHidden);
@@ -29,8 +71,12 @@ export class MediaManager {
     return this._mediaRA.getByLibraryId(libraryId);
   }
 
-  add(filename: string, path?: string) {
-    const newMediaItem = this._mediaEngine.initializeMedia(filename, path);
+  add(filename: string, userId: string, path?: string) {
+    const newMediaItem = this._mediaEngine.initializeMedia(
+      filename,
+      userId,
+      path
+    );
     return this._mediaRA.add(newMediaItem);
   }
 
@@ -49,7 +95,7 @@ export class MediaManager {
     return this._mediaRA.deleteById(id);
   }
 
-  async where(predicate: ((x: MediaItem) => boolean)) {
+  async where(predicate: (x: MediaItem) => boolean) {
     return (await this._mediaRA.get(true)).filter(predicate);
   }
 

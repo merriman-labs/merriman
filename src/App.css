@@ -33,3 +33,13 @@ body {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
+.filelist-item {
+  cursor: pointer;
+}
+.filelist-item.selected {
+  color: cyan;
+}
+.link {
+  cursor: pointer;
+}

@@ -5,7 +5,7 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class MediaEngine {
-  initializeMedia(filename: string, path?: string) {
+  initializeMedia(filename: string, userId: string, path?: string) {
     const ext = this._getExtension(filename);
     const id = new ObjectId();
     const newName = path ? filename : `${id.toHexString()}.${ext}`; // only use created name if path wasn't specified
@@ -19,7 +19,8 @@ export class MediaEngine {
       R.assoc('created', timestamp),
       R.assoc('updated', timestamp),
       R.assoc('isHidden', false),
-      x => (path ? R.assoc('path', path, x) : x)
+      R.assoc('userId', new ObjectId(userId)),
+      (x) => (path ? R.assoc('path', path, x) : x)
     )({}) as MediaItem;
   }
 

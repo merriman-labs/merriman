@@ -9,13 +9,13 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
-import { useUserContext } from './hooks/useUserContext';
-import { isAdmin } from './util/isAdmin';
+import { useUserContext } from '../hooks/useUserContext';
+import { isAdmin } from '../util/isAdmin';
 
 type NavigationProps = {};
 type NavigationState = { open: boolean };
 
-const Navigation = () => {
+const AdminNavigation = () => {
   const [isOpen, setOpen] = useState(false);
   const toggle = () => setOpen(R.not);
   const user = useUserContext();
@@ -28,18 +28,10 @@ const Navigation = () => {
         <Collapse isOpen={isOpen} className="ml-auto" navbar>
           <Nav>
             <NavItem>
-              <NavLink href="/media/new">New</NavLink>
+              <NavLink href="/admin">Admin</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/random">Random</NavLink>
-            </NavItem>
-            {isAdmin(user) ? (
-              <NavItem>
-                <NavLink href="/admin">Admin</NavLink>
-              </NavItem>
-            ) : null}
-            <NavItem>
-              <NavLink href="/logout">{user?.username} (Logout)</NavLink>
+              <NavLink href="/admin/register-media">Register Media</NavLink>
             </NavItem>
           </Nav>
         </Collapse>
@@ -48,4 +40,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default AdminNavigation;
