@@ -15,16 +15,8 @@ export class AuthController implements IController {
       '/login',
       function (req, res, next) {
         passport.authenticate('local', function (err, user) {
-          if (err) {
-            return res
-              .status(401)
-              .json({ success: false, errorDetails: err.message });
-          }
-          if (!user) {
-            return res.status(401).json({
-              success: false,
-              errorDetails: 'Wrong email or password.'
-            });
+          if (err || !user) {
+            return res.status(401).json('AUTH_INVALID');
           }
           return req.logIn(user, function (err) {
             if (err) {
