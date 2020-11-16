@@ -50,12 +50,13 @@
     "uuid": "^3.2.1"
   },
   "scripts": {
-    "cli": "ts-node -P .\\server\\tsconfig.json server/cli/cli.ts run C:\\Users\\Johnny\\.merriman\\server-config.Movies.json",
+    "cli": "ts-node -P .\\server\\tsconfig.json server/cli/cli.ts run C:\\Users\\Johnny\\.merriman\\server-config.Movies.json -a",
     "server:watch": "nodemon --verbose",
     "server:debug": "nodemon --inspect",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:server": "tsc -P .\\server\\tsconfig.json",
+    "prebuild:server": "rimraf dist_server/",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "precommit": "lint-staged",
@@ -98,6 +99,7 @@
     "node-sass": "^4.14.1",
     "nodemon": "^1.18.9",
     "prettier": "^2.1.2",
+    "rimraf": "^3.0.2",
     "ts-node": "^7.0.1"
   },
   "bin": {

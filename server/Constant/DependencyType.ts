@@ -26,6 +26,7 @@ export const DependencyType = {
     Admin: Symbol('AdminController'),
     Media: Symbol('MediaController'),
     Library: Symbol('LibraryController'),
+    Stream: Symbol('StreamController'),
     User: Symbol('UserController')
   },
   External: {

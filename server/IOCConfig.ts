@@ -6,6 +6,7 @@ import { AuthController } from './Controllers/AuthController';
 import { LibraryController } from './Controllers/LibraryController';
 import { MediaController } from './Controllers/MediaController';
 import { ServerController } from './Controllers/ServerController';
+import { StreamController } from './Controllers/StreamController';
 import { UserController } from './Controllers/UserController';
 import { AuthEngine } from './Engines/AuthEngine';
 import { LibraryEngine } from './Engines/LibraryEngine';
@@ -49,6 +50,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.Controller.Library).to(LibraryController);
   container.bind(DependencyType.Controller.Media).to(MediaController);
   container.bind(DependencyType.Controller.Server).to(ServerController);
+  container.bind(DependencyType.Controller.Stream).to(StreamController);
   container.bind(DependencyType.Controller.User).to(UserController);
 
   return container;

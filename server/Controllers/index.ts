@@ -14,6 +14,7 @@ export const AuthenticatedControllers: (
 export const UnauthenticatedControllers = (
   container: Container
 ): Array<IController> => [
-  container.get(DependencyType.Controller.User),
-  container.get(DependencyType.Controller.Auth)
+  container.get(DependencyType.Controller.Auth),
+  container.get(DependencyType.Controller.Stream),
+  container.get(DependencyType.Controller.User)
 ];
