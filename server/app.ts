@@ -29,6 +29,13 @@ export class Merriman {
   }
 
   private _setupMiddleware() {
+    morgan.token('user', function (req, res) {
+      // @ts-ignore
+      return req.user ? `${req.user.username} (${req.user._id})` : '--';
+    });
+    const logFormat =
+      '[:date[iso]] [:method] [:url] [:status] [:response-time[3]ms] [:remote-addr] [:user] [len :res[content-length]]';
+
     this._app.use(function (req, res, next) {
       // @ts-ignore
       res.header('Access-Control-Allow-Credentials', true);
@@ -45,7 +52,7 @@ export class Merriman {
       }
     });
     this._app.use(express.json({ limit: '5mb' }));
-    this._app.use(morgan('dev'));
+    this._app.use(morgan(logFormat));
     this._app.use(cors());
     this._app.use(busboy());
   }
