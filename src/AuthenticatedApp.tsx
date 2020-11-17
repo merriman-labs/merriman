@@ -33,17 +33,19 @@ export const AuthenticatedApp = () => {
         </Route>
         <Route path="/">
           <Navigation />
-          <Route path="/random" component={RandomVideo} />
-          <Route path="/media/new" component={NewVideosPage} exact />
-          <Route path="/media/edit/:id" component={MediaEdit} exact />
-          <Route path="/media/tag/:tag" component={MediaByTag} exact />
-          <Route path="/media/:media" component={StandaloneMedia} exact />
-          <Route
-            path="/videos/:library?/:video?"
-            component={VideoLibrariesPage}
-          />
-          <Route path="/logout" component={Logout} />
-          <Route exact path="/" component={Home} />
+          <Switch>
+            <Route path="/random" component={RandomVideo} />
+            <Route path="/media/new" component={NewVideosPage} exact />
+            <Route path="/media/edit/:id" component={MediaEdit} exact />
+            <Route path="/media/tag/:tag" component={MediaByTag} exact />
+            <Route path="/media/:media" component={StandaloneMedia} exact />
+            <Route
+              path="/videos/:library?/:video?"
+              component={VideoLibrariesPage}
+            />
+            <Route path="/logout" component={Logout} />
+            <Route exact path="/" component={Home} />
+          </Switch>
         </Route>
       </Switch>
     </>
