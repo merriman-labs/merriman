@@ -6,4 +6,5 @@ export interface MongoUser {
   username: string;
   password: string;
   roles: Array<UserRole>;
+  isActive: boolean;
 }

@@ -9,6 +9,7 @@ export class User {
   username: string;
   password: string;
   roles: Array<UserRole>;
+  isActive: boolean = false;
 
   constructor();
   constructor(user: UserCreatePayload);
@@ -27,7 +28,8 @@ export class User {
       _id: this._id,
       username: this.username,
       password: this.password,
-      roles: this.roles
+      roles: this.roles,
+      isActive: this.isActive
     };
   }
 
@@ -35,7 +37,8 @@ export class User {
     return {
       _id: this._id,
       username: this.username,
-      roles: this.roles
+      roles: this.roles,
+      isActive: this.isActive
     };
   }
 

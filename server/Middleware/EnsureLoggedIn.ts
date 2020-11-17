@@ -5,7 +5,8 @@ export function ensureLoggedIn(
   res: Response,
   next: NextFunction
 ) {
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
+  // @ts-ignore
+  if (!req.isAuthenticated || !req.isAuthenticated() || !req.user.isActive) {
     if (req.session) {
       req.session.returnTo = req.originalUrl || req.url;
     }
