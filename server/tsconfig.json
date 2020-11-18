@@ -9,7 +9,13 @@
     "lib": ["es2017"],
     "sourceMap": true,
     "target": "es5",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "typeRoots": ["./server/typings", "./node_modules/@types"]
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts"],
+  "files": ["index.d.ts"],
+  "ts-node": {
+    "files": true
+  }
 }

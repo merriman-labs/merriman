@@ -96,10 +96,11 @@ export const Video = (props: VideoProps) => {
             <Col md="3" sm="12">
               {details.tags && details.tags.length ? (
                 <>
-                  {details.tags.map(tag => (
+                  {details.tags.map((tag, i) => (
                     <Link
                       to={`/media/tag/${tag}`}
                       className="badge badge-pill badge-secondary mr-1"
+                      key={i}
                     >
                       {tag}
                     </Link>
@@ -118,7 +119,7 @@ export const Video = (props: VideoProps) => {
                 <DropdownMenu>
                   <DropdownItem header>Add to library</DropdownItem>
                   {libraries.map(library => (
-                    <DropdownItem onClick={() => handleAddLibrary(library)}>
+                    <DropdownItem onClick={() => handleAddLibrary(library)} key={library._id.toString()}>
                       {library.isMember ? <FaTimes /> : <FaPlus />}{' '}
                       {library.name}
                     </DropdownItem>

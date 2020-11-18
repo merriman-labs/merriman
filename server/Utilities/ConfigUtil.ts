@@ -10,6 +10,10 @@ export class Configuration {
   };
   name: string;
   port: number;
+  allowUnsafeFileAccess: boolean = false;
+  session: {
+    secret: string;
+  };
   constructor(data: any) {
     if (!this._isvalid(data)) throw new Error('Configuration must be complete');
     this.mediaLocation = data.mediaLocation;
@@ -17,6 +21,9 @@ export class Configuration {
     this.mongo = {
       connectionString: data.mongo.connectionString,
       database: data.mongo.database
+    };
+    this.session = {
+      secret: data.session.secret
     };
     this.name = data.name;
     this.port = data.port;
@@ -32,6 +39,9 @@ export class Configuration {
     mongo: _.conforms({
       connectionString: _.isString,
       database: _.isString
+    }),
+    session: _.conforms({
+      secret: _.isString
     }),
     name: _.isString,
     port: _.isInteger

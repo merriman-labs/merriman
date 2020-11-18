@@ -24,10 +24,12 @@ export type MediaItem = {
   srt?: string;
   webvtt?: string;
   isHidden: boolean;
+  userId: string | ObjectId;
 };
 
 export type Library = {
   _id: string | ObjectId;
+  userId: string | ObjectId;
   items: Array<string | ObjectId>;
   name: string;
 };
@@ -49,3 +51,5 @@ export interface ServerLog {
   message: string;
   additional?: any;
 }
+
+export type { RegisterLocalPayload } from './RegisterLocalPayload';

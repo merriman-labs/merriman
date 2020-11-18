@@ -165,7 +165,6 @@ const fonts = [
   'Morse',
   'Morse2',
   'Moscow',
-  'Mshebrew210',
   'Muzzle',
   'NScript',
   'NT Greek',

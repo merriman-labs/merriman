@@ -1,4 +1,4 @@
-import * as ajv from 'ajv';
+import ajv from 'ajv';
 import { Schema } from './Schemas/index';
 
 class ValidationEngine {
@@ -10,9 +10,9 @@ class ValidationEngine {
 
   private _registerSchemas() {
     const keys = Object.keys(Schema);
-    keys.forEach(key => {
+    keys.forEach((key) => {
       const methods = Object.keys(Schema[key]);
-      methods.forEach(method => {
+      methods.forEach((method) => {
         this._ajv.addSchema(Schema[key][method], `${key}.${method}`);
       });
     });
@@ -26,7 +26,9 @@ class ValidationEngine {
       // @ts-ignore
       throw new Error(
         this._ajv.errors
-          ? this._ajv.errors.map(error => `body ${error.message}`).join('\n')
+          ? this._ajv.errors
+              .map((error) => `body${error.dataPath} ${error.message}`)
+              .join('\n')
           : 'VALIDATION_ERROR'
       );
     }
