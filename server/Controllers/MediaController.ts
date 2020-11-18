@@ -51,6 +51,7 @@ export class MediaController implements IController {
   };
 
   registerLocal: RequestHandler = async (req, res) => {
+    // @ts-ignore
     const userId = Validator.Utility.ObjectId(req.user._id);
     const body = { ...req.body, userId };
     const payload = Validator.Media.RegisterLocal(body);
@@ -79,6 +80,7 @@ export class MediaController implements IController {
   };
 
   upload: RequestHandler = (req, res) => {
+    // @ts-ignore
     const userId = Validator.Utility.ObjectId(req.user._id);
     const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     const busboy = new Busboy({ headers: req.headers });

@@ -20,6 +20,7 @@ export class UserController implements IController {
   };
   create: RequestHandler = async (req, res, next) => {
     const result = await this._userManager.create(req.body);
+    // @ts-ignore
     req.login(result, (err) => {
       if (err) next(err);
       res.json(result);

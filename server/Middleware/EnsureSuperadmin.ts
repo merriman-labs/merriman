@@ -4,6 +4,7 @@ import { UserInfo } from '../models/User/UserInfo';
 import { isSuperadmin } from '../Utilities/isSuperadmin';
 
 export const ensureSuperadmin: RequestHandler = (req, res, next) => {
+  // @ts-ignore
   if (!req.user || !isSuperadmin(req.user as UserInfo)) {
     throw new UnauthorizedError('Superadmin is required!');
   }

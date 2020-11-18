@@ -24,6 +24,7 @@ export class LibraryController implements IController {
    * Create a new libary.
    */
   create: RequestHandler = async (req, res) => {
+    // @ts-ignore
     const library = { ...req.body, userId: req.user._id };
     const result = await this._libraryManager.insert(library);
     res.json(result);
