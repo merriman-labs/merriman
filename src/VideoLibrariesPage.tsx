@@ -6,6 +6,8 @@ import MediaListing from './MediaListing';
 import { sortBy } from 'ramda';
 import LibraryManager from './managers/LibraryManager';
 import MediaManager from './managers/MediaManager';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { RouterProps } from 'react-router';
 
 type VideoLibrariesPageProps = {
   match: {
@@ -14,7 +16,7 @@ type VideoLibrariesPageProps = {
       video: string;
     };
   };
-};
+} & RouterProps;
 
 type VideoLibrariesPageState = {
   media: Array<MediaItem>;
@@ -52,6 +54,36 @@ class VideoLibrariesPage extends Component<
       this._getLibraryDetails(id);
     }
   }
+
+  getCurrent = () => {
+    const id = this.props.match.params.video;
+
+    const currentIndex = this.state.media.findIndex(
+      (item) => item._id.toString() === id
+    );
+    return currentIndex;
+  };
+
+  getNext = () => {
+    const current = this.getCurrent();
+    if (current === -1 || this.state.media.length - 1 === current) return;
+    this.props.history.push(
+      `/videos/${this.props.match.params.library}/${this.state.media[
+        current + 1
+      ]._id.toString()}`
+    );
+  };
+
+  getPrev = () => {
+    const current = this.getCurrent();
+    if (current < 1) return;
+    this.props.history.push(
+      `/videos/${this.props.match.params.library}/${this.state.media[
+        current - 1
+      ]._id.toString()}`
+    );
+  };
+
   render() {
     const {
       match: {
@@ -73,36 +105,42 @@ class VideoLibrariesPage extends Component<
           <Col>{video ? <Video video={video} /> : <div />}</Col>
         </Row>
         <Row>
+          <Col>
+            <div className="btn-group">
+              <button className="btn btn-outline-info" onClick={this.getPrev}>
+                <FaArrowLeft />
+              </button>
+              <button className="btn btn-outline-info" onClick={this.getNext}>
+                <FaArrowRight />
+              </button>
+            </div>
+          </Col>
+        </Row>
+        <Row>
           {this.state.media && this.state.media.length ? (
-            <MediaListing
-              library={library}
-              media={sortBy(x => x.name, this.state.media)}
-            />
-          ) : (
-            <Col>
-              <h3>Select a library above.</h3>
-            </Col>
-          )}
+            <MediaListing library={library} media={this.state.media} />
+          ) : null}
         </Row>
       </Container>
     );
   }
   _getLibraryDetails(id: string) {
-    LibraryManager.getById(id).then(libraryDetails =>
+    LibraryManager.getById(id).then((libraryDetails) =>
       this.setState({ libraryDetails })
     );
   }
   _fetchVideoList(id: string) {
     if (id) {
-      return MediaManager.getByLibrary(id).then(media =>
-        this.setState({ media })
-      );
+      return MediaManager.getByLibrary(id).then((items) => {
+        const media = sortBy((x) => x.name, items);
+        this.setState({ media });
+      });
     }
   }
   _fetchLibraries() {
     return fetch('/api/library')
-      .then(response => response.json())
-      .then(libraries => this.setState({ libraries }));
+      .then((response) => response.json())
+      .then((libraries) => this.setState({ libraries }));
   }
   _toggleLibraryPicker() {
     this.setState({ dropdown: !this.state.dropdown });
