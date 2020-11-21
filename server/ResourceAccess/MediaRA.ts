@@ -12,10 +12,7 @@ export default class MediaRA {
    */
   get(includeHidden: boolean = false): Promise<Array<MediaItem>> {
     const query = includeHidden ? {} : { isHidden: false };
-    return this._db
-      .collection<MediaItem>('media')
-      .find(query)
-      .toArray();
+    return this._db.collection<MediaItem>('media').find(query).toArray();
   }
 
   getByTag(tag: string): Promise<Array<MediaItem>> {
@@ -82,6 +79,13 @@ export default class MediaRA {
     return this._db
       .collection<MediaItem>('media')
       .findOne({ _id: new ObjectId(id) });
+  }
+
+  findAllByFileName(filenames: Array<string>): Promise<Array<MediaItem>> {
+    return this._db
+      .collection<MediaItem>('media')
+      .find({ filename: { $in: filenames } })
+      .toArray();
   }
 
   /**

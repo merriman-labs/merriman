@@ -5,7 +5,6 @@ import { DependencyType } from '../Constant/DependencyType';
 import { HttpStatus } from '../Constant/HttpStatus';
 import { FileSystemManager } from '../Managers/FileSystemManager';
 import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
-import { isSuperadmin } from '../Utilities/isSuperadmin';
 import { IController } from './IController';
 
 @injectable()
@@ -28,10 +27,10 @@ export class ServerController implements IController {
     }
   }
 
-  listDirectory: RequestHandler = (req, res) => {
+  listDirectory: RequestHandler = async (req, res) => {
     const config = AppContext.get(AppContext.WellKnown.Config);
     const path = req.params.path || config.mediaLocation;
-    const files = this._fsManager.ls(path);
+    const files = await this._fsManager.ls(path);
     return res.json(files);
   };
 }
