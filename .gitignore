@@ -23,3 +23,7 @@ yarn-error.log*
 /server/data/db
 .cache
 dist_server
+
+*.config.js
+/media
+/thumbs
