@@ -10,3 +10,7 @@ export interface RequestLog {
   user?: UserInfo;
   contentLength: number;
 }
+
+export type RequestLogResponse = RequestLog & {
+  _id: string;
+};

@@ -11,11 +11,9 @@ import NewVideosPage from './NewVideos';
 import RandomVideo from './RandomVideo';
 import StandaloneMedia from './StandaloneMedia';
 import VideoLibrariesPage from './VideoLibrariesPage';
-import { UserInfo } from '../server/models/User/UserInfo';
 import { Logout } from './Logout';
-import { AuthProvider } from './context/UserContext';
-import { Admin } from './admin/Admin';
 import AdminNavigation from './admin/AdminNavigation';
+import { RequestLogs } from './admin/RequestLogs';
 
 export const AuthenticatedApp = () => {
   return (
@@ -30,6 +28,7 @@ export const AuthenticatedApp = () => {
             path="/admin/select-media/:library"
             component={SelectMedia}
           />
+          <Route path="/admin/request-logs" component={RequestLogs} />
         </Route>
         <Route path="/">
           <Navigation />

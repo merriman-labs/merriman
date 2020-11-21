@@ -17,12 +17,28 @@ export default class ServerLogRA {
   /**
    *
    */
+  getRequestLogs(params: {
+    skip: number;
+    limit: number;
+  }): Promise<Array<RequestLog>> {
+    return this._db
+      .collection<RequestLog>('request-logs')
+      .find()
+      .skip(params.skip)
+      .limit(params.limit)
+      .sort('date', -1)
+      .toArray();
+  }
+
+  /**
+   *
+   */
   async add(item: ServerLog): Promise<ServerLog> {
     await this._db.collection<ServerLog>('logs').insertOne(item);
     return item;
   }
 
   addRequestLog(item: RequestLog) {
-    return this._db.collection<RequestLog>('requests').insertOne(item);
+    return this._db.collection<RequestLog>('request-logs').insertOne(item);
   }
 }

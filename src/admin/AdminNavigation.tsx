@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Collapse,
   NavbarToggler,
@@ -9,17 +9,10 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
-import { useUserContext } from '../hooks/useUserContext';
-import { isAdmin } from '../util/isAdmin';
-
-type NavigationProps = {};
-type NavigationState = { open: boolean };
 
 const AdminNavigation = () => {
   const [isOpen, setOpen] = useState(false);
   const toggle = () => setOpen(R.not);
-  const user = useUserContext();
-
   return (
     <div>
       <Navbar color="dark" expand="md" dark>
@@ -32,6 +25,9 @@ const AdminNavigation = () => {
             </NavItem>
             <NavItem>
               <NavLink href="/admin/register-media">Register Media</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href="/admin/request-logs">Request Logs</NavLink>
             </NavItem>
           </Nav>
         </Collapse>

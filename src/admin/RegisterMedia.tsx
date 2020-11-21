@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import React, { useEffect, useState } from 'react';
-import { FaCheckCircle, FaFile, FaFolder, FaFolderPlus } from 'react-icons/fa';
+import { FaCheckCircle, FaFile, FaFolder } from 'react-icons/fa';
 import { Library, MediaItem } from '../../server/models';
 import {
   DirectoryItem,
@@ -8,7 +8,6 @@ import {
 } from '../../server/models/ListDirectoryResult';
 import { LibrarySelector } from '../components/LibrarySelector';
 import { TagInput } from '../components/TagInput';
-import LibraryManager from '../managers/LibraryManager';
 import MediaManager from '../managers/MediaManager';
 import ServerManager from '../managers/ServerManager';
 

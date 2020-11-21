@@ -29,6 +29,10 @@ export class ServerLogManager {
     });
   }
 
+  getRequestLogs(params: { skip: number; limit: number }) {
+    return this._logRA.getRequestLogs(params);
+  }
+
   addRequestLog(item: RequestLog) {
     return this._logRA.addRequestLog(item);
   }

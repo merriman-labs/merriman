@@ -53,3 +53,5 @@ export interface ServerLog {
 }
 
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
+
+export type { RequestLog, RequestLogResponse } from './RequestLog';

@@ -16,7 +16,6 @@ import { Library } from '../../server/models';
 import Container from 'reactstrap/lib/Container';
 import LibraryManager from '../managers/LibraryManager';
 import MediaManager from '../managers/MediaManager';
-import AdminNavigation from './AdminNavigation';
 
 type FileInfo = { uploaded: boolean; file: File };
 type AdminPanelProps = {};
