@@ -2,6 +2,7 @@ import ServerLogRA from '../ResourceAccess/ServerLogRA';
 import { ServerLogSeverity } from '../models';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
+import { RequestLog } from '../models/RequestLog';
 
 @injectable()
 export class ServerLogManager {
@@ -26,6 +27,10 @@ export class ServerLogManager {
       source,
       additional
     });
+  }
+
+  addRequestLog(item: RequestLog) {
+    return this._logRA.addRequestLog(item);
   }
 
   info(message: string, source?: string, additional?: any) {

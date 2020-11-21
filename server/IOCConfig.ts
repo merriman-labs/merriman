@@ -16,10 +16,12 @@ import { AuthManager } from './Managers/AuthManager';
 import { FileSystemManager } from './Managers/FileSystemManager';
 import { LibraryManager } from './Managers/LibraryManager';
 import { MediaManager } from './Managers/MediaManager';
+import { ServerLogManager } from './Managers/ServerLogManager';
 import { UserManager } from './Managers/UserManager';
 import { FileSystemRA } from './ResourceAccess/FileSystemRA';
 import LibraryRA from './ResourceAccess/LibraryRA';
 import MediaRA from './ResourceAccess/MediaRA';
+import ServerLogRA from './ResourceAccess/ServerLogRA';
 import { UserRA } from './ResourceAccess/UserRA';
 import { Configuration } from './Utilities/ConfigUtil';
 
@@ -33,6 +35,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.ResourceAccess.Library).to(LibraryRA);
   container.bind(DependencyType.ResourceAccess.Media).to(MediaRA);
   container.bind(DependencyType.ResourceAccess.FileSystem).to(FileSystemRA);
+  container.bind(DependencyType.ResourceAccess.ServerLog).to(ServerLogRA);
   container.bind(DependencyType.ResourceAccess.User).to(UserRA);
 
   container.bind(DependencyType.Engines.Auth).to(AuthEngine);
@@ -43,6 +46,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.Managers.Library).to(LibraryManager);
   container.bind(DependencyType.Managers.Media).to(MediaManager);
   container.bind(DependencyType.Managers.FileSystem).to(FileSystemManager);
+  container.bind(DependencyType.Managers.ServerLog).to(ServerLogManager);
   container.bind(DependencyType.Managers.User).to(UserManager);
 
   container.bind(DependencyType.Controller.Auth).to(AuthController);

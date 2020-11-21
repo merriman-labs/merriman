@@ -18,6 +18,7 @@ import { UserManager } from './Managers/UserManager';
 import { Container } from 'inversify';
 import AuthenticationStrategy from './Middleware/AuthenticationStrategy';
 import mongoSession from 'connect-mongodb-session';
+import Logger from './Middleware/Logger';
 
 export class Merriman {
   private _app = express();
@@ -36,21 +37,6 @@ export class Merriman {
     const logFormat =
       '[:date[iso]] [:method] [:url] [:status] [:response-time[3]ms] [:remote-addr] [:user] [len :res[content-length]]';
 
-    this._app.use(function (req, res, next) {
-      // @ts-ignore
-      res.header('Access-Control-Allow-Credentials', true);
-      res.header('Access-Control-Allow-Origin', req.headers.origin);
-      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-      res.header(
-        'Access-Control-Allow-Headers',
-        'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept'
-      );
-      if ('OPTIONS' == req.method) {
-        res.send(200);
-      } else {
-        next();
-      }
-    });
     this._app.use(express.json({ limit: '5mb' }));
     this._app.use(morgan(logFormat));
     this._app.use(cors());
@@ -116,6 +102,8 @@ export class Merriman {
   public async start() {
     // Set up dependency-injection container, make the MongoDB connection injectable
     const container = await setupIoc(this._config);
+    const logger = Logger(container);
+    this._app.use(logger);
     this._setupMiddleware();
     this._setupAuth(container);
     this._setupApi(container);
