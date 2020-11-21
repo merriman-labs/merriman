@@ -1,12 +1,19 @@
 import { ObjectId } from 'mongodb';
 import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
+import { ItemVisibility } from '../Constant/ItemVisibility';
 
 export type ServerConfiguration = {
   mediaLocation: string;
   thumbLocation: string;
 };
 
-export type MediaType = 'video' | 'audio' | 'image' | 'binary';
+export enum MediaType {
+  Video = 'video',
+  Audio = 'audio',
+  Image = 'image',
+  Book = 'book',
+  Binary = 'binary'
+}
 
 export type MediaItem = {
   _id: string | ObjectId;
@@ -25,6 +32,7 @@ export type MediaItem = {
   webvtt?: string;
   isHidden: boolean;
   userId: string | ObjectId;
+  visibility: ItemVisibility;
 };
 
 export type Library = {
