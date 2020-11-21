@@ -41,7 +41,7 @@ class NewVideosPage extends Component<
     this.state = {
       media: [],
       video: null,
-      count: 60
+      count: 27
     };
   }
 
