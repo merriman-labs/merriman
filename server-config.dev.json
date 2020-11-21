@@ -1,0 +1,14 @@
+{
+  "mediaLocation": "C:\\development\\merriman\\media\\",
+  "thumbLocation": "C:\\development\\merriman\\thumbs\\",
+  "name": "development",
+  "mongo": {
+    "connectionString": "mongodb://mongo.db",
+    "database": "development"
+  },
+  "session": {
+    "secret": "iO2CeydTu3MlB0i#WLz4cUn3LaU8p2Zm^oxjN%YOCg29jNBweFVttc7E212B&jX*"
+  },
+  "isConfigured": false,
+  "port": 4000
+}
