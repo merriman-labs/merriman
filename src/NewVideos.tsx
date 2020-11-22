@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Video } from './Video';
 import {
   Container,
   Row,
@@ -17,6 +16,7 @@ import ReactImageFallback from 'react-image-fallback';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Input from 'reactstrap/lib/Input';
 import MediaManager from './managers/MediaManager';
+import { MediaPlayer } from './components/MediaPlayer/MediaPlayer';
 type VideoLibrariesPageProps = {
   match: {
     params: {
@@ -73,7 +73,7 @@ class NewVideosPage extends Component<
         <Row>
           <Col>
             {this.state.video ? (
-              <Video video={this.state.video._id.toString()} />
+              <MediaPlayer id={this.state.video._id.toString()} />
             ) : (
               <div />
             )}

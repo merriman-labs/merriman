@@ -2,7 +2,6 @@ import React from 'react';
 import { Switch, Route, RouteComponentProps } from 'react-router';
 import AdminPanel from './admin/AdminPanel';
 import { RegisterMedia } from './admin/RegisterMedia';
-import SelectMedia from './admin/SelectMedia';
 import Home from './Home';
 import { MediaEdit } from './Media/Edit';
 import { MediaByTag } from './Media/MediaByTag';
@@ -23,11 +22,6 @@ export const AuthenticatedApp = () => {
           <AdminNavigation />
           <Route exact path="/admin" component={AdminPanel} />
           <Route path="/admin/register-media" component={RegisterMedia} />
-          <Route
-            exact
-            path="/admin/select-media/:library"
-            component={SelectMedia}
-          />
           <Route path="/admin/request-logs" component={RequestLogs} />
         </Route>
         <Route path="/">

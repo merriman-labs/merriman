@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
 import { ItemVisibility } from '../Constant/ItemVisibility';
+import { Library } from './Library';
 
 export type ServerConfiguration = {
   mediaLocation: string;
@@ -35,13 +36,6 @@ export type MediaItem = {
   visibility: ItemVisibility;
 };
 
-export type Library = {
-  _id: string | ObjectId;
-  userId: string | ObjectId;
-  items: Array<string | ObjectId>;
-  name: string;
-};
-
 export type LibraryDatabase = {
   libraries: Array<Library>;
 };
@@ -60,6 +54,7 @@ export interface ServerLog {
   additional?: any;
 }
 
+export type { Library };
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
 
 export type { RequestLog, RequestLogResponse } from './RequestLog';

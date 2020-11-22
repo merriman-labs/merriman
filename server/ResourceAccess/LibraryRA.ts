@@ -11,10 +11,7 @@ export default class LibraryRA {
    * Load all Libraries.
    */
   get(): Promise<Array<Library>> {
-    return this._db
-      .collection<Library>('libraries')
-      .find()
-      .toArray();
+    return this._db.collection<Library>('libraries').find().toArray();
   }
 
   async update(library: Library) {
@@ -43,21 +40,29 @@ export default class LibraryRA {
     return this._db.collection<Library>('libraries').insertOne(library);
   }
   async addMediaToLibrary(
-    media: string | Array<string>,
+    media: { id: string; order: number } | Array<{ id: string; order: number }>,
     library: string
   ): Promise<void> {
-    const ids = Array.isArray(media) ? media : [media];
-    const items = { $each: ids.map(id => new ObjectId(id)) };
+    const items = Array.isArray(media) ? media : [media];
+    const update = {
+      $each: items.map((id) => ({
+        id: new ObjectId(id.id),
+        order: id.order
+      }))
+    };
     await this._db
       .collection<Library>('libraries')
-      .findOneAndUpdate({ _id: new ObjectId(library) }, { $push: { items } });
+      .findOneAndUpdate(
+        { _id: new ObjectId(library) },
+        { $push: { items: update } }
+      );
   }
   async removeMediaToLibrary(media: string, library: string) {
     return this._db
       .collection<Library>('libraries')
       .findOneAndUpdate(
         { _id: new ObjectId(library) },
-        { $pull: { items: new ObjectId(media) } }
+        { $pull: { items: { id: new ObjectId(media) } } }
       );
   }
 

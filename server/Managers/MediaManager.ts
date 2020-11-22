@@ -39,12 +39,12 @@ export class MediaManager {
 
     // add to libraries
     await Promise.all(
-      payload.libraries.map((library) =>
-        this._libraryRA.addMediaToLibrary(
-          mediaItem._id.toString(),
-          library._id.toString()
-        )
-      )
+      payload.libraries.map(async (library) => {
+        const lib = await this._libraryRA.findById(library._id.toString());
+        const item = { id: mediaItem._id.toString(), order: lib.items.length };
+
+        this._libraryRA.addMediaToLibrary(item, library._id.toString());
+      })
     );
     return mediaItem;
   }

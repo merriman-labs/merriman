@@ -14,12 +14,13 @@ import { MediaSwitch } from './MediaSwitch';
 
 type MediaPlayerProps = {
   id: string;
-  onFinished: (media: MediaItem) => void;
+  onFinished?: (media: MediaItem) => void;
 };
 type MediaPlayerState = MediaItem | null;
 type LibraryDropdownItem = Library & { isMember: boolean };
 
 export const MediaPlayer = (props: MediaPlayerProps) => {
+  const { id, onFinished = () => {} } = props;
   const [details, setDetails] = useState<MediaPlayerState>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [libraries, setLibraries] = useState<Array<LibraryDropdownItem>>([]);
@@ -30,7 +31,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
       (lib) => ({
         ...lib,
-        isMember: lib.items.includes(props.id)
+        isMember: lib.items.some((item) => item.id === id)
       })
     );
     setLibraries(libs);
@@ -38,9 +39,16 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
 
   const handleAddLibrary = async (library: Library) => {
     if (library === null || details === null) return;
-    const items = library.items.includes(details._id.toString())
-      ? library.items.filter((item) => item !== details._id.toString())
-      : library.items.concat(details._id.toString());
+    const items = library.items.some(
+      (item) => item.id === details._id.toString()
+    )
+      ? library.items.filter(
+          (item) => item.id.toString() !== details._id.toString()
+        )
+      : library.items.concat({
+          id: details._id.toString(),
+          order: library.items.length
+        });
     await LibraryManager.update({
       ...library,
       items
@@ -50,15 +58,19 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
   useEffect(() => {
     const effect = async () => {
       await getLibraries();
-      const details = await MediaManager.details(props.id);
+      const details = await MediaManager.details(id);
       setDetails(details);
     };
     effect();
-  }, [props.id]);
+  }, [id]);
 
   return (
     <>
-      <Col>{details ? <MediaSwitch media={details} onFinished={props.onFinished} /> : null}</Col>
+      <Col>
+        {details ? (
+          <MediaSwitch media={details} onFinished={onFinished} />
+        ) : null}
+      </Col>
       <Row>
         {details ? (
           <>

@@ -29,8 +29,8 @@ export default class MediaRA {
         {
           $lookup: {
             from: 'media',
-            let: { items: '$items' },
-            pipeline: [{ $match: { $expr: { $in: ['$_id', '$$items'] } } }],
+            localField: 'items.id',
+            foreignField: '_id',
             as: 'items'
           }
         },
