@@ -86,7 +86,7 @@ export const RequestLogs = () => {
                   <span aria-hidden="true">&laquo;</span>
                 </Link>
               </li>
-              {R.range(R.clamp(0, page, page - 3), page + 4).map(
+              {R.range(R.clamp(0, page, page - 3), R.clamp(0, page, page - 3) + 8).map(
                 (pageNumber) => (
                   <li className={c({ 'page-item': true, active: pageNumber === page })}>
                     <Link
