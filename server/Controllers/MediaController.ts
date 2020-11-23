@@ -43,9 +43,8 @@ export class MediaController implements IController {
   searchByTerm: RequestHandler = async (req, res) => {
     const term = req.params.term;
     if (!term || term === '') return res.json([]);
-    const results = await this._mediaManager.where((item) =>
-      JSON.stringify(item).toLowerCase().includes(term.toLowerCase())
-    );
+    // @ts-ignore
+    const results = await this._mediaManager.search(term, req.user._id);
 
     res.json(results);
   };

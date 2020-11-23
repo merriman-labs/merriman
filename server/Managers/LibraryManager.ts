@@ -33,8 +33,14 @@ export class LibraryManager {
     return newLibrary;
   }
 
-  addMediaToLibrary(mediaId: string | Array<string>, libraryId: string) {
-    return this._libraryRA.addMediaToLibrary(mediaId, libraryId);
+  async addMediaToLibrary(mediaId: string | Array<string>, libraryId: string) {
+    mediaId = Array.isArray(mediaId) ? mediaId : [mediaId];
+    const library = await this._libraryRA.findById(libraryId);
+    const items = mediaId.map((id, idx) => ({
+      id,
+      order: library.items.length + idx
+    }));
+    return this._libraryRA.addMediaToLibrary(items, libraryId);
   }
 
   removeMediaFromLibrary(mediaId: string, libraryId: string) {

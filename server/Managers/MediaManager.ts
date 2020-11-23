@@ -22,6 +22,10 @@ export class MediaManager {
     private _libraryRA: LibraryRA
   ) {}
 
+  async search(term: string, userId: string) {
+    return this._mediaRA.search(term, userId);
+  }
+
   async registerLocal(payload: RegisterLocalPayload) {
     const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     const newItem = this._mediaEngine.initializeLocalMedia(payload);

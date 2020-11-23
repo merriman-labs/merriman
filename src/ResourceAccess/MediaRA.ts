@@ -1,4 +1,8 @@
-import { Library, MediaItem, RegisterLocalPayload } from '../../server/models';
+import {
+  MediaItem,
+  RegisterLocalPayload,
+  SearchResult
+} from '../../server/models';
 
 class MediaRA {
   list(): Promise<Array<MediaItem>> {
@@ -33,7 +37,7 @@ class MediaRA {
     return fetch(`/api/media/random`).then((x) => x.json());
   }
 
-  search(term: string): Promise<Array<MediaItem>> {
+  search(term: string): Promise<Array<SearchResult>> {
     return fetch(`/api/media/search/${term}`).then((x) => x.json());
   }
   async upload(data: FormData) {

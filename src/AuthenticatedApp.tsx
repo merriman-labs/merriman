@@ -5,7 +5,7 @@ import { RegisterMedia } from './admin/RegisterMedia';
 import Home from './Home';
 import { MediaEdit } from './Media/Edit';
 import { MediaByTag } from './Media/MediaByTag';
-import Navigation from './Navigation';
+import Navigation from './components/Navigation/Navigation';
 import NewVideosPage from './NewVideos';
 import RandomVideo from './RandomVideo';
 import StandaloneMedia from './StandaloneMedia';
@@ -13,6 +13,7 @@ import VideoLibrariesPage from './VideoLibrariesPage';
 import { Logout } from './Logout';
 import AdminNavigation from './admin/AdminNavigation';
 import { RequestLogs } from './admin/RequestLogs';
+import { Results } from './components/Results';
 
 export const AuthenticatedApp = () => {
   return (
@@ -28,6 +29,7 @@ export const AuthenticatedApp = () => {
           <Navigation />
           <Switch>
             <Route path="/random" component={RandomVideo} />
+            <Route path="/results" component={Results} />
             <Route path="/media/new" component={NewVideosPage} exact />
             <Route path="/media/edit/:id" component={MediaEdit} exact />
             <Route path="/media/tag/:tag" component={MediaByTag} exact />

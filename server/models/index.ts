@@ -58,3 +58,4 @@ export type { Library };
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
 
 export type { RequestLog, RequestLogResponse } from './RequestLog';
+export type { SearchResult } from './SearchResult';

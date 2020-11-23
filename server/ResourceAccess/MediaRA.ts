@@ -7,6 +7,26 @@ import { DependencyType } from '../Constant/DependencyType';
 @injectable()
 export default class MediaRA {
   constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
+
+  async search(term: string, userId: string): Promise<Array<any>> {
+    return this._db
+      .collection('media')
+      .aggregate([
+        { $match: { name: { $regex: `.*${term}.*`, $options: 'i' } } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $addFields: { user: { $arrayElemAt: ['$user', 0] } } },
+        { $project: { user: { password: 0, isActive: 0, roles: 0 } } }
+      ])
+      .toArray();
+  }
+
   /**
    *
    */

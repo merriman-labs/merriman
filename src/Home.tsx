@@ -22,12 +22,7 @@ class Home extends Component<any, HomeState> {
   render() {
     return (
       <>
-        <Jumbotron>
-          <h1 className="display-4">Hello, world!</h1>
-          <p className="lead">Welcome to node media server!</p>
-          <SearchPage />
-        </Jumbotron>
-        <Container>
+        <Container className="mt-3">
           <Row>
             <Col md="6">
               <ListGroup>
