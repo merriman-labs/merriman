@@ -55,7 +55,7 @@ export interface ServerLog {
 }
 
 export type { Library };
+export type { MediaState } from './MediaState';
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
-
 export type { RequestLog, RequestLogResponse } from './RequestLog';
 export type { SearchResult } from './SearchResult';

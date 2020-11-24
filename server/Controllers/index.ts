@@ -8,6 +8,7 @@ export const AuthenticatedControllers: (
   container.get(DependencyType.Controller.Admin),
   container.get(DependencyType.Controller.Media),
   container.get(DependencyType.Controller.Library),
+  container.get(DependencyType.Controller.MediaState),
   container.get(DependencyType.Controller.Server)
 ];
 

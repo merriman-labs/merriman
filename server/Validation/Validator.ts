@@ -12,6 +12,15 @@ class Validator {
       );
     }
   };
+  MediaState = {
+    SetWatchTime(item: any) {
+      return ValidationEngine.validate<{
+        userId: string;
+        mediaId: string;
+        time: number;
+      }>(item, 'mediaState.setWatchTime');
+    }
+  };
   Library = {
     Create(item: any) {
       return ValidationEngine.validate<{ name: string; userId: string }>(
