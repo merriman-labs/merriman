@@ -15,15 +15,15 @@ export const SearchBox = () => {
     }
   };
   return (
-    <div className="form-inline my-2 my-lg-0">
-      <div className="input-group">
+    <div className="form-inline my-2 my-lg-0 w-25">
+      <div className="input-group flex-fill">
         <input
           type="search"
           className="form-control"
           onChange={(e) => setTerm(e.target.value)}
           onKeyPress={handleKeyPress}
           value={term}
-          placeholder="Find media on this server..."
+          placeholder="Search"
         />
         <div className="input-group-append">
           <span className="btn btn-outline-primary">
