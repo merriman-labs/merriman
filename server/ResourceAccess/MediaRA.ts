@@ -88,6 +88,7 @@ export default class MediaRA {
    *
    */
   async add(item: MediaItem): Promise<MediaItem> {
+    item.userId = new ObjectId(item.userId);
     await this._db.collection<MediaItem>('media').insertOne(item);
     return item;
   }
@@ -127,7 +128,7 @@ export default class MediaRA {
       .collection<MediaItem>('media')
       .updateOne(
         { _id: new ObjectId(updatedVideo._id) },
-        { $set: R.omit(['_id'], updatedVideo) }
+        { $set: R.omit(['_id', 'userId'], updatedVideo) }
       );
   }
   async incrementPlayCount(id: string) {
