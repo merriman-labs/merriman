@@ -85,7 +85,11 @@ export class MediaController implements IController {
     const busboy = new Busboy({ headers: req.headers });
     busboy.on('file', async (fieldname, file, filename) => {
       // Enter media into database
-      const mediaItem = await this._mediaManager.add(filename, userId);
+      const mediaItem = await this._mediaManager.add(
+        filename,
+        userId,
+        serverConfig.mediaLocation
+      );
       file.pipe(
         fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
       );
