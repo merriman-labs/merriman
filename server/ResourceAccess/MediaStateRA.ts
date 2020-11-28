@@ -20,12 +20,16 @@ export class MediaStateRA {
     userId: string;
     time: number;
     isFinished: boolean;
+    createdAt: Date;
+    updatedAt: Date;
   }) {
     return this._db.collection<MediaState>('media-state').insertOne({
       isFinished: mediaState.isFinished,
       mediaId: new ObjectId(mediaState.mediaId),
       time: mediaState.time,
-      userId: new ObjectId(mediaState.userId)
+      userId: new ObjectId(mediaState.userId),
+      createdAt: mediaState.createdAt,
+      updatedAt: mediaState.updatedAt
     });
   }
 
@@ -35,6 +39,7 @@ export class MediaStateRA {
       userId: string;
       time: number;
       isFinished: boolean;
+      updatedAt: Date;
     }>
   ) {
     if (!mediaState.mediaId || !mediaState.userId) throw new Error();
@@ -43,7 +48,7 @@ export class MediaStateRA {
         mediaId: new ObjectId(mediaState.mediaId),
         userId: new ObjectId(mediaState.userId)
       },
-      { $set: R.omit(['mediaId', 'userId'], mediaState) }
+      { $set: R.omit(['mediaId', 'userId', 'createdAt'], mediaState) }
     );
   }
 }

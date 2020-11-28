@@ -5,6 +5,7 @@ import { LibraryManager } from '../Managers/LibraryManager';
 import { IController } from './IController';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
+import Validator from '../Validation/Validator';
 
 @injectable()
 export class LibraryController implements IController {
@@ -16,6 +17,8 @@ export class LibraryController implements IController {
   ) {
     this.router.get('/', this.list);
     this.router.post('/', this.create);
+    this.router.post('/addMedia', this.addItem);
+    this.router.post('/removeMedia', this.removeItem);
     this.router.put('/', this.update);
     this.router.get('/:id', this.getById);
     this.router.delete('/:id', this.deleteLibrary);
@@ -36,6 +39,28 @@ export class LibraryController implements IController {
     const library = req.body;
     const result = await this._libraryManager.update(library);
     return res.json(result);
+  };
+
+  addItem: RequestHandler = async (req, res) => {
+    let { libraryId, mediaId } = req.body;
+    libraryId = Validator.Utility.ObjectId(libraryId);
+    mediaId = Validator.Utility.ObjectId(mediaId);
+    const result = await this._libraryManager.addMediaToLibrary(
+      mediaId,
+      libraryId
+    );
+    res.json(result);
+  };
+
+  removeItem: RequestHandler = async (req, res) => {
+    let { libraryId, mediaId } = req.body;
+    libraryId = Validator.Utility.ObjectId(libraryId);
+    mediaId = Validator.Utility.ObjectId(mediaId);
+    const result = this._libraryManager.removeMediaFromLibrary(
+      mediaId,
+      libraryId
+    );
+    res.json(result);
   };
   /**
    * Delete a library by _id.

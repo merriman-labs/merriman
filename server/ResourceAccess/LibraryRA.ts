@@ -42,7 +42,7 @@ export default class LibraryRA {
   async addMediaToLibrary(
     media: { id: string; order: number } | Array<{ id: string; order: number }>,
     library: string
-  ): Promise<void> {
+  ) {
     const items = Array.isArray(media) ? media : [media];
     const update = {
       $each: items.map((id) => ({
@@ -50,20 +50,22 @@ export default class LibraryRA {
         order: id.order
       }))
     };
-    await this._db
+    return this._db
       .collection<Library>('libraries')
       .findOneAndUpdate(
         { _id: new ObjectId(library) },
         { $push: { items: update } }
-      );
+      )
+      .then((x) => x.value);
   }
-  async removeMediaToLibrary(media: string, library: string) {
+  removeMediaToLibrary(media: string, library: string) {
     return this._db
       .collection<Library>('libraries')
       .findOneAndUpdate(
         { _id: new ObjectId(library) },
         { $pull: { items: { id: new ObjectId(media) } } }
-      );
+      )
+      .then((x) => x.value);
   }
 
   /**
