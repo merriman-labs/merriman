@@ -23,7 +23,15 @@ export class MediaManager {
   ) {}
 
   async search(term: string, userId: string) {
-    return this._mediaRA.search(term, userId);
+    return this._mediaRA.search(term);
+  }
+
+  latest(skip: number, limit: number) {
+    return this._mediaRA.latest(skip, limit);
+  }
+
+  recentlyPlayed(userId: string, limit: number) {
+    return this._mediaRA.getRecentlyPlayed(userId, limit);
   }
 
   async registerLocal(payload: RegisterLocalPayload) {
@@ -65,10 +73,11 @@ export class MediaManager {
     return this._mediaRA.getByLibraryId(libraryId);
   }
 
-  add(filename: string, userId: string, path?: string) {
+  add(filename: string, userId: string, username: string, path?: string) {
     const newMediaItem = this._mediaEngine.initializeUploadedMedia(
       filename,
       userId,
+      username,
       path
     );
     return this._mediaRA.add(newMediaItem);

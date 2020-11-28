@@ -5,4 +5,6 @@ export interface MediaState {
   userId: ObjectId;
   time: number;
   isFinished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

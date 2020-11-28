@@ -12,20 +12,39 @@ export class MediaStateManager {
   getMediaTime(mediaId: string, userId: string) {
     return this._mediaStateRA.get(mediaId, userId);
   }
+  async create(
+    mediaId: string,
+    userId: string,
+    time: number,
+    isFinished: boolean = false
+  ) {
+    return this._mediaStateRA.create({
+      isFinished,
+      mediaId,
+      userId,
+      time,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+  }
   async setMediaTime(mediaId: string, time: number, userId: string) {
     const existing = await this._mediaStateRA.get(mediaId, userId);
     if (!existing) {
-      return this._mediaStateRA.create({
-        isFinished: false,
-        mediaId,
-        userId,
-        time
-      });
+      return this.create(mediaId, userId, time);
     }
     return this._mediaStateRA.update({
       mediaId,
       userId,
-      time
+      time,
+      isFinished: false,
+      updatedAt: new Date()
     });
+  }
+
+  async setIsFinished(mediaId: string, userId: string) {
+    const existing = await this._mediaStateRA.get(mediaId, userId);
+    if (!existing) {
+      await this.create(mediaId, userId, 0, true);
+    }
   }
 }

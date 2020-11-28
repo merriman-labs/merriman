@@ -15,6 +15,7 @@ export class MediaEngine {
   initializeUploadedMedia(
     filename: string,
     userId: string,
+    username: string,
     path?: string
   ): MediaItem {
     const ext = this._getExtension(filename);
@@ -30,9 +31,13 @@ export class MediaEngine {
       tags: [],
       type: this._mapMediaType(filename),
       updated: timestamp,
-      userId,
+      user: {
+        userId,
+        username
+      },
       views: 0,
-      visibility: ItemVisibility.public
+      visibility: ItemVisibility.public,
+      path
     };
   }
 
@@ -45,15 +50,18 @@ export class MediaEngine {
     const timestamp = new Date();
     return {
       _id,
-      created: timestamp,
+      createdAt: timestamp,
       filename: payload.filename,
       isHidden: false,
       name: payload.filename,
       path: payload.path,
       tags: payload.tags,
       type: this._mapMediaType(payload.filename),
-      updated: timestamp,
-      userId: payload.userId,
+      updatedAt: timestamp,
+      user: {
+        userId: payload.userId,
+        username: payload.username
+      },
       views: 0,
       visibility: ItemVisibility.public
     };
@@ -69,7 +77,7 @@ export class MediaEngine {
   }
   private _mapMediaType(filename: string): MediaType {
     const mediaTypeMap: Array<[RegExp, MediaType]> = [
-      [/(mp4|mpg|mpeg|avi|mov|flv|wmv|mkv)/i, MediaType.Video],
+      [/(mp4|mpg|mpeg|avi|mov|flv|wmv|mkv|m4v)/i, MediaType.Video],
       [/(jpg|jpeg|png|tiff|tif|bmp|gif|svg)/i, MediaType.Image],
       [/(mp3|ogg|aac|wma|aiff|wav|pcm|flac|alac)/i, MediaType.Audio],
       [/(pdf|epub)/i, MediaType.Book]

@@ -18,13 +18,17 @@ export enum MediaType {
 
 export type MediaItem = {
   _id: string | ObjectId;
+  user: {
+    username: string;
+    userId: string | ObjectId;
+  };
   filename: string;
   name: string;
   path?: string;
   type: MediaType;
   views: number;
-  created: Date;
-  updated: Date;
+  createdAt: Date;
+  updatedAt: Date;
   tags: Array<string>;
   subs?: Array<Subtitle>;
   subtitles?: string;
@@ -32,7 +36,6 @@ export type MediaItem = {
   srt?: string;
   webvtt?: string;
   isHidden: boolean;
-  userId: string | ObjectId;
   visibility: ItemVisibility;
 };
 
@@ -58,4 +61,3 @@ export type { Library };
 export type { MediaState } from './MediaState';
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
 export type { RequestLog, RequestLogResponse } from './RequestLog';
-export type { SearchResult } from './SearchResult';

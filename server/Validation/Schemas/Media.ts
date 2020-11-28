@@ -13,11 +13,15 @@ export const MediaSchema: Record<string, ObjectSchema> = {
   },
   registerLocal: {
     type: 'object',
-    required: ['userId', 'tags', 'libraries', 'filename', 'path'],
+    required: ['userId', 'username', 'tags', 'libraries', 'filename', 'path'],
     properties: {
       userId: {
         type: 'string',
         pattern: '[0-9a-f]{24}'
+      },
+      username: {
+        type: 'string',
+        minLength: 3
       },
       tags: {
         type: 'array',

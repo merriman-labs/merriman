@@ -30,7 +30,8 @@ export class MediaController implements IController {
     this.router.get('/list/byTag/:tag', this.getByTag);
     this.router.get('/tags', this.listTags);
     this.router.get('/list/byLibrary/:library', this.getMediaForLibrary);
-    this.router.get('/latest/:count', this.latest);
+    this.router.get('/latest', this.latest);
+    this.router.get('/recentlyPlayed', this.recentlyPlayed);
     this.router.post('/upload', this.upload);
     this.router.post('/request-meta/:id', this.requestMeta);
     this.router.post('/request-srt/:id/:track', this.requestSrt);
@@ -52,10 +53,18 @@ export class MediaController implements IController {
   registerLocal: RequestHandler = async (req, res) => {
     // @ts-ignore
     const userId = Validator.Utility.ObjectId(req.user._id);
-    const body = { ...req.body, userId };
+    const body = { ...req.body, userId, username: req.user.username };
     const payload = Validator.Media.RegisterLocal(body);
     const item = await this._mediaManager.registerLocal(payload);
     return res.json(item);
+  };
+
+  recentlyPlayed: RequestHandler = async (req, res) => {
+    // @ts-ignore
+    const userId = Validator.Utility.ObjectId(req.user._id);
+    const limit = parseInt(req.query.limit || 0);
+    const recent = await this._mediaManager.recentlyPlayed(userId, limit);
+    res.json(recent);
   };
 
   update: RequestHandler = async (req, res) => {
@@ -142,18 +151,13 @@ export class MediaController implements IController {
   };
 
   latest: RequestHandler = async (req, res) => {
-    const count = +req.params.count;
-    const allItems = await this._mediaManager.get();
-    const newest = allItems
-      .filter((x) => x.created !== undefined)
-      .sort((a, b) =>
-        moment(a.created).isBefore(b.created)
-          ? -1
-          : moment(b.created).isBefore(a.created)
-          ? 1
-          : 0
-      );
-    res.json(R.take(count, R.reverse(newest)));
+    let { skip = 0, limit = 20 } = req.query;
+
+    skip = parseInt(skip, 10);
+    limit = parseInt(limit, 10);
+
+    const allItems = await this._mediaManager.latest(skip, limit);
+    res.json(allItems);
   };
 
   requestMeta: RequestHandler = async (req, res) => {
