@@ -37,22 +37,16 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
     setLibraries(libs);
   };
 
-  const handleAddLibrary = async (library: Library) => {
+  const handleLibraryClick = async (library: Library) => {
     if (library === null || details === null) return;
-    const items = library.items.some(
-      (item) => item.id === details._id.toString()
-    )
-      ? library.items.filter(
-          (item) => item.id.toString() !== details._id.toString()
-        )
-      : library.items.concat({
-          id: details._id.toString(),
-          order: library.items.length
-        });
-    await LibraryManager.update({
-      ...library,
-      items
-    }).then(getLibraries);
+
+    const method = library.items.some((item) => item.id === id)
+      ? LibraryManager.removeMedia
+      : LibraryManager.addMedia;
+
+    await method(library._id.toString(), details._id.toString()).then(
+      getLibraries
+    );
   };
 
   useEffect(() => {
@@ -110,7 +104,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
                   <DropdownItem header>Add to library</DropdownItem>
                   {libraries.map((library) => (
                     <DropdownItem
-                      onClick={() => handleAddLibrary(library)}
+                      onClick={() => handleLibraryClick(library)}
                       key={library._id.toString()}
                     >
                       {library.isMember ? <FaTimes /> : <FaPlus />}{' '}

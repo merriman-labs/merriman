@@ -17,6 +17,11 @@ class MediaManager {
     };
     return MediaRA.registerLocal(payload);
   }
+
+  recentlyPlayed(limit: number) {
+    return MediaRA.recentlyPlayed(limit);
+  }
+
   update(item: MediaItem) {
     return MediaRA.update(item);
   }

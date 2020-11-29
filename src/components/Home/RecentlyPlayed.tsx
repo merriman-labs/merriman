@@ -3,16 +3,16 @@ import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
 import { MediaGrid } from '../../Media/MediaGrid';
 
-export const RecentItems = (props: { items?: number }) => {
+export const RecentlyPlayed = (props: { items?: number }) => {
   const [items, setItems] = useState<Array<MediaItem>>([]);
 
   useEffect(() => {
-    MediaManager.latest(props.items || 12).then(setItems);
-  }, [props.items]);
+    MediaManager.recentlyPlayed(props.items || 12).then(setItems);
+  }, []);
 
   return (
     <>
-      <h4 className="m-3">New stuff</h4>
+      <h4 className="m-3">Pick up where you left off</h4>
       <MediaGrid items={items} />
     </>
   );

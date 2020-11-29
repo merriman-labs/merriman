@@ -24,13 +24,13 @@ export class MediaEngine {
     const timestamp = new Date();
     return {
       _id,
-      created: timestamp,
+      createdAt: timestamp,
       filename,
       isHidden: false,
       name: newName,
       tags: [],
       type: this._mapMediaType(filename),
-      updated: timestamp,
+      updatedAt: timestamp,
       user: {
         userId,
         username

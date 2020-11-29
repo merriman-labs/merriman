@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
-import { MediaItem } from '../server/models';
-import { MediaPlayer } from './components/MediaPlayer/MediaPlayer';
-import MediaManager from './managers/MediaManager';
+import { MediaItem } from '../../server/models';
+import { MediaPlayer } from '../components/MediaPlayer/MediaPlayer';
+import MediaManager from '../managers/MediaManager';
 
 type VideoState = {
   current: MediaItem | null;
   history: Array<MediaItem>;
 };
 
-export default class RandomVideo extends Component<{}, VideoState> {
+export default class RandomMedia extends Component<{}, VideoState> {
   constructor(props: {}) {
     super(props);
     this.state = { current: null, history: [] };
@@ -28,8 +28,6 @@ export default class RandomVideo extends Component<{}, VideoState> {
         )}
         {this.state.current ? (
           <div>
-            <strong>{this.state.current.name}</strong>
-            <br />
             <span>{this.state.current.views} views</span>
             <br />
             <div className="btn-group mb-1">

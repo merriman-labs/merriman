@@ -1,8 +1,4 @@
-import {
-  MediaItem,
-  RegisterLocalPayload,
-  SearchResult
-} from '../../server/models';
+import { MediaItem, RegisterLocalPayload } from '../../server/models';
 
 class MediaRA {
   list(): Promise<Array<MediaItem>> {
@@ -10,7 +6,7 @@ class MediaRA {
   }
 
   registerLocal(
-    payload: Omit<RegisterLocalPayload, 'userId'>
+    payload: Omit<RegisterLocalPayload, 'userId' | 'username'>
   ): Promise<MediaItem> {
     return fetch('/api/media/registerLocal', {
       method: 'POST',
@@ -19,6 +15,12 @@ class MediaRA {
         'Content-Type': 'application/json'
       }
     }).then((x) => x.json());
+  }
+
+  recentlyPlayed(limit: number): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/recentlyPlayed?limit=${limit}`).then((x) =>
+      x.json()
+    );
   }
 
   update(item: MediaItem): Promise<{ status: 'OK' }> {
@@ -30,14 +32,16 @@ class MediaRA {
       }
     }).then((x) => x.json());
   }
-  latest(count: number): Promise<Array<MediaItem>> {
-    return fetch(`/api/media/latest/${count}`).then((x) => x.json());
+  latest(limit: number, skip: number = 0): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/latest?skip=${skip}&limit=${limit}`).then((x) =>
+      x.json()
+    );
   }
   random(): Promise<MediaItem> {
     return fetch(`/api/media/random`).then((x) => x.json());
   }
 
-  search(term: string): Promise<Array<SearchResult>> {
+  search(term: string): Promise<Array<MediaItem>> {
     return fetch(`/api/media/search/${term}`).then((x) => x.json());
   }
   async upload(data: FormData) {

@@ -8,6 +8,7 @@ import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import { TagsList } from './Media/TagsList';
 import LibraryManager from './managers/LibraryManager';
 import { RecentItems } from './components/Home/RecentItems';
+import { RecentlyPlayed } from './components/Home/RecentlyPlayed';
 
 type HomeState = {
   libraries: Array<Library> | null;
@@ -23,6 +24,7 @@ class Home extends Component<any, HomeState> {
   render() {
     return (
       <>
+        <RecentlyPlayed />
         <RecentItems />
         <Container className="mt-3">
           <Row>
