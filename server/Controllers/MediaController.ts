@@ -104,7 +104,7 @@ export class MediaController implements IController {
       );
 
       busboy.on('finish', function () {
-        if (filename.toLowerCase().indexOf('.mp4')) {
+        if (filename.toLowerCase().includes('.mp4')) {
           // Make sure media has a thumbnail
           ThumbProvider.ensureThumbs(
             [mediaItem.filename],
