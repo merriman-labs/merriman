@@ -30,30 +30,7 @@ class AdminPanel extends Component<AdminPanelProps, AdminPanelState> {
       files: []
     };
   }
-  _handleFileUploadChanged({
-    target: { files }
-  }: React.ChangeEvent<HTMLInputElement>) {
-    const fileObjects = [...files]
-      .map((file) => ({ file }))
-      .map(R.assoc('uploaded', false));
 
-    this.setState({ files: fileObjects });
-  }
-  _handleFileUpload = () => {
-    this.state.files.forEach(({ file }) => this._sendFile(file));
-  };
-  _sendFile(file: File) {
-    const data = new FormData();
-    data.append('file', file);
-
-    return MediaManager.upload(data).then((_) =>
-      this.setState(({ files }) => ({
-        files: files.map((f) =>
-          f.file.name === file.name ? R.assoc('uploaded', true, f) : f
-        )
-      }))
-    );
-  }
   _handleStopServer = () => {
     fetch('/api/admin/stop', { method: 'POST' });
   };

@@ -15,6 +15,7 @@ import { RequestLogs } from './admin/RequestLogs';
 import { Results } from './components/Results';
 import { SideNavigation } from './components/Navigation/SideNavigation';
 import { Recent } from './Media/Recent';
+import { Upload } from './Media/Upload';
 
 export const AuthenticatedApp = () => {
   return (
@@ -37,6 +38,7 @@ export const AuthenticatedApp = () => {
                 <Route path="/media/recent" component={Recent} exact />
                 <Route path="/media/edit/:id" component={MediaEdit} exact />
                 <Route path="/media/tag/:tag" component={MediaByTag} exact />
+                <Route path="/media/upload" component={Upload} exact />
                 <Route path="/media/:media" component={StandaloneMedia} exact />
                 <Route
                   path="/videos/:library?/:video?"

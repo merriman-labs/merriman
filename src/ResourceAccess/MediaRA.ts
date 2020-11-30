@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { MediaItem, RegisterLocalPayload } from '../../server/models';
 
 class MediaRA {
@@ -44,10 +45,11 @@ class MediaRA {
   search(term: string): Promise<Array<MediaItem>> {
     return fetch(`/api/media/search/${term}`).then((x) => x.json());
   }
-  async upload(data: FormData) {
-    await fetch('/api/media/upload', {
-      method: 'POST',
-      body: data
+  async upload(data: FormData, updateProgress: (progress: number) => void) {
+    await axios.post('/api/media/upload', data, {
+      onUploadProgress: (p) => {
+        updateProgress(Math.ceil((p.loaded / p.total) * 100));
+      }
     });
   }
   tags(): Promise<{ tags: Array<string> }> {
