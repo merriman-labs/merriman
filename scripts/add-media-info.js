@@ -4,7 +4,7 @@ const moment = require('moment');
 const dbName = 'development';
 
 /**
- * Add ordinal to library items and visiblity to library
+ * Change created and updated to createdAt and updatedAt on media items
  */
 async function addMediaInfo() {
   const client = await MongoClient.connect('mongodb://mongo.db');
