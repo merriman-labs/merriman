@@ -7,13 +7,18 @@ import {
   FaDiceFive
 } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { Collapse, NavbarToggler } from 'reactstrap';
+import { Collapse, Navbar, NavbarToggler } from 'reactstrap';
 import { SearchBox } from './SearchBox';
 
 export const MobileNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark d-md-none">
+    <Navbar
+      color="dark"
+      expand="lg"
+      dark
+      className="d-md-none"
+    >
       <a className="navbar-brand" href="#">
         Merriman
       </a>
@@ -56,6 +61,6 @@ export const MobileNavbar = () => {
           <SearchBox />
         </form>
       </Collapse>
-    </nav>
+    </Navbar>
   );
 };

@@ -6,14 +6,12 @@ export class MongoFactory {
   static async init(config: Configuration) {
     const { mongo } = config;
 
-    const db = await (await MongoClient.connect(
-      mongo.connectionString,
-      { useUnifiedTopology: true }
-    )).db(mongo.database);
+    const db = await (
+      await MongoClient.connect(mongo.connectionString, {
+        useUnifiedTopology: true
+      })
+    ).db(mongo.database);
     MongoFactory.db = db;
     return db;
-  }
-  static create() {
-    return MongoFactory.db;
   }
 }
