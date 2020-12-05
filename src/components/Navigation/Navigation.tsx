@@ -9,7 +9,7 @@ const Navigation = () => {
   const toggle = () => setOpen(R.not);
 
   return (
-    <Navbar color="dark" expand="md" dark>
+    <Navbar color="dark" expand="md" dark className="d-none d-md-block">
       <a className="navbar-brand d-inline-block d-md-none" href="/">
         Merriman
       </a>

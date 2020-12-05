@@ -97,12 +97,14 @@ export const Upload = () => {
               />
             ))}
           </div>
-          <button
-            className="btn btn-outline-success btn-block"
-            onClick={handleUploadall}
-          >
-            Upload All
-          </button>
+          {files.length ? (
+            <button
+              className="btn btn-outline-success btn-block"
+              onClick={handleUploadall}
+            >
+              Upload All
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

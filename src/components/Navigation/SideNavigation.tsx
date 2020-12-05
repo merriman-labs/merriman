@@ -9,7 +9,7 @@ export const SideNavigation = () => {
   return (
     <div
       className={c({
-        'side-nav list-group list-group-flush': true,
+        'side-nav list-group list-group-flush d-none d-md-block': true,
         open: isOpen
       })}
     >

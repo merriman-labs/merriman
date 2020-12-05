@@ -16,6 +16,7 @@ import { Results } from './components/Results';
 import { SideNavigation } from './components/Navigation/SideNavigation';
 import { Recent } from './Media/Recent';
 import { Upload } from './Media/Upload';
+import { MobileNavbar } from './components/Navigation/MobileNavbar';
 
 export const AuthenticatedApp = () => {
   return (
@@ -28,6 +29,7 @@ export const AuthenticatedApp = () => {
           <Route path="/admin/request-logs" component={RequestLogs} />
         </Route>
         <Route path="/">
+          <MobileNavbar />
           <Navigation />
           <div className="main d-flex">
             <SideNavigation />

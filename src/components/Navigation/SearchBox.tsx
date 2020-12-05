@@ -1,9 +1,6 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useHistory } from 'react-router';
-import {} from 'reactstrap';
-
-type SearchProps = { onUpdate: (term: string) => void };
 
 export const SearchBox = () => {
   const [term, setTerm] = useState('');
@@ -15,7 +12,7 @@ export const SearchBox = () => {
     }
   };
   return (
-    <div className="form-inline my-2 my-lg-0 w-25">
+    <div className="form-inline my-2 my-lg-0 w-md-25 w-sm-100">
       <div className="input-group flex-fill">
         <input
           type="search"
