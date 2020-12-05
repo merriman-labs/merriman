@@ -3,16 +3,20 @@ import * as R from 'ramda';
 import { Library } from '../models';
 import { ObjectId } from 'mongodb';
 import { injectable } from 'inversify';
+import { ItemVisibility } from '../Constant/ItemVisibility';
 
 @injectable()
 export class LibraryEngine {
   initializeLibrary(library: { name: string; userId: string }): Library {
-    return R.pipe(
-      R.assoc('_id', new ObjectId()),
-      R.assoc('items', []),
-      R.assoc('userId', new ObjectId(library.userId)),
-      R.assoc('createdAt', new Date()),
-      R.assoc('updatedAt', new Date())
-    )(library) as Library;
+    const createdAt = new Date();
+    return {
+      _id: new ObjectId(),
+      name: library.name,
+      items: [],
+      userId: new ObjectId(library.userId),
+      createdAt,
+      updatedAt: createdAt,
+      visibility: ItemVisibility.public
+    };
   }
 }

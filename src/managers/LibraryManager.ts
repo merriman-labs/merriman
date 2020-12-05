@@ -17,6 +17,12 @@ class LibraryManager {
   delete(id: string) {
     return LibraryRA.delete(id);
   }
+  addMedia(libraryId: string, mediaId: string) {
+    return LibraryRA.addItem(libraryId, mediaId);
+  }
+  removeMedia(libraryId: string, mediaId: string) {
+    return LibraryRA.removeItem(libraryId, mediaId);
+  }
 }
 
 export default new LibraryManager();

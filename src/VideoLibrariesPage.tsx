@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Video } from './Video';
 import { Container, Row, Col } from 'reactstrap';
 import { MediaItem, Library } from '../server/models';
 import MediaListing from './MediaListing';
@@ -8,6 +7,7 @@ import LibraryManager from './managers/LibraryManager';
 import MediaManager from './managers/MediaManager';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { RouterProps } from 'react-router';
+import { MediaPlayer } from './components/MediaPlayer/MediaPlayer';
 
 type VideoLibrariesPageProps = {
   match: {
@@ -102,7 +102,7 @@ class VideoLibrariesPage extends Component<
           </Col>
         </Row>
         <Row>
-          <Col>{video ? <Video video={video} /> : <div />}</Col>
+          <Col>{video ? <MediaPlayer id={video} onFinished={() => this.getNext()} /> : <div />}</Col>
         </Row>
         <Row>
           <Col>

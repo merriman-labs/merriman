@@ -1,22 +1,34 @@
 import { ObjectId } from 'mongodb';
 import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
+import { ItemVisibility } from '../Constant/ItemVisibility';
+import { Library } from './Library';
 
 export type ServerConfiguration = {
   mediaLocation: string;
   thumbLocation: string;
 };
 
-export type MediaType = 'video' | 'audio' | 'image' | 'binary';
+export enum MediaType {
+  Video = 'video',
+  Audio = 'audio',
+  Image = 'image',
+  Book = 'book',
+  Binary = 'binary'
+}
 
 export type MediaItem = {
   _id: string | ObjectId;
+  user: {
+    username: string;
+    userId: string | ObjectId;
+  };
   filename: string;
   name: string;
   path?: string;
   type: MediaType;
   views: number;
-  created: Date;
-  updated: Date;
+  createdAt: Date;
+  updatedAt: Date;
   tags: Array<string>;
   subs?: Array<Subtitle>;
   subtitles?: string;
@@ -24,14 +36,7 @@ export type MediaItem = {
   srt?: string;
   webvtt?: string;
   isHidden: boolean;
-  userId: string | ObjectId;
-};
-
-export type Library = {
-  _id: string | ObjectId;
-  userId: string | ObjectId;
-  items: Array<string | ObjectId>;
-  name: string;
+  visibility: ItemVisibility;
 };
 
 export type LibraryDatabase = {
@@ -52,6 +57,7 @@ export interface ServerLog {
   additional?: any;
 }
 
+export type { Library };
+export type { MediaState } from './MediaState';
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
-
 export type { RequestLog, RequestLogResponse } from './RequestLog';

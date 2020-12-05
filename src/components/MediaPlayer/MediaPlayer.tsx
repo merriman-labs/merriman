@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row } from 'reactstrap';
-import { MediaItem, Library } from '../server/models';
 import { FaPencilAlt, FaFolderPlus, FaTimes, FaPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Dropdown from 'reactstrap/lib/Dropdown';
@@ -8,78 +7,63 @@ import DropdownItem from 'reactstrap/lib/DropdownItem';
 import DropdownMenu from 'reactstrap/lib/DropdownMenu';
 import DropdownToggle from 'reactstrap/lib/DropdownToggle';
 import * as R from 'ramda';
-import LibraryManager from './managers/LibraryManager';
-import MediaManager from './managers/MediaManager';
+import { Library, MediaItem } from '../../../server/models';
+import LibraryManager from '../../managers/LibraryManager';
+import MediaManager from '../../managers/MediaManager';
+import { MediaSwitch } from './MediaSwitch';
 
-type VideoProps = {
-  video: string;
+type MediaPlayerProps = {
+  id: string;
+  onFinished?: (media: MediaItem) => void;
 };
-type VideoState = MediaItem | null;
+type MediaPlayerState = MediaItem | null;
 type LibraryDropdownItem = Library & { isMember: boolean };
 
-export const Video = (props: VideoProps) => {
-  const [details, setDetails] = useState<VideoState>(null);
+export const MediaPlayer = (props: MediaPlayerProps) => {
+  const { id, onFinished = () => {} } = props;
+  const [details, setDetails] = useState<MediaPlayerState>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [libraries, setLibraries] = useState<Array<LibraryDropdownItem>>([]);
-  const { video } = props;
+
   window.scrollTo({ top: 0 });
 
   const getLibraries = async () => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
-      lib => ({
+      (lib) => ({
         ...lib,
-        isMember: lib.items.includes(props.video)
+        isMember: lib.items.some((item) => item.id === id)
       })
     );
     setLibraries(libs);
   };
 
-  const handleAddLibrary = async (library: Library) => {
+  const handleLibraryClick = async (library: Library) => {
     if (library === null || details === null) return;
-    const items = library.items.includes(details._id.toString())
-      ? library.items.filter(item => item !== details._id.toString())
-      : library.items.concat(details._id.toString());
-    await LibraryManager.update({
-      ...library,
-      items
-    }).then(getLibraries);
+
+    const method = library.items.some((item) => item.id === id)
+      ? LibraryManager.removeMedia
+      : LibraryManager.addMedia;
+
+    await method(library._id.toString(), details._id.toString()).then(
+      getLibraries
+    );
   };
 
-  useEffect(
-    () => {
-      const effect = async () => {
-        await getLibraries();
-        const details = await MediaManager.details(props.video);
-        setDetails(details);
-      };
-      effect();
-    },
-    [props.video]
-  );
+  useEffect(() => {
+    const effect = async () => {
+      await getLibraries();
+      const details = await MediaManager.details(id);
+      setDetails(details);
+    };
+    effect();
+  }, [id]);
 
   return (
     <>
       <Col>
-        {video ? (
-          <video
-            className="video-player"
-            id="video-player"
-            controls
-            src={`/api/media/play/${video}`}
-          >
-            {details && details.webvtt ? (
-              <track
-                label="English"
-                kind="subtitles"
-                srcLang="en"
-                src={`/api/media/captions/${video}`}
-                default
-              />
-            ) : null}
-          </video>
-        ) : (
-          <div />
-        )}
+        {details ? (
+          <MediaSwitch media={details} onFinished={onFinished} />
+        ) : null}
       </Col>
       <Row>
         {details ? (
@@ -118,8 +102,11 @@ export const Video = (props: VideoProps) => {
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Add to library</DropdownItem>
-                  {libraries.map(library => (
-                    <DropdownItem onClick={() => handleAddLibrary(library)} key={library._id.toString()}>
+                  {libraries.map((library) => (
+                    <DropdownItem
+                      onClick={() => handleLibraryClick(library)}
+                      key={library._id.toString()}
+                    >
                       {library.isMember ? <FaTimes /> : <FaPlus />}{' '}
                       {library.name}
                     </DropdownItem>

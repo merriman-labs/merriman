@@ -43,3 +43,54 @@ body {
 .link {
   cursor: pointer;
 }
+
+.side-nav {
+  background-color: var(--gray-dark);
+  width: 54px;
+}
+
+.side-nav .list-group-item {
+  cursor: pointer;
+}
+
+.side-nav.open {
+  min-width: 175px;
+  width: 175px;
+}
+
+.side-nav:not(.open) .list-group-item span {
+  display: none;
+}
+
+.truncate-text-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  max-height: 3rem;
+}
+
+.nav-link {
+  cursor: pointer;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .w-md-25 {
+    width: 25% !important;
+  }
+}
+@media (max-width: 767px) {
+  .w-sm-100 {
+    width: 100% !important;
+  }
+}

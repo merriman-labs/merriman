@@ -4,6 +4,7 @@ export const DependencyType = {
     FileSystem: Symbol('FileSystemManager'),
     Media: Symbol('MediaManager'),
     Library: Symbol('LibraryManager'),
+    MediaState: Symbol('MediaStateManager'),
     ServerLog: Symbol('ServerLogManager'),
     User: Symbol('UserManager')
   },
@@ -12,6 +13,7 @@ export const DependencyType = {
     FileSystem: Symbol('FileSystemResourceAccess'),
     Media: Symbol('MediaResourceAccess'),
     Library: Symbol('LibraryResourceAccess'),
+    MediaState: Symbol('MediaStateResourceAccess'),
     ServerLog: Symbol('ServerLogResourceAccess'),
     User: Symbol('UserManager')
   },
@@ -26,6 +28,7 @@ export const DependencyType = {
     Admin: Symbol('AdminController'),
     Media: Symbol('MediaController'),
     Library: Symbol('LibraryController'),
+    MediaState: Symbol('MediaStateController'),
     Stream: Symbol('StreamController'),
     User: Symbol('UserController')
   },

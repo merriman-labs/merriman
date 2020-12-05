@@ -7,6 +7,8 @@ import { Library } from '../server/models';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import { TagsList } from './Media/TagsList';
 import LibraryManager from './managers/LibraryManager';
+import { RecentItems } from './components/Home/RecentItems';
+import { RecentlyPlayed } from './components/Home/RecentlyPlayed';
 
 type HomeState = {
   libraries: Array<Library> | null;
@@ -22,12 +24,9 @@ class Home extends Component<any, HomeState> {
   render() {
     return (
       <>
-        <Jumbotron>
-          <h1 className="display-4">Hello, world!</h1>
-          <p className="lead">Welcome to node media server!</p>
-          <SearchPage />
-        </Jumbotron>
-        <Container>
+        <RecentlyPlayed />
+        <RecentItems />
+        <Container className="mt-3">
           <Row>
             <Col md="6">
               <ListGroup>
@@ -68,7 +67,7 @@ class Home extends Component<any, HomeState> {
     );
   }
   private _fetchLibraries() {
-    return LibraryManager.list().then(libraries =>
+    return LibraryManager.list().then((libraries) =>
       this.setState({ libraries })
     );
   }

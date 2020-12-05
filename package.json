@@ -14,6 +14,7 @@
     "@johnny.reina/convert-srt": "^0.2.1",
     "@johnny.reina/json-db": "^2.0.5",
     "ajv": "^6.12.6",
+    "axios": "^0.21.0",
     "bcrypt": "^5.0.0",
     "bluebird": "^3.7.2",
     "body-parser": "^1.18.2",
@@ -51,8 +52,7 @@
   },
   "scripts": {
     "cli": "ts-node -P .\\server\\tsconfig.json server/cli/cli.ts run C:\\Users\\Johnny\\.merriman\\server-config.Movies.json -a",
-    "server:watch": "nodemon --verbose",
-    "server:debug": "nodemon --inspect",
+    "server:watch": "tsnd -P .\\server\\tsconfig.json server/server.ts server-config.dev.json -a",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:server": "tsc -P .\\server\\tsconfig.json",
@@ -100,7 +100,8 @@
     "nodemon": "^1.18.9",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
-    "ts-node": "^7.0.1"
+    "ts-node": "^7.0.1",
+    "ts-node-dev": "^1.0.0"
   },
   "bin": {
     "merriman": ".\\dist_server\\cli\\cli.js"

@@ -7,15 +7,31 @@ import { DependencyType } from '../Constant/DependencyType';
 @injectable()
 export default class MediaRA {
   constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
+
+  latest(skip: number, limit: number) {
+    return this._db
+      .collection<MediaItem>('media')
+      .aggregate([
+        { $sort: { createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit }
+      ])
+      .toArray();
+  }
+
+  async search(term: string): Promise<Array<MediaItem>> {
+    return this._db
+      .collection('media')
+      .find({ name: { $regex: `.*${term}.*`, $options: 'i' } })
+      .toArray();
+  }
+
   /**
    *
    */
   get(includeHidden: boolean = false): Promise<Array<MediaItem>> {
     const query = includeHidden ? {} : { isHidden: false };
-    return this._db
-      .collection<MediaItem>('media')
-      .find(query)
-      .toArray();
+    return this._db.collection<MediaItem>('media').find(query).toArray();
   }
 
   getByTag(tag: string): Promise<Array<MediaItem>> {
@@ -32,8 +48,8 @@ export default class MediaRA {
         {
           $lookup: {
             from: 'media',
-            let: { items: '$items' },
-            pipeline: [{ $match: { $expr: { $in: ['$_id', '$$items'] } } }],
+            localField: 'items.id',
+            foreignField: '_id',
             as: 'items'
           }
         },
@@ -71,6 +87,7 @@ export default class MediaRA {
    *
    */
   async add(item: MediaItem): Promise<MediaItem> {
+    item.user.userId = new ObjectId(item.user.userId);
     await this._db.collection<MediaItem>('media').insertOne(item);
     return item;
   }
@@ -82,6 +99,13 @@ export default class MediaRA {
     return this._db
       .collection<MediaItem>('media')
       .findOne({ _id: new ObjectId(id) });
+  }
+
+  findAllByFileName(filenames: Array<string>): Promise<Array<MediaItem>> {
+    return this._db
+      .collection<MediaItem>('media')
+      .find({ filename: { $in: filenames } })
+      .toArray();
   }
 
   /**
@@ -98,17 +122,41 @@ export default class MediaRA {
    *
    */
   async update(updatedVideo: MediaItem): Promise<void> {
+    updatedVideo.updatedAt = new Date();
     // @ts-ignore
     await this._db
       .collection<MediaItem>('media')
       .updateOne(
         { _id: new ObjectId(updatedVideo._id) },
-        { $set: R.omit(['_id'], updatedVideo) }
+        { $set: R.omit(['_id', 'user', 'createdAt'], updatedVideo) }
       );
   }
   async incrementPlayCount(id: string) {
     await this._db
       .collection<MediaItem>('media')
       .findOneAndUpdate({ _id: new ObjectId(id) }, { $inc: { views: 1 } });
+  }
+
+  async getRecentlyPlayed(
+    userId: string,
+    limit: number
+  ): Promise<Array<MediaItem>> {
+    return this._db
+      .collection<MediaItem>('media-state')
+      .aggregate([
+        { $match: { userId: new ObjectId(userId) } },
+        { $sort: { updatedAt: -1 } },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: 'media',
+            localField: 'mediaId',
+            foreignField: '_id',
+            as: 'media'
+          }
+        },
+        { $replaceRoot: { newRoot: { $arrayElemAt: ['$media', 0] } } }
+      ])
+      .toArray();
   }
 }

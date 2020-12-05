@@ -17,6 +17,11 @@ class MediaManager {
     };
     return MediaRA.registerLocal(payload);
   }
+
+  recentlyPlayed(limit: number) {
+    return MediaRA.recentlyPlayed(limit);
+  }
+
   update(item: MediaItem) {
     return MediaRA.update(item);
   }
@@ -26,8 +31,8 @@ class MediaManager {
   random(): Promise<MediaItem> {
     return MediaRA.random();
   }
-  upload(data: FormData) {
-    return MediaRA.upload(data);
+  upload(data: FormData, updateProgress: (progress: number) => void) {
+    return MediaRA.upload(data, updateProgress);
   }
   search(term: string) {
     return MediaRA.search(term);

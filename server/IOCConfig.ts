@@ -5,6 +5,7 @@ import { AdminController } from './Controllers/AdminController';
 import { AuthController } from './Controllers/AuthController';
 import { LibraryController } from './Controllers/LibraryController';
 import { MediaController } from './Controllers/MediaController';
+import { MediaStateController } from './Controllers/MediaStateController';
 import { ServerController } from './Controllers/ServerController';
 import { StreamController } from './Controllers/StreamController';
 import { UserController } from './Controllers/UserController';
@@ -16,11 +17,13 @@ import { AuthManager } from './Managers/AuthManager';
 import { FileSystemManager } from './Managers/FileSystemManager';
 import { LibraryManager } from './Managers/LibraryManager';
 import { MediaManager } from './Managers/MediaManager';
+import { MediaStateManager } from './Managers/MediaStateManager';
 import { ServerLogManager } from './Managers/ServerLogManager';
 import { UserManager } from './Managers/UserManager';
 import { FileSystemRA } from './ResourceAccess/FileSystemRA';
 import LibraryRA from './ResourceAccess/LibraryRA';
 import MediaRA from './ResourceAccess/MediaRA';
+import { MediaStateRA } from './ResourceAccess/MediaStateRA';
 import ServerLogRA from './ResourceAccess/ServerLogRA';
 import { UserRA } from './ResourceAccess/UserRA';
 import { Configuration } from './Utilities/ConfigUtil';
@@ -35,6 +38,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.ResourceAccess.Library).to(LibraryRA);
   container.bind(DependencyType.ResourceAccess.Media).to(MediaRA);
   container.bind(DependencyType.ResourceAccess.FileSystem).to(FileSystemRA);
+  container.bind(DependencyType.ResourceAccess.MediaState).to(MediaStateRA);
   container.bind(DependencyType.ResourceAccess.ServerLog).to(ServerLogRA);
   container.bind(DependencyType.ResourceAccess.User).to(UserRA);
 
@@ -46,6 +50,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.Managers.Library).to(LibraryManager);
   container.bind(DependencyType.Managers.Media).to(MediaManager);
   container.bind(DependencyType.Managers.FileSystem).to(FileSystemManager);
+  container.bind(DependencyType.Managers.MediaState).to(MediaStateManager);
   container.bind(DependencyType.Managers.ServerLog).to(ServerLogManager);
   container.bind(DependencyType.Managers.User).to(UserManager);
 
@@ -53,6 +58,7 @@ async function setupIoc(config: Configuration) {
   container.bind(DependencyType.Controller.Admin).to(AdminController);
   container.bind(DependencyType.Controller.Library).to(LibraryController);
   container.bind(DependencyType.Controller.Media).to(MediaController);
+  container.bind(DependencyType.Controller.MediaState).to(MediaStateController);
   container.bind(DependencyType.Controller.Server).to(ServerController);
   container.bind(DependencyType.Controller.Stream).to(StreamController);
   container.bind(DependencyType.Controller.User).to(UserController);

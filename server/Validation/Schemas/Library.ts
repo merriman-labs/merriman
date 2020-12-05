@@ -17,8 +17,7 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
   },
   update: {
     type: 'object',
-    required: ['name', '_id', 'items'],
-    additionalProperties: false,
+    required: ['name', '_id', 'visibility'],
     properties: {
       name: {
         type: 'string',
@@ -28,12 +27,8 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
         type: 'string',
         pattern: '[a-g0-9]{24}'
       },
-      items: {
-        type: 'array',
-        items: {
-          type: 'string',
-          pattern: '[a-g0-9]{24}'
-        }
+      visibility: {
+        type: 'number'
       }
     }
   }
