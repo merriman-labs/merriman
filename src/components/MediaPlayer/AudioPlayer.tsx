@@ -1,10 +1,7 @@
 import React, { useLayoutEffect, useRef } from 'react';
-import { MediaItem } from '../../../server/models';
+import { MediaHandlerComponentProps } from './MediaHandlerComponentProps';
 
-export const AudioPlayer = (props: {
-  media: MediaItem;
-  onFinished: (media: MediaItem) => void;
-}) => {
+export const AudioPlayer = (props: MediaHandlerComponentProps) => {
   const ref = useRef<HTMLAudioElement>(null);
 
   useLayoutEffect(() => {
@@ -18,7 +15,6 @@ export const AudioPlayer = (props: {
   return (
     <audio
       ref={ref}
-      autoPlay
       controls
       src={`/api/media/play/${props.media._id.toString()}`}
     />
