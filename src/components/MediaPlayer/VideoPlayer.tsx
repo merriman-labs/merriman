@@ -1,8 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { MediaItem } from '../../../server/models';
 import WatchStateManager from '../../managers/WatchStateManager';
+import { MediaHandlerComponentProps } from './MediaHandlerComponentProps';
 
-export const VideoPlayer = (props: { media: MediaItem }) => {
+export const VideoPlayer = (props: MediaHandlerComponentProps) => {
   const [watchTime, setWatchTime] = useState(0);
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -16,6 +16,10 @@ export const VideoPlayer = (props: { media: MediaItem }) => {
         setWatchTime(state.time || 0);
         ref.current.currentTime = state.time;
       }
+
+      ref.current.onended = () => {
+        props.onFinished(props.media);
+      };
     };
     effect();
   }, []);
