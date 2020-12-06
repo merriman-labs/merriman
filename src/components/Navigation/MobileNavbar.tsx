@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FaHome,
   FaFolderOpen,
   FaAsterisk,
   FaFileUpload,
-  FaDiceFive
+  FaDiceFive,
+  FaSignOutAlt
 } from 'react-icons/fa';
+import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Collapse, Navbar, NavbarToggler } from 'reactstrap';
 import { SearchBox } from './SearchBox';
 
 export const MobileNavbar = () => {
+  const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [history.location]);
   return (
     <Navbar
       color="dark"
@@ -19,7 +26,7 @@ export const MobileNavbar = () => {
       dark
       className="d-md-none"
     >
-      <a className="navbar-brand" href="#">
+      <a className="navbar-brand" href="/">
         Merriman
       </a>
       <NavbarToggler onClick={() => setIsOpen(!isOpen)} />
@@ -60,6 +67,8 @@ export const MobileNavbar = () => {
         <form className="form-inline my-2 my-lg-0">
           <SearchBox />
         </form>
+        <div className="dropdown-divider"></div>
+        <Link to="/logout" className="dropdown-item"><FaSignOutAlt /> Log out</Link>
       </Collapse>
     </Navbar>
   );
