@@ -24,7 +24,7 @@ export type MediaItem = {
   };
   filename: string;
   name: string;
-  path?: string;
+  path: string;
   type: MediaType;
   views: number;
   createdAt: Date;

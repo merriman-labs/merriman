@@ -25,9 +25,9 @@ export class MediaEngine {
     return {
       _id,
       createdAt: timestamp,
-      filename,
+      filename: newName,
       isHidden: false,
-      name: newName,
+      name: filename,
       tags: [],
       type: this._mapMediaType(filename),
       updatedAt: timestamp,

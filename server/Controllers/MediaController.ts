@@ -13,6 +13,7 @@ import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import Validator from '../Validation/Validator';
 import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
+import { NotFoundError } from '../Errors/NotFoundError';
 
 const Chance = chance.Chance();
 
@@ -32,6 +33,7 @@ export class MediaController implements IController {
     this.router.get('/list/byLibrary/:library', this.getMediaForLibrary);
     this.router.get('/latest', this.latest);
     this.router.get('/recentlyPlayed', this.recentlyPlayed);
+    this.router.get('/download/:id', this.download);
     this.router.post('/upload', this.upload);
     this.router.post('/request-meta/:id', this.requestMeta);
     this.router.post('/request-srt/:id/:track', this.requestSrt);
@@ -40,6 +42,15 @@ export class MediaController implements IController {
     this.router.put('/', this.update);
     this.router.delete('/:id', this.delete);
   }
+
+  download: RequestHandler = async (req, res) => {
+    const mediaId = Validator.Utility.ObjectId(req.params.id);
+    const file = await this._mediaManager.findById(mediaId);
+    if (!file) throw new NotFoundError('No media at ' + mediaId);
+    const { filename, path: dir } = file;
+    const fullpath = path.join(dir, filename);
+    res.download(fullpath);
+  };
 
   searchByTerm: RequestHandler = async (req, res) => {
     const term = req.params.term;
@@ -97,6 +108,7 @@ export class MediaController implements IController {
       const mediaItem = await this._mediaManager.add(
         filename,
         userId,
+        req.user.username,
         serverConfig.mediaLocation
       );
       file.pipe(
