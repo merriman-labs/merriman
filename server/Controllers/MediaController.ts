@@ -2,7 +2,6 @@ import { RequestHandler, Router } from 'express';
 import ThumbProvider from '../thumb-provider';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as R from 'ramda';
 import Busboy from 'busboy';
 import * as chance from 'chance';
 import moment = require('moment');
@@ -112,7 +111,9 @@ export class MediaController implements IController {
         serverConfig.mediaLocation
       );
       file.pipe(
-        fs.createWriteStream(serverConfig.mediaLocation + mediaItem.filename)
+        fs.createWriteStream(
+          path.join(serverConfig.mediaLocation, mediaItem.filename)
+        )
       );
 
       busboy.on('finish', function () {
