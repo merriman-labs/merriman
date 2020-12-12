@@ -1,6 +1,6 @@
 {
-  "mediaLocation": "C:\\development\\merriman\\media\\",
-  "thumbLocation": "C:\\development\\merriman\\thumbs\\",
+  "mediaLocation": "/home/johnny/development/merriman/media/",
+  "thumbLocation": "/home/johnny/development/merriman/thumbs/",
   "name": "development",
   "mongo": {
     "connectionString": "mongodb://mongo.db",

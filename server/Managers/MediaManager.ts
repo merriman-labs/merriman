@@ -1,3 +1,4 @@
+import * as path from 'path';
 import MediaRA from '../ResourceAccess/MediaRA';
 import { MediaEngine } from '../Engines/MediaEngine';
 import { MediaItem, MediaType } from '../models';
@@ -117,7 +118,7 @@ export class MediaManager {
   async requestMeta(id: string) {
     const media = await this._mediaRA.findById(id);
     const { stdout, stderr } = await requestMeta(
-      `${media.path}\\${media.filename}`
+      path.join(media.path, media.filename)
     );
     const meta = stdout === '' ? stderr : stdout;
     media.meta = meta;
@@ -127,7 +128,10 @@ export class MediaManager {
 
   async generateSubs(id: string, track: string) {
     const media = await this._mediaRA.findById(id);
-    const subs = await generateSubs(`${media.path}\\${media.filename}`, track);
+    const subs = await generateSubs(
+      path.join(media.path, media.filename),
+      track
+    );
     media.srt = subs;
 
     await this._mediaRA.update(media);
