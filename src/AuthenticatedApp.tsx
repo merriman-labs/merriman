@@ -17,6 +17,9 @@ import { SideNavigation } from './components/Navigation/SideNavigation';
 import { Recent } from './Media/Recent';
 import { Upload } from './Media/Upload';
 import { MobileNavbar } from './components/Navigation/MobileNavbar';
+import { Library } from './components/Library/Library';
+import { Libraries } from './components/Libraries';
+import { EditLibrary } from './components/Library/EditLibrary';
 
 export const AuthenticatedApp = () => {
   return (
@@ -42,6 +45,9 @@ export const AuthenticatedApp = () => {
                 <Route path="/media/tag/:tag" component={MediaByTag} exact />
                 <Route path="/media/upload" component={Upload} exact />
                 <Route path="/media/:media" component={StandaloneMedia} exact />
+                <Route path="/library/edit/:library" component={EditLibrary} exact />
+                <Route path="/library/:library/:media?" component={Library} exact />
+                <Route path="/libraries" component={Libraries} exact />
                 <Route
                   path="/videos/:library?/:video?"
                   component={VideoLibrariesPage}

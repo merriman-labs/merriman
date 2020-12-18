@@ -2,9 +2,6 @@ import { Library, MediaItem } from '../../server/models';
 import MediaRA from '../ResourceAccess/MediaRA';
 
 class MediaManager {
-  list(): Promise<Array<MediaItem>> {
-    return MediaRA.list();
-  }
   registerLocal(
     item: { filename: string; path: string },
     libraries: Array<Library>,

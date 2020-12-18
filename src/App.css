@@ -94,3 +94,8 @@ body {
     width: 100% !important;
   }
 }
+
+a {
+  color: white;
+  text-decoration: none;
+}

@@ -7,13 +7,20 @@ import { ItemVisibility } from '../Constant/ItemVisibility';
 
 @injectable()
 export class LibraryEngine {
-  initializeLibrary(library: { name: string; userId: string }): Library {
+  initializeLibrary(library: {
+    name: string;
+    userId: string;
+    username: string;
+  }): Library {
     const createdAt = new Date();
     return {
       _id: new ObjectId(),
       name: library.name,
       items: [],
-      userId: new ObjectId(library.userId),
+      user: {
+        userId: new ObjectId(library.userId),
+        username: library.username
+      },
       createdAt,
       updatedAt: createdAt,
       visibility: ItemVisibility.public

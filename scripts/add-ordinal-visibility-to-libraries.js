@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
-
-const dbName = 'development';
+const moment = require('moment');
+const dbName = 'Movies';
 
 /**
  * Add ordinal to library items and visiblity to library
@@ -14,6 +14,10 @@ async function migrate() {
   libraries.forEach((library) => {
     library.items = library.items.map((id, order) => ({ id, order }));
     library.visibility = 0;
+    library.createdAt = moment(library.created).toDate();
+    library.updatedAt = moment(library.updated).toDate();
+    delete library.created;
+    delete library.updated;
   });
 
   await db.collection('libraries-migrated').insertMany(libraries);

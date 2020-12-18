@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const moment = require('moment');
 
-const dbName = 'development';
+const dbName = 'Movies';
 
 /**
  * Change created and updated to createdAt and updatedAt on media items
@@ -17,6 +17,10 @@ async function addMediaInfo() {
     item.updatedAt = moment(item.updated).toDate();
     delete item.created;
     delete item.updated;
+
+    item.path = item.path
+      ? item.path
+      : 'F:\\Portable\\everything\\media-server\\';
   });
 
   await db.collection('media-migrated').insertMany(media);

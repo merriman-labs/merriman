@@ -13,19 +13,19 @@ import { DependencyType } from '../Constant/DependencyType';
 import Validator from '../Validation/Validator';
 import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
 import { NotFoundError } from '../Errors/NotFoundError';
+import { AsyncRouter } from '../Utilities/AsyncRouter';
 
 const Chance = chance.Chance();
 
 @injectable()
 export class MediaController implements IController {
-  public router = Router();
+  public router = AsyncRouter();
   public path = '/media';
   constructor(
     @inject(DependencyType.Managers.Media) private _mediaManager: MediaManager
   ) {
     this.router.get('/search/:term', this.searchByTerm);
     this.router.get('/detail/:_id', this.getById);
-    this.router.get('/', this.list);
     this.router.get('/random', this.getRandom);
     this.router.get('/list/byTag/:tag', this.getByTag);
     this.router.get('/tags', this.listTags);
@@ -44,7 +44,7 @@ export class MediaController implements IController {
 
   download: RequestHandler = async (req, res) => {
     const mediaId = Validator.Utility.ObjectId(req.params.id);
-    const file = await this._mediaManager.findById(mediaId);
+    const file = await this._mediaManager.findById(mediaId, req.user._id);
     if (!file) throw new NotFoundError('No media at ' + mediaId);
     const { filename, path: dir } = file;
     const fullpath = path.join(dir, filename);
@@ -78,7 +78,7 @@ export class MediaController implements IController {
   };
 
   update: RequestHandler = async (req, res) => {
-    await this._mediaManager.update(req.body);
+    await this._mediaManager.update(req.body, req.user._id);
     return res.json({ status: 'OK' });
   };
 
@@ -86,6 +86,7 @@ export class MediaController implements IController {
     const hardDelete = req.query.hard === 'true';
     const result = await this._mediaManager.deleteById(
       req.params.id,
+      req.user._id,
       hardDelete
     );
     res.json({ result });
@@ -93,7 +94,7 @@ export class MediaController implements IController {
 
   getById: RequestHandler = async (req, res) => {
     const id: string = req.params._id;
-    const media = await this._mediaManager.findById(id);
+    const media = await this._mediaManager.findById(id, req.user._id);
     return res.json(media);
   };
 
@@ -137,18 +138,15 @@ export class MediaController implements IController {
     return req.pipe(busboy);
   };
 
-  list: RequestHandler = async (req, res) => {
-    const media = await this._mediaManager.get();
-    res.json(media);
-  };
   getRandom: RequestHandler = async (req, res) => {
-    const media = await this._mediaManager.get();
-    res.json(Chance.pickone(media));
+    const media = await this._mediaManager.random(req.user._id);
+    if (!media) throw new NotFoundError('NO_MEDIA');
+    res.json(media);
   };
 
   getByTag: RequestHandler = async (req, res) => {
     const tag = req.params.tag;
-    const items = await this._mediaManager.getByTag(tag);
+    const items = await this._mediaManager.getByTag(tag, req.user._id);
     res.json({ items });
   };
 
@@ -159,7 +157,10 @@ export class MediaController implements IController {
 
   getMediaForLibrary: RequestHandler = async (req, res) => {
     const libraryId = req.params.library;
-    const media = await this._mediaManager.getByLibraryId(libraryId);
+    const media = await this._mediaManager.getByLibraryId(
+      libraryId,
+      req.user._id
+    );
     res.json(media);
   };
 
@@ -169,25 +170,32 @@ export class MediaController implements IController {
     skip = parseInt(skip, 10);
     limit = parseInt(limit, 10);
 
-    const allItems = await this._mediaManager.latest(skip, limit);
+    const allItems = await this._mediaManager.latest(skip, limit, req.user._id);
     res.json(allItems);
   };
 
   requestMeta: RequestHandler = async (req, res) => {
-    const meta = await this._mediaManager.requestMeta(req.params.id);
+    const meta = await this._mediaManager.requestMeta(
+      req.params.id,
+      req.user._id
+    );
     return res.json({ meta });
   };
 
   requestSrt: RequestHandler = async (req, res) => {
     const srt = await this._mediaManager.generateSubs(
       req.params.id,
-      req.params.track
+      req.params.track,
+      req.user._id
     );
     return res.json({ srt });
   };
 
   requestWebVTT: RequestHandler = async (req, res) => {
-    const webvtt = await this._mediaManager.generateWebVtt(req.params.id);
+    const webvtt = await this._mediaManager.generateWebVtt(
+      req.params.id,
+      req.user._id
+    );
     return res.json({ webvtt });
   };
 }

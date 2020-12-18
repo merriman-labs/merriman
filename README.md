@@ -2,11 +2,7 @@
 [![Bless](https://cdn.rawgit.com/LunaGao/BlessYourCodeTag/master/tags/ramen.svg)](http://lunagao.github.io/BlessYourCodeTag/) 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-## What this is?
-A media server that runs on node.
-
-## Why?
-I wanted to stream media at home.
+_A media server that runs on node._
 
 ## Dependencies
 - ffmpeg - This server requires [ffmpeg](https://ffmpeg.zeranoe.com/builds/) to generate thumbnails, subtitles, and burn tracks. Install [ffmpeg](https://ffmpeg.zeranoe.com/builds/) and place it in your path.
@@ -21,22 +17,12 @@ npm install -g merriman
 
 ## Usage
 
-### Configuring server
-```bash
-merriman editconfig
-```
-
 ### Running the server
 ```bash
 merriman run config.json
 ```
 
-### Adding media
-```bash
-merriman initdir config.json c:\users\movies
-```
-
-## Sample configuration file
+### Sample configuration file
 ```json
 {
   "mediaLocation": "c:\\media\\",                   // where uploaded media gets stored
@@ -46,22 +32,21 @@ merriman initdir config.json c:\users\movies
     "connectionString": "mongodb://127.0.0.1",      // MongoDB connection string
     "database": "Movies"                            // The name of the database to store items in
   },
-  "port": 80                                        // The port to bind to. Might require admin/sudo for <3000
+  "port": 80,                                        // The port to bind to. Might require admin/sudo for <3000
+  "allowUnsafeFileAccess": false                     // Setting true allows a superadmin to traverse the filesystem from the UI
 }
 ```
 
 ## Developing
 
-Once [ffmpeg](https://ffmpeg.zeranoe.com/builds/) is installed, you must run the client and the server.
-
-```bash
-npm install
-npm run server:watch # starts the server
-```
-and in a separate shell
-```bash
-npm start # starts the UI
-```
+1. Start an instance of MongoDB.
+1. Install ffmpeg
+1. Create a directory to house uploaded media
+1. Create a directory to house uploaded thumbnails
+1. Configure the connection string, media, and thumbnail paths in [the development config](./server-config.dev.json)
+1. run `npm install`
+1. run `npm run server:watch` to start the server
+1. run `npm start` to start the UI 
 
 ## Libraries
  - Inversify - Used for dependency injection

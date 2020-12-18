@@ -2,10 +2,6 @@ import axios from 'axios';
 import { MediaItem, RegisterLocalPayload } from '../../server/models';
 
 class MediaRA {
-  list(): Promise<Array<MediaItem>> {
-    return fetch('/api/media').then((x) => x.json());
-  }
-
   registerLocal(
     payload: Omit<RegisterLocalPayload, 'userId' | 'username'>
   ): Promise<MediaItem> {

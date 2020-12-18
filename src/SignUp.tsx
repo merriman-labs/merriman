@@ -12,7 +12,7 @@ export const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const user = await UserManager.create({ username, password });
-    dispatch({ action: 'LOGIN', user });
+    dispatch(user);
     history.push('/');
   };
 

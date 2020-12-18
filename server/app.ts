@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import * as path from 'path';
 import busboy from 'connect-busboy';
@@ -19,6 +19,7 @@ import { Container } from 'inversify';
 import AuthenticationStrategy from './Middleware/AuthenticationStrategy';
 import mongoSession from 'connect-mongodb-session';
 import Logger from './Middleware/Logger';
+import { HttpError } from './Errors/HttpError';
 
 export class Merriman {
   private _app = express();
@@ -41,6 +42,17 @@ export class Merriman {
     this._app.use(morgan(logFormat));
     this._app.use(cors());
     this._app.use(busboy());
+    this._app.use(
+      (err: Error, req: Request, res: Response, next: NextFunction) => {
+        if (err instanceof HttpError) {
+          return res.status(err.statusCode).send(err.message);
+        }
+        if (err) {
+          return res.status(500).send('SERVER_ERROR');
+        }
+        next();
+      }
+    );
   }
 
   private _setupApi(container: Container) {

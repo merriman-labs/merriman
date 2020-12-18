@@ -11,7 +11,7 @@ export const Login = withRouter(props => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await AuthManager.login({ username, password });
-    dispatch({ user: response, action: 'LOGIN' });
+    dispatch(response);
     props.history.push('/');
   };
 

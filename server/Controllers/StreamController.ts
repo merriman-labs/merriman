@@ -6,10 +6,11 @@ import { IController } from './IController';
 import { AppContext } from '../appContext';
 import { DependencyType } from '../Constant/DependencyType';
 import { MediaManager } from '../Managers/MediaManager';
+import { AsyncRouter } from '../Utilities/AsyncRouter';
 
 @injectable()
 export class StreamController implements IController {
-  public router = Router();
+  public router = AsyncRouter();
   public path = '/media';
 
   constructor(
@@ -21,8 +22,9 @@ export class StreamController implements IController {
 
   streamMedia: RequestHandler = async (req, res) => {
     const { mediaLocation } = AppContext.get(AppContext.WellKnown.Config);
-    const videoId = req.params.video;
-    const video = await this._mediaManager.findById(videoId);
+    const videoId = req.params.video.replace('.mp4', '');
+    const userId = req.user?._id ?? undefined;
+    const video = await this._mediaManager.findById(videoId, userId);
     const vDir = video.path ? video.path : mediaLocation;
     const vPath = path.join(vDir, video.filename);
 
@@ -58,7 +60,7 @@ export class StreamController implements IController {
   };
 
   getCaptions: RequestHandler = async (req, res) => {
-    const item = await this._mediaManager.findById(req.params.id);
+    const item = await this._mediaManager.findById(req.params.id, req.user._id);
     if (!item.webvtt) res.status(404).send('not found');
     res.status(200).send(item.webvtt);
   };

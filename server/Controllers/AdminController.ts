@@ -3,11 +3,12 @@ import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import { ServerLogManager } from '../Managers/ServerLogManager';
 import { ensureAdmin } from '../Middleware/EnsureAdmin';
+import { AsyncRouter } from '../Utilities/AsyncRouter';
 import { IController } from './IController';
 
 @injectable()
 export class AdminController implements IController {
-  router: Router = Router();
+  router: Router = AsyncRouter();
   path: string = '/admin';
   constructor(
     @inject(DependencyType.Managers.ServerLog)

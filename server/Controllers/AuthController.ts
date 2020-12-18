@@ -4,10 +4,11 @@ import { DependencyType } from '../Constant/DependencyType';
 import { AuthManager } from '../Managers/AuthManager';
 import { IController } from './IController';
 import passport from 'passport';
+import { AsyncRouter } from '../Utilities/AsyncRouter';
 
 @injectable()
 export class AuthController implements IController {
-  router = Router();
+  router = AsyncRouter();
   path = '/auth';
 
   constructor(@inject(DependencyType.Managers.Auth) _authManager: AuthManager) {

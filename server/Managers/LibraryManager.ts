@@ -4,6 +4,8 @@ import { Library } from '../models';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import Validator from '../Validation/Validator';
+import { SetMediaOrderPayload } from '../models/SetMediaOrderPayload';
+import { NotFoundError } from '../Errors/NotFoundError';
 
 @injectable()
 export class LibraryManager {
@@ -13,8 +15,8 @@ export class LibraryManager {
     @inject(DependencyType.Engines.Library)
     private _libraryEngine: LibraryEngine
   ) {}
-  get() {
-    return this._libraryRA.get();
+  get(userId: string) {
+    return this._libraryRA.get(userId);
   }
 
   update(library: Library) {
@@ -49,5 +51,32 @@ export class LibraryManager {
 
   delete(libraryId: string) {
     return this._libraryRA.delete(libraryId);
+  }
+
+  async setMediaOrder(payload: SetMediaOrderPayload) {
+    const library = await this._libraryRA.findById(payload.libraryId);
+    if (!library) throw new NotFoundError('Library not found');
+
+    const changeItem = library.items.find(
+      (item) => item.id.toString() === payload.mediaId
+    );
+    if (!changeItem) throw new NotFoundError('Media not in library');
+
+    if (payload.direction === 'down') {
+      if (changeItem.order === 0) return;
+      const previousItem = library.items.find(
+        (item) => item.order === changeItem.order - 1
+      );
+      previousItem.order++;
+      changeItem.order--;
+    } else if (payload.direction === 'up') {
+      const nextItem = library.items.find(
+        (item) => item.order === changeItem.order + 1
+      );
+      nextItem.order--;
+      changeItem.order++;
+    }
+    await this._libraryRA.update(library);
+    return library;
   }
 }

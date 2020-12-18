@@ -1,34 +1,38 @@
-import React, { createContext, Dispatch, useReducer } from 'react';
+import React, {
+  createContext,
+  Dispatch,
+  useEffect,
+  useState
+} from 'react';
 import { Props } from 'reactstrap/lib/Dropdown';
 import { UserInfo } from '../../server/models/User/UserInfo';
+import UserManager from '../managers/UserManager';
+import { CircleLoader } from 'react-spinners';
 
 export const UserContext = createContext<UserInfo | null>(null);
 export const UserDispatchContext = createContext<
-  Dispatch<LoginMessage | LogoutMessage>
+  Dispatch<UserInfo | null>
 >(() => null);
 
-const userTxt = localStorage.getItem('user-info');
-const initialUser = userTxt ? (JSON.parse(userTxt) as UserInfo) : null;
-
-type LoginMessage = { user: UserInfo; action: 'LOGIN' };
-type LogoutMessage = { action: 'LOGOUT' };
-
-export const AuthReducer = (
-  initialState: UserInfo | null,
-  action: LoginMessage | LogoutMessage
-) => {
-  switch (action.action) {
-    case 'LOGIN':
-      localStorage.setItem('user-info', JSON.stringify(action.user))
-      return action.user;
-    case 'LOGOUT':
-      localStorage.removeItem('user-info')
-      return null;
-  }
-};
-
 export const AuthProvider = (props: Props<any>) => {
-  const [user, dispatch] = useReducer(AuthReducer, initialUser);
+  const [user, dispatch] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const effect = async () => {
+      const usr = await UserManager.currentUser();
+      if (usr) {
+        dispatch(usr);
+      }
+      setLoading(false);
+    };
+    effect();
+  }, []);
+
+  if (loading) {
+    return <div className="d-inline-block mx-auto mt-5"><CircleLoader color="#36D7B7" /></div>;
+  }
+
   return (
     <UserContext.Provider value={user}>
       <UserDispatchContext.Provider value={dispatch}>

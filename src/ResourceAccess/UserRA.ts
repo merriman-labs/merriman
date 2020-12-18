@@ -10,6 +10,12 @@ class UserRA {
       body: JSON.stringify(creds)
     }).then((x) => x.json());
   }
+
+  currentUser(): Promise<UserInfo> {
+    return fetch('/api/users/me')
+      .then((x) => x.json())
+      .catch((x) => null);
+  }
 }
 
 export default new UserRA();

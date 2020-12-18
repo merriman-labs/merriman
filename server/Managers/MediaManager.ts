@@ -11,6 +11,8 @@ import { DependencyType } from '../Constant/DependencyType';
 import { RegisterLocalPayload } from '../models/RegisterLocalPayload';
 import ThumbProvider from '../thumb-provider';
 import LibraryRA from '../ResourceAccess/LibraryRA';
+import { NotFoundError } from '../Errors/NotFoundError';
+import { UnauthorizedError } from '../Errors/UnauthorizedError';
 
 @injectable()
 export class MediaManager {
@@ -23,12 +25,12 @@ export class MediaManager {
     private _libraryRA: LibraryRA
   ) {}
 
-  async search(term: string, userId: string) {
-    return this._mediaRA.search(term);
+  random(userId: string) {
+    return this._mediaRA.random(userId);
   }
 
-  latest(skip: number, limit: number) {
-    return this._mediaRA.latest(skip, limit);
+  latest(skip: number, limit: number, userId: string) {
+    return this._mediaRA.latest(skip, limit, userId);
   }
 
   recentlyPlayed(userId: string, limit: number) {
@@ -62,16 +64,12 @@ export class MediaManager {
     return mediaItem;
   }
 
-  get(includeHidden: boolean = false) {
-    return this._mediaRA.get(includeHidden);
+  getByTag(tag: string, userId: string) {
+    return this._mediaRA.getByTag(tag, userId);
   }
 
-  getByTag(tag: string) {
-    return this._mediaRA.getByTag(tag);
-  }
-
-  getByLibraryId(libraryId: string) {
-    return this._mediaRA.getByLibraryId(libraryId);
+  getByLibraryId(libraryId: string, userId: string) {
+    return this._mediaRA.getByLibraryId(libraryId, userId);
   }
 
   add(filename: string, userId: string, username: string, path?: string) {
@@ -84,13 +82,13 @@ export class MediaManager {
     return this._mediaRA.add(newMediaItem);
   }
 
-  findById(id: string) {
-    return this._mediaRA.findById(id);
+  findById(id: string, userId: string) {
+    return this._mediaRA.findById(id, userId);
   }
 
-  async deleteById(id: string, hardDelete: boolean = false) {
+  async deleteById(id: string, userId: string, hardDelete: boolean = false) {
     const config = AppContext.get(AppContext.WellKnown.Config);
-    const media = await this._mediaRA.findById(id);
+    const media = await this._mediaRA.findById(id, userId);
     if (!media) return false;
     if (hardDelete) {
       const path = media.path ? media.path : config.mediaLocation;
@@ -99,11 +97,11 @@ export class MediaManager {
     return this._mediaRA.deleteById(id);
   }
 
-  async where(predicate: (x: MediaItem) => boolean) {
-    return (await this._mediaRA.get(true)).filter(predicate);
-  }
-
-  update(item: MediaItem) {
+  async update(item: MediaItem, userId: string) {
+    const existing = await this._mediaRA.findById(item._id.toString(), userId);
+    if (!existing) throw new NotFoundError('NOT_FOUND');
+    if (existing.user.userId.toString() !== userId)
+      throw new UnauthorizedError('NOT_AUTHORIZED');
     return this._mediaRA.update(item);
   }
 
@@ -115,8 +113,8 @@ export class MediaManager {
     return this._mediaRA.getTags();
   }
 
-  async requestMeta(id: string) {
-    const media = await this._mediaRA.findById(id);
+  async requestMeta(id: string, userId: string) {
+    const media = await this._mediaRA.findById(id, userId);
     const { stdout, stderr } = await requestMeta(
       path.join(media.path, media.filename)
     );
@@ -126,8 +124,8 @@ export class MediaManager {
     return meta;
   }
 
-  async generateSubs(id: string, track: string) {
-    const media = await this._mediaRA.findById(id);
+  async generateSubs(id: string, track: string, userId: string) {
+    const media = await this._mediaRA.findById(id, userId);
     const subs = await generateSubs(
       path.join(media.path, media.filename),
       track
@@ -138,8 +136,8 @@ export class MediaManager {
     return subs;
   }
 
-  async generateWebVtt(id: string) {
-    const media = await this._mediaRA.findById(id);
+  async generateWebVtt(id: string, userId: string) {
+    const media = await this._mediaRA.findById(id, userId);
     if (!media.srt) throw new Error('No SRT subs found');
     const jsubs = fromSrt(media.srt);
     const webvtt = toWebVTT(jsubs);

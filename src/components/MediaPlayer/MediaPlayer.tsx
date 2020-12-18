@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row } from 'reactstrap';
-import { FaPencilAlt, FaFolderPlus, FaTimes, FaPlus } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { FaFolderPlus, FaTimes, FaPlus } from 'react-icons/fa';
 import Dropdown from 'reactstrap/lib/Dropdown';
 import DropdownItem from 'reactstrap/lib/DropdownItem';
 import DropdownMenu from 'reactstrap/lib/DropdownMenu';
@@ -11,6 +10,7 @@ import { Library, MediaItem } from '../../../server/models';
 import LibraryManager from '../../managers/LibraryManager';
 import MediaManager from '../../managers/MediaManager';
 import { MediaSwitch } from './MediaSwitch';
+import moment from 'moment';
 
 type MediaPlayerProps = {
   id: string;
@@ -24,8 +24,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
   const [details, setDetails] = useState<MediaPlayerState>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [libraries, setLibraries] = useState<Array<LibraryDropdownItem>>([]);
-
-  window.scrollTo({ top: 0 });
+  const [newLibraryName, setNewLibraryName] = useState<string>('');
 
   const getLibraries = async () => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
@@ -58,6 +57,16 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
     effect();
   }, [id]);
 
+  const handleLibraryKeyPress = async (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      await LibraryManager.create({ name: newLibraryName });
+      setNewLibraryName('');
+      await getLibraries();
+    }
+  };
+
   return (
     <>
       <Col>
@@ -67,31 +76,21 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       </Col>
       <Row>
         {details ? (
+          <Col md="6" sm="12">
+            <strong>{details.name}</strong>
+          </Col>
+        ) : null}
+      </Row>
+      <Row>
+        {details === null ? null : (
           <>
-            <Col md="6" sm="12">
-              <Link
-                to={`/media/edit/${details._id.toString()}`}
-                className="btn btn-outline-info btn-sm mr-2"
-              >
-                <FaPencilAlt />
-              </Link>
-              <strong>{details.name}</strong>
-            </Col>
             <Col md="3" sm="12">
-              {details.tags && details.tags.length ? (
-                <>
-                  {details.tags.map((tag, i) => (
-                    <Link
-                      to={`/media/tag/${tag}`}
-                      className="badge badge-pill badge-secondary mr-1"
-                      key={i}
-                    >
-                      {tag}
-                    </Link>
-                  ))}
-                </>
-              ) : null}
+              <p className="mt-2">
+                {details.views} views |{' '}
+                {moment(details.createdAt).format('MMM D, YYYY')}
+              </p>
             </Col>
+            <Col md="6" sm="12" />
             <Col md="3" sm="12">
               <Dropdown
                 isOpen={dropdownOpen}
@@ -102,6 +101,19 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Add to library</DropdownItem>
+                  <div className="dropdown-item">
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        id="new-library"
+                        className="form-control"
+                        placeholder="Create new library"
+                        value={newLibraryName}
+                        onChange={(e) => setNewLibraryName(e.target.value)}
+                        onKeyPress={handleLibraryKeyPress}
+                      />
+                    </div>
+                  </div>
                   {libraries.map((library) => (
                     <DropdownItem
                       onClick={() => handleLibraryClick(library)}
@@ -115,7 +127,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
               </Dropdown>
             </Col>
           </>
-        ) : null}
+        )}
       </Row>
     </>
   );

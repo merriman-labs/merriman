@@ -8,7 +8,7 @@ export const Logout = withRouter((props) => {
   useEffect(() => {
     const effect = async () => {
       await AuthManager.logout();
-      dispatch({ action: 'LOGOUT' });
+      dispatch(null);
       props.history.push('/login');
     };
     effect();

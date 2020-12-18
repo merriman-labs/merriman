@@ -3,6 +3,9 @@ import { MediaItem } from '../../server/models';
 import MediaManager from '../managers/MediaManager';
 import { FaTimesCircle } from 'react-icons/fa';
 import { RouterProps } from 'react-router';
+import { ItemVisibility } from '../constant/ItemVisibility';
+import { c } from '../util/classList';
+import { MediaType } from '../constant/MediaType';
 
 type MediaEditProps = RouterProps & {
   match: {
@@ -17,16 +20,13 @@ export const MediaEdit = (props: MediaEditProps) => {
   const [currentTag, setCurrentTag] = useState('');
   const [srtTrack, setSrtTrack] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  useEffect(
-    () => {
-      const effect = async () => {
-        const media = await MediaManager.details(props.match.params.id);
-        setMedia(media);
-      };
-      effect();
-    },
-    [props.match.params.id]
-  );
+
+  const loadMedia = () =>
+    MediaManager.details(props.match.params.id).then(setMedia);
+
+  useEffect(() => {
+    loadMedia();
+  }, [props.match.params.id]);
 
   const handleDelete = async (hard: boolean) => {
     if (media === null) return;
@@ -68,7 +68,7 @@ export const MediaEdit = (props: MediaEditProps) => {
 
   const handleTagRemove = async (tag: string) => {
     if (media === null) return;
-    const tags = media.tags.filter(t => t !== tag);
+    const tags = media.tags.filter((t) => t !== tag);
     const item = { ...media, tags };
     setMedia(item);
   };
@@ -86,14 +86,14 @@ export const MediaEdit = (props: MediaEditProps) => {
   };
 
   const handleCheckChange = (val: boolean) => {
-    setMedia(item => (item === null ? item : { ...item, isHidden: val }));
+    setMedia((item) => (item === null ? item : { ...item, isHidden: val }));
   };
 
   return media === null ? null : (
     <div className="col md-12">
       <div className="mt-2 mb-5 form">
         <div className="row">
-          <div className="col-md-4">
+          <div className="col-md-3">
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
@@ -107,126 +107,59 @@ export const MediaEdit = (props: MediaEditProps) => {
                 }
               />
             </div>
-          </div>
-          <div className="col-md-8">
             <div className="form-group">
-              <label htmlFor="meta">Metadata</label>
-              <textarea
+              <label htmlFor="library-visibility">Visibility</label>
+              <select
+                id="library-visibility"
                 className="form-control"
-                name="meta"
-                id="meta"
-                readOnly
-                rows={10}
-                value={media.meta || '(No metadata available)'}
-              />
-              <button
-                className="btn btn-outline-info"
-                onClick={() => handleGetMeta(media._id.toString())}
+                value={media.visibility}
+                onChange={(e) =>
+                  setMedia({ ...media, visibility: +e.target.value })
+                }
               >
-                Generate metadata
-              </button>
+                <option value={ItemVisibility.private}>Private</option>
+                <option value={ItemVisibility.public}>Public</option>
+                <option value={ItemVisibility.unlisted}>Unlisted</option>
+              </select>
             </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-4">
-            <p>
-              <strong>Tags</strong>
-            </p>
-            {media.tags && media.tags.length ? (
-              <>
-                {media.tags.map(tag => (
-                  <span className="badge badge-pill badge-secondary mr-1">
-                    {tag} <FaTimesCircle onClick={() => handleTagRemove(tag)} />
-                  </span>
-                ))}
-              </>
-            ) : null}
-            <div className="input-group mt-2">
+            <div className="form-group mt-2">
+              <label htmlFor="tag">Tags</label>
+              <div className="mb-2">
+                {media.tags && media.tags.length ? (
+                  <>
+                    {media.tags.map((tag) => (
+                      <span className="badge badge-pill badge-secondary mr-1">
+                        {tag}{' '}
+                        <FaTimesCircle onClick={() => handleTagRemove(tag)} />
+                      </span>
+                    ))}
+                  </>
+                ) : null}
+              </div>
               <input
+                id="tag"
                 className="form-control"
                 type="text"
                 value={currentTag}
                 placeholder="type here and press enter to add a tag"
-                onChange={x => setCurrentTag(x.target.value)}
+                onChange={(x) => setCurrentTag(x.target.value)}
                 onKeyDown={handleKeyPress}
               />
             </div>
-          </div>
-          <div className="col-md-8">
-            <div className="form-group">
-              <label htmlFor="name">Subtitles (SRT)</label>
-              <textarea
-                className="form-control"
-                name="name"
-                id="name"
-                rows={10}
-                value={media.srt || 'No subtitles available'}
-                readOnly
-              />
-            </div>
-            <div className="input-group mb-3">
-              <div className="input-group-prepend">
-                <button
-                  className="btn btn-outline-info"
-                  type="button"
-                  onClick={() => handleGetSrt(media._id.toString(), srtTrack)}
-                >
-                  Generate from track:
-                </button>
-              </div>
-              <input
-                type="text"
-                className="form-control"
-                value={srtTrack}
-                onChange={evt => setSrtTrack(evt.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-4">
-            <div className="form-check">
+
+            <div className="form-check mb-3">
               <input
                 className="form-check-input"
                 name="name"
                 id="name"
                 type="checkbox"
                 checked={!media.isHidden}
-                onChange={evt => handleCheckChange(!evt.target.checked)}
+                onChange={(evt) => handleCheckChange(!evt.target.checked)}
               />
               <label htmlFor="name" className="form-check-label">
                 Show
               </label>
             </div>
-          </div>
-          <div className="col-md-8">
-            <div className="form-group">
-              <label htmlFor="name">Subtitles (WebVTT)</label>
-              <textarea
-                className="form-control"
-                name="name"
-                id="name"
-                rows={10}
-                value={media.webvtt || 'No WebVTT subtitles available'}
-                readOnly
-              />
-            </div>
-            <div className="input-group mb-3">
-              <div className="input-group-prepend">
-                <button
-                  className="btn btn-outline-info"
-                  type="button"
-                  onClick={() => handleGenerateWebvtt(media._id.toString())}
-                >
-                  Generate from SRT
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md">
             {isDeleting ? (
               <>
                 <button
@@ -266,10 +199,88 @@ export const MediaEdit = (props: MediaEditProps) => {
             )}
           </div>
         </div>
+        <hr />
+        <div
+          className={c({
+            'row mt-3': true,
+            invisible: media.type !== MediaType.Video
+          })}
+        >
+          <div className="col-md-3">
+            <div className="form-group">
+              <label htmlFor="meta">Metadata</label>
+              <textarea
+                className="form-control"
+                name="meta"
+                id="meta"
+                readOnly
+                rows={10}
+                value={media.meta || '(No metadata available)'}
+              />
+              <button
+                className="btn btn-outline-info"
+                onClick={() => handleGetMeta(media._id.toString())}
+              >
+                Generate metadata
+              </button>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="form-group">
+              <label htmlFor="name">Subtitles (SRT)</label>
+              <textarea
+                className="form-control"
+                name="name"
+                id="name"
+                rows={10}
+                value={media.srt || 'No subtitles available'}
+                readOnly
+              />
+              <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                  <button
+                    className="btn btn-outline-info"
+                    type="button"
+                    onClick={() => handleGetSrt(media._id.toString(), srtTrack)}
+                  >
+                    Generate from track:
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={srtTrack}
+                  onChange={(evt) => setSrtTrack(evt.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="form-group">
+              <label htmlFor="name">Subtitles (WebVTT)</label>
+              <textarea
+                className="form-control"
+                name="name"
+                id="name"
+                rows={10}
+                value={media.webvtt || 'No WebVTT subtitles available'}
+                readOnly
+              />
 
-        <div className="row">
-          <div className="col-md-4" />
-          <div className="col-md-8">
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <button
+                    className="btn btn-outline-info"
+                    type="button"
+                    onClick={() => handleGenerateWebvtt(media._id.toString())}
+                  >
+                    Generate from SRT
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3">
             <p>
               <strong>Burn new video</strong>
             </p>
@@ -288,14 +299,14 @@ export const MediaEdit = (props: MediaEditProps) => {
                 className="form-control"
                 value={srtTrack}
                 placeholder="video track, e.g. 0:0"
-                onChange={evt => setSrtTrack(evt.target.value)}
+                onChange={(evt) => setSrtTrack(evt.target.value)}
               />
               <input
                 type="text"
                 className="form-control"
                 value={srtTrack}
                 placeholder="audio track, e.g. 0:2"
-                onChange={evt => setSrtTrack(evt.target.value)}
+                onChange={(evt) => setSrtTrack(evt.target.value)}
               />
             </div>
           </div>

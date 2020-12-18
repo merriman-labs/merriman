@@ -5,12 +5,13 @@ import { DependencyType } from '../Constant/DependencyType';
 import { HttpStatus } from '../Constant/HttpStatus';
 import { FileSystemManager } from '../Managers/FileSystemManager';
 import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
+import { AsyncRouter } from '../Utilities/AsyncRouter';
 import { IController } from './IController';
 
 @injectable()
 export class ServerController implements IController {
   path = '/server';
-  router = Router();
+  router = AsyncRouter();
 
   constructor(
     @inject(DependencyType.Managers.FileSystem)

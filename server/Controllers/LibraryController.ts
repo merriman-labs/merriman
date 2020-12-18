@@ -1,15 +1,14 @@
 import { RequestHandler, Router } from 'express';
-import * as R from 'ramda';
-import { MediaManager } from '../Managers/MediaManager';
 import { LibraryManager } from '../Managers/LibraryManager';
 import { IController } from './IController';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import Validator from '../Validation/Validator';
+import { AsyncRouter } from '../Utilities/AsyncRouter';
 
 @injectable()
 export class LibraryController implements IController {
-  router: Router = Router();
+  router: Router = AsyncRouter();
   path: string = '/library';
   constructor(
     @inject(DependencyType.Managers.Library)
@@ -22,13 +21,18 @@ export class LibraryController implements IController {
     this.router.put('/', this.update);
     this.router.get('/:id', this.getById);
     this.router.delete('/:id', this.deleteLibrary);
+    this.router.post('/setMediaOrder', this.setMediaOrder);
   }
   /**
    * Create a new libary.
    */
   create: RequestHandler = async (req, res) => {
     // @ts-ignore
-    const library = { ...req.body, userId: req.user._id };
+    const library = {
+      ...req.body,
+      userId: req.user._id,
+      username: req.user.username
+    };
     const result = await this._libraryManager.insert(library);
     res.json(result);
   };
@@ -73,7 +77,7 @@ export class LibraryController implements IController {
    * List all libraries.
    */
   list: RequestHandler = async (req, res) => {
-    const response = await this._libraryManager.get();
+    const response = await this._libraryManager.get(req.user._id);
     res.json(response);
   };
   /**
@@ -86,5 +90,11 @@ export class LibraryController implements IController {
     if (!library)
       return res.status(500).json({ message: 'Library not found!' });
     res.json(library);
+  };
+
+  setMediaOrder: RequestHandler = async (req, res) => {
+    const payload = Validator.Library.SetMediaOrder(req.body);
+    const lib = await this._libraryManager.setMediaOrder(payload);
+    res.json(lib);
   };
 }

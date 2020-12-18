@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
 import { ItemVisibility } from '../Constant/ItemVisibility';
 import { Library } from './Library';
+import { type } from 'ramda';
 
 export type ServerConfiguration = {
   mediaLocation: string;
@@ -61,3 +62,4 @@ export type { Library };
 export type { MediaState } from './MediaState';
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
 export type { RequestLog, RequestLogResponse } from './RequestLog';
+export type { SetMediaOrderPayload } from './SetMediaOrderPayload';

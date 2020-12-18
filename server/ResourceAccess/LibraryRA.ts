@@ -3,6 +3,7 @@ import { Library } from '../models';
 import { Db, ObjectId } from 'mongodb';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
+import { ItemVisibility } from '../Constant/ItemVisibility';
 
 @injectable()
 export default class LibraryRA {
@@ -10,8 +11,11 @@ export default class LibraryRA {
   /**
    * Load all Libraries.
    */
-  get(): Promise<Array<Library>> {
-    return this._db.collection<Library>('libraries').find().toArray();
+  get(userId: string): Promise<Array<Library>> {
+    return this._db
+      .collection('libraries')
+      .find(this.publicOrPrivateOwner(userId))
+      .toArray();
   }
 
   async update(library: Library) {
@@ -75,5 +79,18 @@ export default class LibraryRA {
     return this._db
       .collection<Library>('libraries')
       .deleteOne({ _id: new ObjectId(id) });
+  }
+
+  private publicOrPrivateOwner(userId: string) {
+    return {
+      $or: [
+        {
+          'user.userId': new ObjectId(userId)
+        },
+        {
+          visibility: ItemVisibility.public
+        }
+      ]
+    };
   }
 }
