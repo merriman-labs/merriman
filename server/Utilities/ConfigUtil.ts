@@ -4,6 +4,15 @@ import { readFileSync } from 'fs';
 export class Configuration {
   mediaLocation: string;
   thumbLocation: string;
+  server:
+    | {
+        useSsl: true;
+        certPath: string;
+        keyPath: string;
+      }
+    | {
+        useSsl: false;
+      };
   mongo: {
     connectionString: string;
     database: string;
@@ -27,6 +36,10 @@ export class Configuration {
     };
     this.name = data.name;
     this.port = data.port;
+
+    if (data.server) {
+      this.server = data.server;
+    }
   }
 
   public static fromJson(data: string) {
@@ -36,6 +49,15 @@ export class Configuration {
   private _isvalid = _.conforms({
     mediaLocation: _.isString,
     thumbLocation: _.isString,
+    server: (value) =>
+      _.conforms({
+        useSsl: _.negate(_.identity)
+      })(value) ||
+      _.conforms({
+        useSsl: _.identity,
+        certPath: _.isString,
+        keyPath: _.isString
+      })(value),
     mongo: _.conforms({
       connectionString: _.isString,
       database: _.isString

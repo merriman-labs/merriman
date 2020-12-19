@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import https from 'https';
+import fs from 'fs';
 import express, { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import * as path from 'path';
@@ -111,6 +113,28 @@ export class Merriman {
     this._app.use(passport.session());
   }
 
+  private _setupHttpsServer() {
+    if (!this._config.server.useSsl) return;
+    https
+      .createServer(
+        {
+          key: fs.readFileSync(this._config.server.keyPath),
+          cert: fs.readFileSync(this._config.server.certPath)
+        },
+        this._app
+      )
+      .listen(this._config.port, () => {
+        console.log('Using HTTPS');
+        console.log(`Listening on port ${this._config.port}`);
+      });
+  }
+
+  private _setupHttpServer() {
+    this._app.listen(this._config.port, () => {
+      console.log(`Listening on port ${this._config.port}!`);
+    });
+  }
+
   public async start() {
     // Set up dependency-injection container, make the MongoDB connection injectable
     const container = await setupIoc(this._config);
@@ -120,10 +144,11 @@ export class Merriman {
     this._setupAuth(container);
     this._setupApi(container);
     this._setupStaticAssets();
-
-    this._app.listen(this._config.port, () => {
-      printHeader();
-      console.log(`Listening on port ${this._config.port}!`);
-    });
+    printHeader();
+    if (this._config.server.useSsl) {
+      this._setupHttpsServer();
+    } else {
+      this._setupHttpServer();
+    }
   }
 }
