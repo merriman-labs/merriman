@@ -27,3 +27,4 @@ dist_server
 *.config.js
 /media
 /thumbs
+/keys
