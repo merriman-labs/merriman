@@ -43,6 +43,12 @@ class Validator {
   User = {
     Create(item: any) {
       return ValidationEngine.validate<UserCreatePayload>(item, 'user.create');
+    },
+    SetIsActive(item: any) {
+      return ValidationEngine.validate<{ _id: string; isActive: boolean }>(
+        item,
+        'user.setIsActive'
+      );
     }
   };
   Utility = {

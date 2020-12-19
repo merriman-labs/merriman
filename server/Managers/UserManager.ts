@@ -40,4 +40,8 @@ export class UserManager {
       isActive: dbUser.isActive || false
     };
   }
+
+  async updateUser(user: Partial<UserInfo>) {
+    return this._userRA.updateUser(user);
+  }
 }

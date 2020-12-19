@@ -3,6 +3,8 @@ import { Db, ObjectId } from 'mongodb';
 import { DependencyType } from '../Constant/DependencyType';
 import { MongoUser } from '../models/User/MongoUser';
 import { User } from '../models/User/User';
+import { UserInfo } from '../models/User/UserInfo';
+import _ from 'lodash';
 
 @injectable()
 export class UserRA {
@@ -25,5 +27,14 @@ export class UserRA {
   async create(user: User) {
     await this._db.collection('users').insertOne(user);
     return user;
+  }
+
+  updateUser(user: Partial<UserInfo>) {
+    return this._db
+      .collection('users')
+      .updateOne(
+        { _id: new ObjectId(user._id) },
+        { $set: _.omit(user, '_id') }
+      );
   }
 }

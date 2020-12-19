@@ -20,6 +20,7 @@ import { MobileNavbar } from './components/Navigation/MobileNavbar';
 import { Library } from './components/Library/Library';
 import { Libraries } from './components/Libraries';
 import { EditLibrary } from './components/Library/EditLibrary';
+import { UserAdmin } from './admin/UserAdmin';
 
 export const AuthenticatedApp = () => {
   return (
@@ -30,6 +31,7 @@ export const AuthenticatedApp = () => {
           <Route exact path="/admin" component={AdminPanel} />
           <Route path="/admin/register-media" component={RegisterMedia} />
           <Route path="/admin/request-logs" component={RequestLogs} />
+          <Route path="/admin/users" component={UserAdmin} />
         </Route>
         <Route path="/">
           <MobileNavbar />

@@ -29,6 +29,9 @@ const AdminNavigation = () => {
             <NavItem>
               <NavLink href="/admin/request-logs">Request Logs</NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink href="/admin/users">Users</NavLink>
+            </NavItem>
           </Nav>
         </Collapse>
       </Navbar>
