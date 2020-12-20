@@ -10,6 +10,15 @@ import _ from 'lodash';
 export class UserRA {
   constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
 
+  updateLoggedIn(userId: string) {
+    return this._db
+      .collection('users')
+      .updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { lastLoginAt: new Date() } }
+      );
+  }
+
   list(): Promise<Array<MongoUser>> {
     return this._db.collection('users').find<MongoUser>().toArray();
   }
@@ -25,7 +34,7 @@ export class UserRA {
   }
 
   async create(user: User) {
-    await this._db.collection('users').insertOne(user);
+    await this._db.collection('users').insertOne(user.toMongo());
     return user;
   }
 

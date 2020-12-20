@@ -24,12 +24,16 @@ export class User {
   }
 
   toMongo(): MongoUser {
+    const timestamp = new Date();
     return {
       _id: this._id,
       username: this.username,
       password: this.password,
       roles: this.roles,
-      isActive: this.isActive
+      isActive: this.isActive,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      lastLoginAt: timestamp
     };
   }
 

@@ -7,4 +7,7 @@ export interface MongoUser {
   password: string;
   roles: Array<UserRole>;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLoginAt: Date;
 }

@@ -3,6 +3,7 @@ import { UserRole } from '../constant/UserRole';
 import { UserInfo } from '../../server/models/User/UserInfo';
 import UserManager from '../managers/UserManager';
 import { c } from '../util/classList';
+import moment from 'moment';
 
 export const UserAdmin = () => {
   const [users, setUsers] = useState<Array<UserInfo>>([]);
@@ -25,6 +26,9 @@ export const UserAdmin = () => {
               <tr>
                 <th scope="col">Username</th>
                 <th scope="col">Roles</th>
+                <th scope="col">Created</th>
+                <th scope="col">Updated</th>
+                <th scope="col">Last Login</th>
                 <th scope="col">Is Active?</th>
                 <th>Actions</th>
               </tr>
@@ -34,6 +38,9 @@ export const UserAdmin = () => {
                 <tr>
                   <td>{user.username}</td>
                   <td>{user.roles.map((role) => UserRole[role]).join(', ')}</td>
+                  <td>{moment(user.createdAt).format('MM/DD/YYYY HH:mm')}</td>
+                  <td>{moment(user.updatedAt).format('MM/DD/YYYY HH:mm')}</td>
+                  <td>{moment(user.lastLoginAt).format('MM/DD/YYYY HH:mm')}</td>
                   <td>{user.isActive ? 'Active' : 'Inactive'}</td>
                   <td>
                     <button

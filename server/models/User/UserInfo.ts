@@ -5,4 +5,7 @@ export interface UserInfo {
   username: string;
   roles: Array<UserRole>;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLoginAt: Date;
 }

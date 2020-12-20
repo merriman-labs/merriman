@@ -37,7 +37,10 @@ export class UserManager {
       _id: dbUser._id.toHexString(),
       roles: dbUser.roles,
       username: dbUser.username,
-      isActive: dbUser.isActive || false
+      isActive: dbUser.isActive || false,
+      createdAt: dbUser.createdAt,
+      lastLoginAt: dbUser.lastLoginAt,
+      updatedAt: dbUser.updatedAt
     };
   }
 

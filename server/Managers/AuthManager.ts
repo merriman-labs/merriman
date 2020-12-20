@@ -19,6 +19,7 @@ export class AuthManager {
       user.password
     );
     if (!valid) throw new UnauthorizedError('Login invalid');
+    await this._userRA.updateLoggedIn(user._id.toHexString());
     return _.omit(user, 'password');
   }
 }
