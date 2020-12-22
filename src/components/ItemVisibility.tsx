@@ -16,13 +16,16 @@ const VisibilityIcon = (prop: { visibility: ItemVisibility }) => {
 export const ItemVisibilityLabel = (props: {
   visibility: ItemVisibility;
   includeIcon?: boolean;
+  includeText?: boolean;
 }) => {
   return (
     <>
       {props.includeIcon ? (
         <VisibilityIcon visibility={props.visibility} />
       ) : null}
-      <span className="ml-1">{ItemVisibility[props.visibility]}</span>
+      {props.includeText ? (
+        <span className="ml-1">{ItemVisibility[props.visibility]}</span>
+      ) : null}
     </>
   );
 };
