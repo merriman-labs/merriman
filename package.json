@@ -14,7 +14,7 @@
     "@johnny.reina/convert-srt": "^0.2.1",
     "ajv": "^6.12.6",
     "axios": "^0.21.0",
-    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "bootstrap": "^4.5.2",
     "bootswatch": "^4.5.1",
     "chance": "^1.0.16",
@@ -68,8 +68,7 @@
   },
   "proxy": "http://localhost:4000",
   "devDependencies": {
-    "@types/bcrypt": "^3.0.0",
-    "@types/bluebird": "^3.5.29",
+    "@types/bcryptjs": "^2.4.2",
     "@types/chance": "^1.0.1",
     "@types/connect-busboy": "0.0.0",
     "@types/connect-ensure-login": "^0.1.5",

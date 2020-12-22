@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import { UserRole } from '../../Constant/UserRole';
 import { UserCreatePayload } from '../../Managers/UserManager';
