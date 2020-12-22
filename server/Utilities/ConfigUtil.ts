@@ -23,7 +23,26 @@ export class Configuration {
   session: {
     secret: string;
   };
-  constructor(data: any) {
+
+  public static fromJson(data: string) {
+    const obj = new Configuration();
+    return obj.fromObject(JSON.parse(data));
+  }
+
+  public toJson() {
+    return JSON.stringify({
+      name: this.name,
+      port: this.port,
+      mediaLocation: this.mediaLocation,
+      thumbLocation: this.thumbLocation,
+      session: this.session,
+      server: this.server,
+      mongo: this.mongo,
+      allowUnsafeFileAccess: this.allowUnsafeFileAccess
+    });
+  }
+
+  private fromObject(data: any) {
     if (!this._isvalid(data)) throw new Error('Configuration must be complete');
     this.mediaLocation = data.mediaLocation;
     this.thumbLocation = data.thumbLocation;
@@ -40,10 +59,7 @@ export class Configuration {
     if (data.server) {
       this.server = data.server;
     }
-  }
-
-  public static fromJson(data: string) {
-    return new Configuration(JSON.parse(data));
+    return this;
   }
 
   private _isvalid = _.conforms({
