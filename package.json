@@ -12,19 +12,15 @@
   "dependencies": {
     "@johnny.reina/ajv-types": "^0.1.0",
     "@johnny.reina/convert-srt": "^0.2.1",
-    "@johnny.reina/json-db": "^2.0.5",
     "ajv": "^6.12.6",
     "axios": "^0.21.0",
     "bcrypt": "^5.0.0",
-    "bluebird": "^3.7.2",
-    "body-parser": "^1.18.2",
     "bootstrap": "^4.5.2",
     "bootswatch": "^4.5.1",
     "chance": "^1.0.16",
     "colors": "^1.3.3",
     "commander": "^6.1.0",
     "connect-busboy": "0.0.2",
-    "connect-ensure-login": "^0.1.1",
     "connect-mongodb-session": "^2.4.1",
     "cors": "^2.8.5",
     "express": "^4.6",
@@ -50,7 +46,6 @@
     "react-toastify": "^6.2.0",
     "reactstrap": "^6.0.1",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^3.7",
     "uuid": "^3.2.1"
   },
   "scripts": {
@@ -104,7 +99,8 @@
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
     "ts-node": "^7.0.1",
-    "ts-node-dev": "^1.0.0"
+    "ts-node-dev": "^1.0.0",
+    "typescript": "^3.7"
   },
   "bin": {
     "merriman": ".\\dist_server\\cli\\cli.js"

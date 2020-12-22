@@ -1,9 +1,9 @@
 .cache
 .vscode
 node_modules
-public
-server
-src
+public/
+server/
+src/
 .gitignore
 .npmignore
 .prettierrc
@@ -12,3 +12,9 @@ nodemon.json
 package-lock.json
 README.create-react-app.md
 tsconfig.json
+thumbs/
+media/
+keys/
+scripts/
+startup.bat
+server-config.dev.json
