@@ -7,7 +7,6 @@ src/
 .gitignore
 .npmignore
 .prettierrc
-index.js
 nodemon.json
 package-lock.json
 README.create-react-app.md
