@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
-import { MediaGrid } from '../../Media/MediaGrid';
+import { MediaGrid } from '../Media/MediaGrid';
 
 export const RecentItems = (props: { items?: number }) => {
   const [items, setItems] = useState<Array<MediaItem>>([]);

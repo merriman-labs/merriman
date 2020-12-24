@@ -3,7 +3,7 @@ import React from 'react';
 import { FaUserAlt } from 'react-icons/fa';
 import ReactImageFallback from 'react-image-fallback';
 import { Link } from 'react-router-dom';
-import { MediaItem } from '../../server/models';
+import { MediaItem } from '../../../server/models';
 
 export const MediaCard = (props: { item: MediaItem }) => (
   <Link to={`/media/${props.item._id}`} className="card mb-3 h-100">

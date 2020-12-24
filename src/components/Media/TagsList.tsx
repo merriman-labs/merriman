@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import MediaManager from '../managers/MediaManager';
+import MediaManager from '../../managers/MediaManager';
 
 export const TagsList = () => {
   const [tags, setTags] = useState<Array<string>>([]);

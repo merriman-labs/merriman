@@ -1,12 +1,12 @@
 import React from 'react';
-import { Switch, Route, RouteComponentProps } from 'react-router';
+import { Switch, Route } from 'react-router';
 import AdminPanel from './admin/AdminPanel';
 import { RegisterMedia } from './admin/RegisterMedia';
-import Home from './Home';
-import { MediaEdit } from './Media/Edit';
-import { MediaByTag } from './Media/MediaByTag';
+import Home from './components/Home/Home';
+import { MediaEdit } from './components/Media/Edit';
+import { MediaByTag } from './components/Media/MediaByTag';
 import Navigation from './components/Navigation/Navigation';
-import RandomMedia from './Media/Random';
+import RandomMedia from './components/Media/Random';
 import StandaloneMedia from './StandaloneMedia';
 import VideoLibrariesPage from './VideoLibrariesPage';
 import { Logout } from './Logout';
@@ -14,14 +14,14 @@ import AdminNavigation from './admin/AdminNavigation';
 import { RequestLogs } from './admin/RequestLogs';
 import { Results } from './components/Results';
 import { SideNavigation } from './components/Navigation/SideNavigation';
-import { RecentlyAddedPage } from './Media/RecentlyAddedPage';
-import { Upload } from './Media/Upload';
+import { RecentlyAddedPage } from './components/Media/RecentlyAddedPage';
+import { Upload } from './components/Media/Upload';
 import { MobileNavbar } from './components/Navigation/MobileNavbar';
 import { Library } from './components/Library/Library';
 import { Libraries } from './components/Libraries';
 import { EditLibrary } from './components/Library/EditLibrary';
 import { UserAdmin } from './admin/UserAdmin';
-import { RecentlyViewedPage } from './Media/RecentlyViewedPage';
+import { RecentlyViewedPage } from './components/Media/RecentlyViewedPage';
 
 export const AuthenticatedApp = () => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaAngleDoubleDown } from 'react-icons/fa';
-import { RecentItems } from '../components/Home/RecentItems';
+import { RecentItems } from '../Home/RecentItems';
 
 export const RecentlyAddedPage = () => {
   const [count, setCount] = useState(24);

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
-import { MediaItem } from '../../server/models';
-import { MediaPlayer } from '../components/MediaPlayer/MediaPlayer';
-import MediaManager from '../managers/MediaManager';
+import { MediaItem } from '../../../server/models';
+import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
+import MediaManager from '../../managers/MediaManager';
 
 type VideoState = {
   current: MediaItem | null;

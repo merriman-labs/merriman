@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MediaItem } from '../../server/models';
-import MediaManager from '../managers/MediaManager';
+import { MediaItem } from '../../../server/models';
+import MediaManager from '../../managers/MediaManager';
 import { FaTimesCircle } from 'react-icons/fa';
 import { RouterProps } from 'react-router';
-import { ItemVisibility } from '../constant/ItemVisibility';
-import { c } from '../util/classList';
-import { MediaType } from '../constant/MediaType';
+import { ItemVisibility } from '../../constant/ItemVisibility';
+import { c } from '../../util/classList';
+import { MediaType } from '../../constant/MediaType';
 
 type MediaEditProps = RouterProps & {
   match: {

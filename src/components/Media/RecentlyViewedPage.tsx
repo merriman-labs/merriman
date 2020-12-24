@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaAngleDoubleDown } from 'react-icons/fa';
-import { MediaItem } from '../../server/models';
-import MediaManager from '../managers/MediaManager';
+import { MediaItem } from '../../../server/models';
+import MediaManager from '../../managers/MediaManager';
 import { MediaGrid } from './MediaGrid';
 
 export const RecentlyViewedPage = () => {

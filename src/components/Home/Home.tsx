@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import { TagsList } from './Media/TagsList';
-import { RecentlyPlayed } from './components/Home/RecentlyPlayed';
-import { NewItems } from './components/Home/NewItems';
+import { TagsList } from '../Media/TagsList';
+import { RecentlyPlayed } from './RecentlyPlayed';
+import { NewItems } from './NewItems';
 
 const Home = () => {
   return (
