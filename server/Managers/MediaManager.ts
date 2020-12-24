@@ -13,6 +13,7 @@ import ThumbProvider from '../thumb-provider';
 import LibraryRA from '../ResourceAccess/LibraryRA';
 import { NotFoundError } from '../Errors/NotFoundError';
 import { UnauthorizedError } from '../Errors/UnauthorizedError';
+import { TagStatistic } from '../ViewModels/TagStatistic';
 
 @injectable()
 export class MediaManager {
@@ -113,7 +114,7 @@ export class MediaManager {
     return this._mediaRA.incrementPlayCount(id);
   }
 
-  getTags(): Promise<Array<string>> {
+  getTags(): Promise<Array<TagStatistic>> {
     return this._mediaRA.getTags();
   }
 
