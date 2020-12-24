@@ -7,7 +7,7 @@ import { MediaEdit } from './components/Media/Edit';
 import { MediaByTag } from './components/Media/MediaByTag';
 import Navigation from './components/Navigation/Navigation';
 import RandomMedia from './components/Media/Random';
-import StandaloneMedia from './StandaloneMedia';
+import { StandaloneMedia } from './components/Media/StandaloneMedia';
 import VideoLibrariesPage from './VideoLibrariesPage';
 import { Logout } from './Logout';
 import AdminNavigation from './admin/AdminNavigation';
@@ -43,14 +43,30 @@ export const AuthenticatedApp = () => {
               <Switch>
                 <Route path="/random" component={RandomMedia} />
                 <Route path="/results" component={Results} />
-                <Route path="/media/recent" component={RecentlyAddedPage} exact />
+                <Route
+                  path="/media/recent"
+                  component={RecentlyAddedPage}
+                  exact
+                />
                 <Route path="/media/edit/:id" component={MediaEdit} exact />
                 <Route path="/media/tag/:tag" component={MediaByTag} exact />
                 <Route path="/media/upload" component={Upload} exact />
-                <Route path="/media/recently-viewed" component={RecentlyViewedPage} exact />
+                <Route
+                  path="/media/recently-viewed"
+                  component={RecentlyViewedPage}
+                  exact
+                />
                 <Route path="/media/:media" component={StandaloneMedia} exact />
-                <Route path="/library/edit/:library" component={EditLibrary} exact />
-                <Route path="/library/:library/:media?" component={Library} exact />
+                <Route
+                  path="/library/edit/:library"
+                  component={EditLibrary}
+                  exact
+                />
+                <Route
+                  path="/library/:library/:media?"
+                  component={Library}
+                  exact
+                />
                 <Route path="/libraries" component={Libraries} exact />
                 <Route
                   path="/videos/:library?/:video?"
