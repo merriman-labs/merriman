@@ -8,7 +8,6 @@ import { MediaByTag } from './components/Media/MediaByTag';
 import Navigation from './components/Navigation/Navigation';
 import RandomMedia from './components/Media/Random';
 import { StandaloneMedia } from './components/Media/StandaloneMedia';
-import VideoLibrariesPage from './VideoLibrariesPage';
 import { Logout } from './Logout';
 import AdminNavigation from './admin/AdminNavigation';
 import { RequestLogs } from './admin/RequestLogs';
@@ -68,10 +67,6 @@ export const AuthenticatedApp = () => {
                   exact
                 />
                 <Route path="/libraries" component={Libraries} exact />
-                <Route
-                  path="/videos/:library?/:video?"
-                  component={VideoLibrariesPage}
-                />
                 <Route path="/logout" component={Logout} />
                 <Route exact path="/" component={Home} />
               </Switch>
