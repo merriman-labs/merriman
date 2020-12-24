@@ -21,6 +21,7 @@ import { Libraries } from './components/Libraries';
 import { EditLibrary } from './components/Library/EditLibrary';
 import { UserAdmin } from './admin/UserAdmin';
 import { RecentlyViewedPage } from './components/Media/RecentlyViewedPage';
+import { TagsPage } from './components/Media/TagsPage';
 
 export const AuthenticatedApp = () => {
   return (
@@ -48,6 +49,7 @@ export const AuthenticatedApp = () => {
                   exact
                 />
                 <Route path="/media/edit/:id" component={MediaEdit} exact />
+                <Route path="/media/tags" component={TagsPage} exact />
                 <Route path="/media/tag/:tag" component={MediaByTag} exact />
                 <Route path="/media/upload" component={Upload} exact />
                 <Route
