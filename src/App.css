@@ -99,3 +99,17 @@ a {
   color: white;
   text-decoration: none;
 }
+
+@media (max-width: 664px) {
+  .carousel,
+  .slide,
+  .slide > a {
+    max-height: 300px;
+  }
+}
+
+.carousel,
+.slide,
+.slide > a {
+  max-height: 600px;
+}

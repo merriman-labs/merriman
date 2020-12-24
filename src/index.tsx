@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import 'bootswatch/dist/darkly/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.min.css';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import { AuthProvider } from './context/UserContext';
 import { ToastContainer } from 'react-toastify';
 

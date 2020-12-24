@@ -39,6 +39,7 @@
     "react-dom": "^16.13.1",
     "react-icons": "^3.2.2",
     "react-image-fallback": "^8.0.0",
+    "react-responsive-carousel": "^3.2.11",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
