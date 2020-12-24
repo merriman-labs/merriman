@@ -7,7 +7,7 @@
     "url": "http://github.com/jreina"
   },
   "repository": {
-    "url": "https://github.com/jreina/merriman"
+    "url": "https://github.com/merriman-labs/merriman"
   },
   "dependencies": {
     "@johnny.reina/ajv-types": "^0.1.0",
