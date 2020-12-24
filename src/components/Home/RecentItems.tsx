@@ -12,7 +12,7 @@ export const RecentItems = (props: { items?: number }) => {
 
   return (
     <>
-      <h4 className="m-3">New stuff</h4>
+      <h4 className="h5 m-3">New stuff</h4>
       <MediaGrid items={items} />
     </>
   );

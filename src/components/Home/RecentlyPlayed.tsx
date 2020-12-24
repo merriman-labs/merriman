@@ -12,7 +12,7 @@ export const RecentlyPlayed = (props: { items?: number }) => {
 
   return (
     <>
-      <h2 className="h5 m-3">Recently Played <Link className="ml-3" to="/media/recently-played">see all</Link></h2>
+      <h2 className="h5 m-3">Recently Viewed <Link className="ml-3" to="/media/recently-viewed">see all</Link></h2>
       <MediaCarousel items={items} />
     </>
   );

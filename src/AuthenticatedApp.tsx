@@ -14,13 +14,14 @@ import AdminNavigation from './admin/AdminNavigation';
 import { RequestLogs } from './admin/RequestLogs';
 import { Results } from './components/Results';
 import { SideNavigation } from './components/Navigation/SideNavigation';
-import { Recent } from './Media/Recent';
+import { RecentlyAddedPage } from './Media/RecentlyAddedPage';
 import { Upload } from './Media/Upload';
 import { MobileNavbar } from './components/Navigation/MobileNavbar';
 import { Library } from './components/Library/Library';
 import { Libraries } from './components/Libraries';
 import { EditLibrary } from './components/Library/EditLibrary';
 import { UserAdmin } from './admin/UserAdmin';
+import { RecentlyViewedPage } from './Media/RecentlyViewedPage';
 
 export const AuthenticatedApp = () => {
   return (
@@ -42,10 +43,11 @@ export const AuthenticatedApp = () => {
               <Switch>
                 <Route path="/random" component={RandomMedia} />
                 <Route path="/results" component={Results} />
-                <Route path="/media/recent" component={Recent} exact />
+                <Route path="/media/recent" component={RecentlyAddedPage} exact />
                 <Route path="/media/edit/:id" component={MediaEdit} exact />
                 <Route path="/media/tag/:tag" component={MediaByTag} exact />
                 <Route path="/media/upload" component={Upload} exact />
+                <Route path="/media/recently-viewed" component={RecentlyViewedPage} exact />
                 <Route path="/media/:media" component={StandaloneMedia} exact />
                 <Route path="/library/edit/:library" component={EditLibrary} exact />
                 <Route path="/library/:library/:media?" component={Library} exact />
