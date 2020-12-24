@@ -5,7 +5,8 @@ import {
   FaAsterisk,
   FaFileUpload,
   FaDiceFive,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaLock
 } from 'react-icons/fa';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -67,8 +68,20 @@ export const MobileNavbar = () => {
         <form className="form-inline my-2 my-lg-0">
           <SearchBox />
         </form>
-        <div className="dropdown-divider"></div>
-        <Link to="/logout" className="dropdown-item"><FaSignOutAlt /> Log out</Link>
+        <div className="dropdown-divider"></div><ul className="navbar-nav mr-auto">
+          <li className="nav-item">
+            <Link to="/admin" className="nav-link">
+              <FaLock className="mr-3" />
+              <span>Admin</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/logout" className="nav-link">
+              <FaSignOutAlt className="mr-3" />
+              <span>Log out</span>
+            </Link>
+          </li>
+        </ul>
       </Collapse>
     </Navbar>
   );
