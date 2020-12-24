@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { MediaItem } from '../../../server/models';
 import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
-import MediaManager from '../../managers/MediaManager';
 import { useParams } from 'react-router';
 
 type StandaloneMediaProps = {

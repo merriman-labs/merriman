@@ -1,15 +1,11 @@
 import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   FaArrowDown,
   FaArrowLeft,
   FaArrowRight,
-  FaArrowUp,
-  FaSortAlphaDown,
-  FaSortAlphaUp,
-  FaSortNumericDown,
-  FaSortNumericUp
+  FaArrowUp
 } from 'react-icons/fa';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -21,13 +17,10 @@ import { c } from '../../util/classList';
 import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
 import { ItemVisibilityLabel } from '../ItemVisibility';
 
-type SortMode = 'ORDERINGASC' | 'ORDERINGDESC' | 'ALPHAASC' | 'ALPHADESC';
-
 const sortByOrdering = (
-  ordering: Array<{ id: string | ObjectId; order: number }>,
-  direction: 'desc' | 'asc' = 'asc'
+  ordering: Array<{ id: string | ObjectId; order: number }>
 ) => (items: Array<MediaItem>) => {
-  const ordered = _.orderBy(ordering, 'order', direction);
+  const ordered = _.orderBy(ordering, 'order');
   const orderedItems = ordered
     .map(({ id }) =>
       items.find((item) => item._id.toString() === id.toString())
@@ -36,52 +29,38 @@ const sortByOrdering = (
   return orderedItems;
 };
 
-const sortByName = (direction: 'desc' | 'asc' = 'asc') => (
-  items: Array<MediaItem>
-) => {
-  return _.orderBy(items, 'name', direction);
-};
-
 export const Library = () => {
-  const [sortMode, setSortMode] = useState<SortMode>('ORDERINGASC');
   const params = useParams<{ library: string; media: string }>();
   const [library, setLibrary] = useState<LibraryModel | null>(null);
   const [media, setMedia] = useState<Array<MediaItem>>([]);
   const [currentMedia, setCurrentMedia] = useState<MediaItem | null>(null);
   const user = useUserContext();
 
-  const getSortFunc = (): ((items: Array<MediaItem>) => Array<MediaItem>) => {
-    if (!library?.items) return _.identity;
-    switch (sortMode) {
-      case 'ALPHAASC':
-        return sortByName('asc');
-      case 'ALPHADESC':
-        return sortByName('desc');
-      case 'ORDERINGASC':
-        return sortByOrdering(library.items, 'asc');
-      case 'ORDERINGDESC':
-        return sortByOrdering(library.items, 'desc');
-      default:
-        throw Error('Invalid sort mode');
-    }
-  };
-
-  const loadLibrary = async () => {
+  const loadLibrary = useCallback(async () => {
     const lib = await LibraryManager.getById(params.library);
     setLibrary(lib);
+  }, [params.library]);
+
+  const loadMedia = useCallback(() => {
+    if (!library) return;
     MediaManager.getByLibrary(params.library)
-      .then(getSortFunc())
+      .then(sortByOrdering(library?.items))
       .then(setMedia);
-  };
+  }, [library, params.library]);
 
   useEffect(() => {
     loadLibrary();
-  }, [params.library]);
+  }, [params.library, loadLibrary]);
+
+  useEffect(() => {
+    loadMedia();
+  }, [library, loadMedia]);
 
   useEffect(() => {
     if (!params.media) return setCurrentMedia(null);
     MediaManager.details(params.media).then(setCurrentMedia);
   }, [params.media]);
+
   const handleReorder = async (direction: 'up' | 'down', mediaId: string) => {
     if (library === null) return;
     await LibraryManager.setMediaOrder({
@@ -89,7 +68,7 @@ export const Library = () => {
       direction,
       mediaId
     });
-    loadLibrary();
+    await loadLibrary();
   };
 
   // these two should just be a ll or queue
@@ -178,48 +157,14 @@ export const Library = () => {
               <FaArrowRight />
             </button>
           </div>
-          <div className="btn-group ml-3">
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ALPHADESC')}
-              disabled={sortMode === 'ALPHADESC'}
-              title="Sort by name descending"
-            >
-              <FaSortAlphaUp />
-            </button>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ALPHAASC')}
-              disabled={sortMode === 'ALPHAASC'}
-              title="Sort by name ascending"
-            >
-              <FaSortAlphaDown />
-            </button>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ORDERINGDESC')}
-              disabled={sortMode === 'ORDERINGDESC'}
-              title="Sort by library order descending"
-            >
-              <FaSortNumericUp />
-            </button>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ORDERINGASC')}
-              disabled={sortMode === 'ORDERINGASC'}
-              title="Sort by library order ascending"
-            >
-              <FaSortNumericDown />
-            </button>
-          </div>
         </div>
       </div>
       <div className="row">
         <div className="col">
           <div className="list-group mt-3">
-            {getSortFunc()(media).map((mediaItem: MediaItem) => {
+            {media.map((mediaItem: MediaItem) => {
               return (
-                <div className="list-group-item d-flex justify-content-between">
+                <div className="list-group-item d-flex justify-content-between" key={mediaItem._id.toString()}>
                   <Link
                     to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
                     key={mediaItem._id.toString()}

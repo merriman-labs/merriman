@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaAsterisk, FaBars, FaDiceFive, FaFileUpload, FaFolderOpen, FaHome, FaSave } from 'react-icons/fa';
+import { FaAsterisk, FaBars, FaDiceFive, FaFileUpload, FaFolderOpen, FaHome } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { c } from '../../util/classList';
 

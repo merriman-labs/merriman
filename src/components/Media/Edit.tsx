@@ -21,11 +21,8 @@ export const MediaEdit = (props: MediaEditProps) => {
   const [srtTrack, setSrtTrack] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadMedia = () =>
-    MediaManager.details(props.match.params.id).then(setMedia);
-
   useEffect(() => {
-    loadMedia();
+    MediaManager.details(props.match.params.id).then(setMedia);
   }, [props.match.params.id]);
 
   const handleDelete = async (hard: boolean) => {

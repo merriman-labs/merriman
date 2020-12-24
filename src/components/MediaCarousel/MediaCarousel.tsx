@@ -8,7 +8,7 @@ export const MediaCarousel = ({ items }: { items: Array<MediaItem> }) => {
   return (
     <Carousel showArrows infiniteLoop showStatus={false}>
       {items.map((item) => (
-        <Link className="d-block" to={`/media/${item._id}`}>
+        <Link className="d-block" to={`/media/${item._id}`} key={item._id.toString()}>
           <ReactImageFallback
             className="card-image-top"
             src={`/${item.filename}.png`}

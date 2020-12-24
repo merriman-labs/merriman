@@ -37,7 +37,7 @@ export const LibrarySelector = (props: LibrarySelectorProps) => {
     props.setSelectedLibraries(libs);
   };
   const handleLibraryAdd = async (name: string) => {
-    const newLibrary = await LibraryManager.create({ name });
+    await LibraryManager.create({ name });
     fetchLibraries();
   }
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {

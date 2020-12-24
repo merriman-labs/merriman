@@ -29,7 +29,7 @@ export const MediaGrid = (props: { items: Array<MediaItem> }) => {
     <div className="container-fluid mt-4">
       <div className="row row-cols-1 row-cols-md-4 row-cols-xl-6">
         {props.items.map((item) => (
-          <div className="col mb-3">
+          <div className="col mb-3" key={item._id.toString()}>
             <MediaCard item={item} />
           </div>
         ))}

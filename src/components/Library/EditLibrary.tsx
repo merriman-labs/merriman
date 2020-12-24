@@ -16,7 +16,7 @@ export const EditLibrary = () => {
 
   useEffect(() => {
     LibraryManager.getById(params.library).then(setLibrary);
-  }, []);
+  }, [params.library]);
 
   const setVisibility = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!library) return;

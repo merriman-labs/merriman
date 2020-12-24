@@ -4,10 +4,10 @@ import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
 import { MediaCarousel } from '../MediaCarousel/MediaCarousel';
 
-export const RecentlyPlayed = (props: { items?: number }) => {
+export const RecentlyPlayed = () => {
   const [items, setItems] = useState<Array<MediaItem>>([]);
   useEffect(() => {
-    MediaManager.recentlyPlayed(props.items || 12).then(setItems);
+    MediaManager.recentlyPlayed(12).then(setItems);
   }, []);
 
   return (

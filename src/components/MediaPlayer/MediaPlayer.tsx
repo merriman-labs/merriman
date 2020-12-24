@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Col, Row } from 'reactstrap';
 import { FaFolderPlus, FaTimes, FaPlus, FaPencilAlt } from 'react-icons/fa';
 import Dropdown from 'reactstrap/lib/Dropdown';
@@ -29,7 +29,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
   const [libraries, setLibraries] = useState<Array<LibraryDropdownItem>>([]);
   const [newLibraryName, setNewLibraryName] = useState<string>('');
 
-  const getLibraries = async () => {
+  const getLibraries = useCallback(async () => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
       (lib) => ({
         ...lib,
@@ -37,7 +37,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       })
     );
     setLibraries(libs);
-  };
+  }, [setLibraries, id]);
 
   const handleLibraryClick = async (library: Library) => {
     if (library === null || details === null) return;
@@ -58,7 +58,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       setDetails(details);
     };
     effect();
-  }, [id]);
+  }, [id, getLibraries]);
 
   const handleLibraryKeyPress = async (
     event: React.KeyboardEvent<HTMLInputElement>
@@ -87,7 +87,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
             <Col md="3" sm="12"></Col>
             <Col md="3" sm="12">
               {details.tags.map((tag) => (
-                <Link to={`/media/tag/${tag}`} className="mr-1">
+                <Link to={`/media/tag/${tag}`} className="mr-1" key={tag}>
                   #{tag}
                 </Link>
               ))}

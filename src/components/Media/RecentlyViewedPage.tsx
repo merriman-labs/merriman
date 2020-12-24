@@ -10,7 +10,7 @@ export const RecentlyViewedPage = () => {
 
   useEffect(() => {
     MediaManager.recentlyPlayed(count).then(setItems);
-  }, []);
+  }, [count]);
   return (
     <>
       <h4 className="h5 m-3">Recently Viewed</h4>

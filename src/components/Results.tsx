@@ -14,7 +14,7 @@ export const Results = () => {
 
   useEffect(() => {
     MediaManager.search(query.q).then(setResults);
-  }, [params.search]);
+  }, [query.q]);
 
   return (
     <div className="container">

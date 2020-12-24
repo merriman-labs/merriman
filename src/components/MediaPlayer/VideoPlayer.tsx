@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import WatchStateManager from '../../managers/WatchStateManager';
 import { MediaHandlerComponentProps } from './MediaHandlerComponentProps';
 
@@ -22,7 +22,7 @@ export const VideoPlayer = (props: MediaHandlerComponentProps) => {
       };
     };
     effect();
-  }, []);
+  }, [props]);
 
   const updateTime = async (time: number) => {
     if (time >= watchTime + 5) {
