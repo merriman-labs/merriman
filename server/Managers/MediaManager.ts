@@ -25,6 +25,10 @@ export class MediaManager {
     private _libraryRA: LibraryRA
   ) {}
 
+  async search(term: string, userId: string) {
+    return this._mediaRA.search(term, userId);
+  }
+
   random(userId: string) {
     return this._mediaRA.random(userId);
   }
