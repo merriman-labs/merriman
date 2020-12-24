@@ -1,14 +1,14 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { TagsList } from './Media/TagsList';
-import { RecentItems } from './components/Home/RecentItems';
 import { RecentlyPlayed } from './components/Home/RecentlyPlayed';
+import { NewItems } from './components/Home/NewItems';
 
 const Home = () => {
   return (
     <>
       <RecentlyPlayed />
-      <RecentItems />
+      <NewItems />
       <Container fluid className="mt-3">
         <Row>
           <Col md="6">
