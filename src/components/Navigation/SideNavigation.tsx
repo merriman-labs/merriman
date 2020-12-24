@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaAsterisk, FaBars, FaDiceFive, FaFileUpload, FaFolderOpen, FaHome } from 'react-icons/fa';
+import { FaAsterisk, FaBars, FaDiceFive, FaFileUpload, FaFolderOpen, FaHome, FaTags } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { c } from '../../util/classList';
 
@@ -21,6 +21,9 @@ export const SideNavigation = () => {
       </Link>
       <Link to="/libraries" className="list-group-item">
         <FaFolderOpen className="mr-3" /><span>Libraries</span>
+      </Link>
+      <Link to="/media/tags" className="list-group-item">
+        <FaTags className="mr-3" /><span>Tags</span>
       </Link>
       <Link to="/media/recent" className="list-group-item">
         <FaAsterisk className="mr-3" /><span>Recent</span>

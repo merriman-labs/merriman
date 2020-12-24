@@ -6,7 +6,8 @@ import {
   FaFileUpload,
   FaDiceFive,
   FaSignOutAlt,
-  FaLock
+  FaLock,
+  FaTags
 } from 'react-icons/fa';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -44,6 +45,12 @@ export const MobileNavbar = () => {
             <Link to="/libraries" className="nav-link">
               <FaFolderOpen className="mr-3" />
               <span>Libraries</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/media/tags" className="nav-link">
+              <FaTags className="mr-3" />
+              <span>Tags</span>
             </Link>
           </li>
           <li className="nav-item">
