@@ -8,7 +8,7 @@ import {
   FaArrowUp,
   FaSort
 } from 'react-icons/fa';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Library as LibraryModel, MediaItem } from '../../../server/models';
 import { useUserContext } from '../../hooks/useUserContext';
@@ -104,9 +104,12 @@ function getSortFunction(mode: SortMode) {
 }
 
 export const Library = () => {
+  const DEFAULT_SORT = 'ORDERASC';
   const params = useParams<{ library: string; media: string }>();
+  const history = useHistory();
   const [library, setLibrary] = useState<LibraryModel | null>(null);
   const [media, setMedia] = useState<Array<OrderedMediaItem>>([]);
+  const [sortedMedia, setSortedMedia] = useState<Array<OrderedMediaItem>>([]);
   const [currentMedia, setCurrentMedia] = useState<OrderedMediaItem | null>(
     null
   );
@@ -123,7 +126,6 @@ export const Library = () => {
 
     MediaManager.getByLibrary(params.library)
       .then(mergeOrderings(library.items))
-      .then(getSortFunction(sortMode))
       .then(setMedia);
   }, [library, params.library]);
 
@@ -136,12 +138,15 @@ export const Library = () => {
   }, [library, loadMedia]);
 
   useEffect(() => {
-    if (!params.media) return setCurrentMedia(null);
-    if (!library) return;
-    MediaManager.details(params.media)
-      .then((item) => mergeOrderings(library.items)([item])[0])// kinda hacky
-      .then(setCurrentMedia);
-  }, [params.media]);
+    setSortedMedia(getSortFunction(sortMode)(media));
+  }, [media, sortMode])
+
+  useEffect(() => {
+    if (!params.media || media.length === 0) return setCurrentMedia(null);
+    const item = media.find(item => item._id.toString() === params.media);
+    if(!item) return;
+    setCurrentMedia(item);
+  }, [params.media, media]);
 
   const handleReorder = async (direction: 'up' | 'down', mediaId: string) => {
     if (library === null) return;
@@ -153,24 +158,29 @@ export const Library = () => {
     await loadLibrary();
   };
 
+  const setMediaLocation = (id: string) =>
+    library &&
+    history.push(`/library/${library._id.toString()}/${id.toString()}`);
+
   const getNext = () => {
     if (!currentMedia) {
-      const first = _.first(media);
+      const first = _.first(sortedMedia);
       if (!first) return;
-      return setCurrentMedia(first);
+      return setMediaLocation(first._id.toString());
     }
-    const currentLibraryItem = media.indexOf(currentMedia);
-    if (currentLibraryItem < 0 || currentLibraryItem >= media.length) return;
-    const nextMediaItem = media[currentLibraryItem + 1];
-    setCurrentMedia(nextMediaItem);
+    const currentLibraryItem = sortedMedia.indexOf(currentMedia);
+    if (currentLibraryItem < 0 || currentLibraryItem >= sortedMedia.length) return;
+    const nextMediaItem = sortedMedia[currentLibraryItem + 1];
+    console.log(nextMediaItem);
+    setMediaLocation(nextMediaItem._id.toString());
   };
 
   const getPrev = () => {
-    if (!currentMedia || !media.length) return;
-    const currentLibraryItem = media.indexOf(currentMedia);
+    if (!currentMedia || !sortedMedia.length) return;
+    const currentLibraryItem = sortedMedia.indexOf(currentMedia);
     if (currentLibraryItem < 1) return;
-    const nextLibraryItem = media[currentLibraryItem - 1];
-    setCurrentMedia(nextLibraryItem);
+    const nextLibraryItem = sortedMedia[currentLibraryItem - 1];
+    setMediaLocation(nextLibraryItem._id.toString());
   };
 
   return library === null ? null : (
@@ -178,7 +188,7 @@ export const Library = () => {
       <div className="row my-3">
         <div className="col">
           <h2 className="h5">
-            {library ? library.name : 'No Library Selected'}{' '}
+            <span className="mr-2">{library.name}</span>
             <ItemVisibilityLabel visibility={library.visibility} includeIcon />
           </h2>
           <p>{library.user.username}</p>
@@ -221,7 +231,7 @@ export const Library = () => {
       <div className="row">
         <div className="col">
           <div className="list-group mt-3">
-            {getSortFunction(sortMode)(media).map((mediaItem: MediaItem) => {
+            {sortedMedia.map((mediaItem: MediaItem) => {
               return (
                 <div
                   className="list-group-item d-flex justify-content-between"
