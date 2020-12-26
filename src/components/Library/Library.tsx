@@ -107,7 +107,9 @@ export const Library = () => {
   const params = useParams<{ library: string; media: string }>();
   const [library, setLibrary] = useState<LibraryModel | null>(null);
   const [media, setMedia] = useState<Array<OrderedMediaItem>>([]);
-  const [currentMedia, setCurrentMedia] = useState<MediaItem | null>(null);
+  const [currentMedia, setCurrentMedia] = useState<OrderedMediaItem | null>(
+    null
+  );
   const [sortMode, setSortMode] = useState<SortMode>('ORDERASC');
   const user = useUserContext();
 
@@ -135,7 +137,10 @@ export const Library = () => {
 
   useEffect(() => {
     if (!params.media) return setCurrentMedia(null);
-    MediaManager.details(params.media).then(setCurrentMedia);
+    if (!library) return;
+    MediaManager.details(params.media)
+      .then((item) => mergeOrderings(library.items)([item])[0])// kinda hacky
+      .then(setCurrentMedia);
   }, [params.media]);
 
   const handleReorder = async (direction: 'up' | 'down', mediaId: string) => {
@@ -148,50 +153,24 @@ export const Library = () => {
     await loadLibrary();
   };
 
-  // these two should just be a ll or queue
   const getNext = () => {
     if (!currentMedia) {
-      const first = library?.items.reduce((memo, item) =>
-        memo.order < item.order ? memo : item
-      );
+      const first = _.first(media);
       if (!first) return;
-      const firstItem = media.find(
-        (item) => item._id.toString() === first.id.toString()
-      );
-      if (!firstItem) return;
-      return setCurrentMedia(firstItem);
+      return setCurrentMedia(first);
     }
-    if (!library?.items) return;
-    const currentLibraryItem = library?.items.find(
-      (item) => item.id.toString() === currentMedia._id.toString()
-    );
-    if (!currentLibraryItem) return;
-    const nextLibraryItem = library?.items.find(
-      (item) => item.order === currentLibraryItem?.order + 1
-    );
-    if (!nextLibraryItem) return;
-    const nextMediaItem = media.find(
-      (item) => item._id.toString() === nextLibraryItem.id.toString()
-    );
-    if (!nextMediaItem) return;
+    const currentLibraryItem = media.indexOf(currentMedia);
+    if (currentLibraryItem < 0 || currentLibraryItem >= media.length) return;
+    const nextMediaItem = media[currentLibraryItem + 1];
     setCurrentMedia(nextMediaItem);
   };
 
   const getPrev = () => {
-    if (!currentMedia || !library?.items) return;
-    const currentLibraryItem = library?.items.find(
-      (item) => item.id.toString() === currentMedia._id.toString()
-    );
-    if (!currentLibraryItem) return;
-    const nextLibraryItem = library?.items.find(
-      (item) => item.order === currentLibraryItem?.order - 1
-    );
-    if (!nextLibraryItem) return;
-    const nextMediaItem = media.find(
-      (item) => item._id.toString() === nextLibraryItem.id.toString()
-    );
-    if (!nextMediaItem) return;
-    setCurrentMedia(nextMediaItem);
+    if (!currentMedia || !media.length) return;
+    const currentLibraryItem = media.indexOf(currentMedia);
+    if (currentLibraryItem < 1) return;
+    const nextLibraryItem = media[currentLibraryItem - 1];
+    setCurrentMedia(nextLibraryItem);
   };
 
   return library === null ? null : (
