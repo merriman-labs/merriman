@@ -1,11 +1,12 @@
 import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, useCallback, useEffect, useState } from 'react';
 import {
   FaArrowDown,
   FaArrowLeft,
   FaArrowRight,
-  FaArrowUp
+  FaArrowUp,
+  FaSort
 } from 'react-icons/fa';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -16,6 +17,49 @@ import MediaManager from '../../managers/MediaManager';
 import { c } from '../../util/classList';
 import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
 import { ItemVisibilityLabel } from '../ItemVisibility';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle
+} from 'reactstrap';
+
+const SortDropdown = (props: {
+  mode: SortMode;
+  setSortmode: Dispatch<SortMode>;
+}) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+
+  return (
+    <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+      <DropdownToggle>
+        Sorting <FaSort />
+      </DropdownToggle>
+      <DropdownMenu>
+        <DropdownItem onClick={() => props.setSortmode('ORDERASC')}>
+          Track # Ascending
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('ORDERDESC')}>
+          Track # Descending
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('ALPHAASC')}>
+          Name (A-Z)
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('ALPHADESC')}>
+          Name (Z-A)
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('CREATEDASC')}>
+          Date (Newest First)
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('CREATEDDESC')}>
+          Date (Oldest First)
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
+};
 
 type OrderedMediaItem = { order: number } & MediaItem;
 
@@ -44,17 +88,17 @@ function getSortFunction(mode: SortMode) {
   ): Array<OrderedMediaItem> {
     switch (mode) {
       case 'ALPHAASC':
-        return _.orderBy(items, 'name', 'asc');
+        return _.orderBy(items, ['name'], 'asc');
       case 'ALPHADESC':
-        return _.orderBy(items, 'name', 'desc');
+        return _.orderBy(items, ['name'], 'desc');
       case 'CREATEDASC':
-        return _.orderBy(items, '_id', 'asc');
+        return _.orderBy(items, ['_id'], 'asc');
       case 'CREATEDDESC':
-        return _.orderBy(items, '_id', 'desc');
+        return _.orderBy(items, ['_id'], 'desc');
       case 'ORDERASC':
-        return _.orderBy(items, 'order', 'asc');
+        return _.orderBy(items, ['order'], 'asc');
       case 'ORDERDESC':
-        return _.orderBy(items, 'order', 'desc');
+        return _.orderBy(items, ['order'], 'desc');
     }
   };
 }
@@ -191,11 +235,14 @@ export const Library = () => {
             </button>
           </div>
         </div>
+        <div className="col">
+          <SortDropdown mode={sortMode} setSortmode={setSortMode} />
+        </div>
       </div>
       <div className="row">
         <div className="col">
           <div className="list-group mt-3">
-            {media.map((mediaItem: MediaItem) => {
+            {getSortFunction(sortMode)(media).map((mediaItem: MediaItem) => {
               return (
                 <div
                   className="list-group-item d-flex justify-content-between"
