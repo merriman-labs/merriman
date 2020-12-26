@@ -3,25 +3,20 @@ import { Link } from 'react-router-dom';
 import { TagStatistic } from '../../../server/ViewModels';
 import MediaManager from '../../managers/MediaManager';
 
-export const TagsList = () => {
+export const TagCloud = () => {
   const [tags, setTags] = useState<Array<TagStatistic>>([]);
   useEffect(() => {
-    const doEffect = async () => {
-      const result = await MediaManager.tags();
-      setTags(result.tags);
-    };
-    doEffect();
+    MediaManager.tags().then(({ tags }) => setTags(tags));
   }, []);
-
   return (
     <>
-      {tags.map(tag => (
+      {tags.map((result) => (
         <Link
-          key={tag.tag}
-          to={`media/tag/${tag.tag}`}
-          className="badge badge-pill badge-secondary mr-1"
+          className="mt-3 btn btn-primary mr-3"
+          to={`/media/tag/${result.tag}`}
+          key={result.tag}
         >
-          {tag.tag} {tag.count}
+          {result.tag} <span className="badge badge-light">{result.count}</span>
         </Link>
       ))}
     </>

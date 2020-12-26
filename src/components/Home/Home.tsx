@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import { TagsList } from '../Media/TagsList';
 import { RecentlyPlayed } from './RecentlyPlayed';
 import { NewItems } from './NewItems';
+import { TagCloud } from '../TagCloud/TagCloud';
 
 const Home = () => {
   return (
@@ -12,14 +12,8 @@ const Home = () => {
       <Container fluid className="mt-3">
         <Row>
           <Col md="6">
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">Tags</h5>
-                <p className="card-text">
-                  <TagsList />
-                </p>
-              </div>
-            </div>
+            <h2 className="h5">Tags</h2>
+            <TagCloud />
           </Col>
         </Row>
       </Container>
