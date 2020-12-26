@@ -17,23 +17,54 @@ import { c } from '../../util/classList';
 import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
 import { ItemVisibilityLabel } from '../ItemVisibility';
 
-const sortByOrdering = (
-  ordering: Array<{ id: string | ObjectId; order: number }>
-) => (items: Array<MediaItem>) => {
-  const ordered = _.orderBy(ordering, 'order');
-  const orderedItems = ordered
-    .map(({ id }) =>
-      items.find((item) => item._id.toString() === id.toString())
-    )
-    .filter(Boolean) as Array<MediaItem>;
-  return orderedItems;
-};
+type OrderedMediaItem = { order: number } & MediaItem;
+
+type SortMode =
+  | 'ORDERASC'
+  | 'ORDERDESC'
+  | 'ALPHAASC'
+  | 'ALPHADESC'
+  | 'CREATEDASC'
+  | 'CREATEDDESC';
+type Ordering = { id: string | ObjectId; order: number };
+
+function mergeOrderings(orderings: Array<Ordering>) {
+  return function (items: Array<MediaItem>): Array<OrderedMediaItem> {
+    return items.map((item) => ({
+      ...item,
+      order: orderings.find((ord) => ord.id.toString() === item._id.toString())
+        ?.order as number // since the orderings is the source of the media items, we can assume we will always find one
+    }));
+  };
+}
+
+function getSortFunction(mode: SortMode) {
+  return function sortItems(
+    items: Array<OrderedMediaItem>
+  ): Array<OrderedMediaItem> {
+    switch (mode) {
+      case 'ALPHAASC':
+        return _.orderBy(items, 'name', 'asc');
+      case 'ALPHADESC':
+        return _.orderBy(items, 'name', 'desc');
+      case 'CREATEDASC':
+        return _.orderBy(items, '_id', 'asc');
+      case 'CREATEDDESC':
+        return _.orderBy(items, '_id', 'desc');
+      case 'ORDERASC':
+        return _.orderBy(items, 'order', 'asc');
+      case 'ORDERDESC':
+        return _.orderBy(items, 'order', 'desc');
+    }
+  };
+}
 
 export const Library = () => {
   const params = useParams<{ library: string; media: string }>();
   const [library, setLibrary] = useState<LibraryModel | null>(null);
-  const [media, setMedia] = useState<Array<MediaItem>>([]);
+  const [media, setMedia] = useState<Array<OrderedMediaItem>>([]);
   const [currentMedia, setCurrentMedia] = useState<MediaItem | null>(null);
+  const [sortMode, setSortMode] = useState<SortMode>('ORDERASC');
   const user = useUserContext();
 
   const loadLibrary = useCallback(async () => {
@@ -43,8 +74,10 @@ export const Library = () => {
 
   const loadMedia = useCallback(() => {
     if (!library) return;
+
     MediaManager.getByLibrary(params.library)
-      .then(sortByOrdering(library?.items))
+      .then(mergeOrderings(library.items))
+      .then(getSortFunction(sortMode))
       .then(setMedia);
   }, [library, params.library]);
 
@@ -164,7 +197,10 @@ export const Library = () => {
           <div className="list-group mt-3">
             {media.map((mediaItem: MediaItem) => {
               return (
-                <div className="list-group-item d-flex justify-content-between" key={mediaItem._id.toString()}>
+                <div
+                  className="list-group-item d-flex justify-content-between"
+                  key={mediaItem._id.toString()}
+                >
                   <Link
                     to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
                     key={mediaItem._id.toString()}
