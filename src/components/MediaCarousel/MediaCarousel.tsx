@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 export const MediaCarousel = ({ items }: { items: Array<MediaItem> }) => {
   return (
-    <Carousel showArrows infiniteLoop showStatus={false} verticalSwipe={undefined}>
+    <Carousel showArrows infiniteLoop showStatus={false} verticalSwipe={undefined} showThumbs={false}>
       {items.map((item) => (
         <Link className="d-block" to={`/media/${item._id}`} key={item._id.toString()}>
           <ReactImageFallback
