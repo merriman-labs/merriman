@@ -104,7 +104,6 @@ function getSortFunction(mode: SortMode) {
 }
 
 export const Library = () => {
-  const DEFAULT_SORT = 'ORDERASC';
   const params = useParams<{ library: string; media: string }>();
   const history = useHistory();
   const [library, setLibrary] = useState<LibraryModel | null>(null);
@@ -144,7 +143,7 @@ export const Library = () => {
   useEffect(() => {
     if (!params.media || media.length === 0) return setCurrentMedia(null);
     const item = media.find(item => item._id.toString() === params.media);
-    if(!item) return;
+    if(!item || item === currentMedia) return;
     setCurrentMedia(item);
   }, [params.media, media]);
 

@@ -22,7 +22,7 @@ export const VideoPlayer = (props: MediaHandlerComponentProps) => {
       };
     };
     effect();
-  }, [props]);
+  }, [props.media]);
 
   const updateTime = async (time: number) => {
     if (time >= watchTime + 5) {
