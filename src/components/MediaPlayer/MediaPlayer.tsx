@@ -58,6 +58,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       setDetails(details);
     };
     effect();
+    window.scrollTo(0, 0);
   }, [id, getLibraries]);
 
   const handleLibraryKeyPress = async (
@@ -105,7 +106,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
               </p>
             </Col>
             <Col md="6" sm="12" />
-            <Col md="3" sm="12">
+            <Col md="3" sm="12" className="mb-3" >
               <Dropdown
                 className="d-inline-block"
                 isOpen={dropdownOpen}
