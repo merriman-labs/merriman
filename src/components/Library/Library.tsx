@@ -138,12 +138,12 @@ export const Library = () => {
 
   useEffect(() => {
     setSortedMedia(getSortFunction(sortMode)(media));
-  }, [media, sortMode])
+  }, [media, sortMode]);
 
   useEffect(() => {
     if (!params.media || media.length === 0) return setCurrentMedia(null);
-    const item = media.find(item => item._id.toString() === params.media);
-    if(!item || item === currentMedia) return;
+    const item = media.find((item) => item._id.toString() === params.media);
+    if (!item) return;
     setCurrentMedia(item);
   }, [params.media, media]);
 
@@ -168,7 +168,8 @@ export const Library = () => {
       return setMediaLocation(first._id.toString());
     }
     const currentLibraryItem = sortedMedia.indexOf(currentMedia);
-    if (currentLibraryItem < 0 || currentLibraryItem >= sortedMedia.length) return;
+    if (currentLibraryItem < 0 || currentLibraryItem >= sortedMedia.length)
+      return;
     const nextMediaItem = sortedMedia[currentLibraryItem + 1];
     console.log(nextMediaItem);
     setMediaLocation(nextMediaItem._id.toString());
@@ -184,16 +185,21 @@ export const Library = () => {
 
   return library === null ? null : (
     <div className="container">
-      <div className="row my-3">
-        <div className="col">
-          <h2 className="h5">
-            <span className="mr-2">{library.name}</span>
-            <ItemVisibilityLabel visibility={library.visibility} includeIcon />
-          </h2>
-          <p>{library.user.username}</p>
-          <p>{library.items.length} items</p>
+      {currentMedia ? null : (
+        <div className="row my-3">
+          <div className="col">
+            <h2 className="h5">
+              <span className="mr-2">{library.name}</span>
+              <ItemVisibilityLabel
+                visibility={library.visibility}
+                includeIcon
+              />
+            </h2>
+            <p>{library.user.username}</p>
+            <p>{library.items.length} items</p>
+          </div>
         </div>
-      </div>
+      )}
       <div className="row">
         <div className="col">
           {currentMedia ? (
