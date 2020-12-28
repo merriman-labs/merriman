@@ -161,7 +161,10 @@ export const RegisterMedia = () => {
       </div>
       <div className="row mt-3">
         <div className="col-md-12">
-          <button className="btn btn-outline-success btn-block" onClick={handleRegisterAllClick}>
+          <button
+            className="btn btn-outline-success btn-block"
+            onClick={handleRegisterAllClick}
+          >
             Register All
           </button>
         </div>

@@ -12,9 +12,7 @@ export const VideoPlayer = (props: MediaHandlerComponentProps) => {
   useLayoutEffect(() => {
     const effect = async () => {
       if (ref.current === null) return;
-      const state = await WatchStateManager.getWatchState(
-        media._id.toString()
-      );
+      const state = await WatchStateManager.getWatchState(media._id.toString());
       if (state) {
         setWatchTime(state.time || 0);
         ref.current.currentTime = state.time;

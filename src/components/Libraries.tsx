@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FaPencilAlt, FaUserCircle } from 'react-icons/fa';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Library } from '../../server/models';
 import { useUserContext } from '../hooks/useUserContext';
 import LibraryManager from '../managers/LibraryManager';
@@ -17,14 +17,14 @@ export const Libraries = () => {
   const loadLibraries = () => LibraryManager.list().then(setLibraries);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if(event.key === 'Enter') {
-      LibraryManager.create({name: newLibraryName}).then(() => {
+    if (event.key === 'Enter') {
+      LibraryManager.create({ name: newLibraryName }).then(() => {
         setNewLibraryName('');
         toast('Library created!');
         loadLibraries();
-      })
+      });
     }
-  }
+  };
 
   useEffect(() => {
     loadLibraries();

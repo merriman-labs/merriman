@@ -16,7 +16,8 @@ export const MediaCard = (props: { item: MediaItem }) => (
       <p className="card-title truncate-text-2">{props.item.name}</p>
       <p className="card-text">
         <small className="text-muted">
-          {moment(props.item.createdAt).fromNow()} &bull; <FaUserAlt className="mr-1" />
+          {moment(props.item.createdAt).fromNow()} &bull;{' '}
+          <FaUserAlt className="mr-1" />
           {props.item.user.username}
         </small>
       </p>

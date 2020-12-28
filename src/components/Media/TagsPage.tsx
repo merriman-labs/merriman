@@ -6,7 +6,7 @@ export const TagsPage = () => {
     <div className="container">
       <div className="row">
         <div className="col-md-12">
-          <TagCloud  />
+          <TagCloud />
         </div>
       </div>
     </div>

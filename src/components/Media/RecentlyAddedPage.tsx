@@ -7,7 +7,12 @@ export const RecentlyAddedPage = () => {
   return (
     <>
       <RecentItems items={count} />
-      <button className="btn btn-block btn-outline-info" onClick={() => setCount(count + 12)}><FaAngleDoubleDown /> Load More</button>
+      <button
+        className="btn btn-block btn-outline-info"
+        onClick={() => setCount(count + 12)}
+      >
+        <FaAngleDoubleDown /> Load More
+      </button>
     </>
   );
 };

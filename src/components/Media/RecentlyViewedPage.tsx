@@ -15,7 +15,12 @@ export const RecentlyViewedPage = () => {
     <>
       <h4 className="h5 m-3">Recently Viewed</h4>
       <MediaGrid items={items} />
-      <button className="btn btn-block btn-outline-info" onClick={() => setCount(count + 12)}><FaAngleDoubleDown /> Load More</button>
+      <button
+        className="btn btn-block btn-outline-info"
+        onClick={() => setCount(count + 12)}
+      >
+        <FaAngleDoubleDown /> Load More
+      </button>
     </>
   );
 };

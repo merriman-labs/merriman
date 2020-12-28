@@ -6,7 +6,7 @@ class AuthRA {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(creds)
-    }).then(x => x.json());
+    }).then((x) => x.json());
   }
   logout() {
     return fetch('/api/auth/logout');

@@ -39,7 +39,7 @@ export const LibrarySelector = (props: LibrarySelectorProps) => {
   const handleLibraryAdd = async (name: string) => {
     await LibraryManager.create({ name });
     fetchLibraries();
-  }
+  };
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.persist();
     if (event.key === 'Enter') {
@@ -72,7 +72,7 @@ export const LibrarySelector = (props: LibrarySelectorProps) => {
             className="form-control"
             id="create-library"
             value={libraryName}
-            onChange={e => setLibraryName(e.target.value)}
+            onChange={(e) => setLibraryName(e.target.value)}
             onKeyDown={handleKeyPress}
           />
         </div>

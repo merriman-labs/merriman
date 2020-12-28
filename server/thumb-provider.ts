@@ -23,7 +23,7 @@ const create = (
   ).then(() => filename);
 };
 
-const _ensureStorage = dir => {
+const _ensureStorage = (dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 };
 
@@ -37,8 +37,8 @@ const ensureThumbs = (
 ) => {
   _ensureStorage(destDir);
   return Promise.all(
-    fileNames.map(filename => {
-      return hasThumb(filename, destDir).then(exists => {
+    fileNames.map((filename) => {
+      return hasThumb(filename, destDir).then((exists) => {
         return exists
           ? 'Thumb already exists!'
           : create(filename, sourceDir, destDir);

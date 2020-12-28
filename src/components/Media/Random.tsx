@@ -57,7 +57,7 @@ export default class RandomMedia extends Component<{}, VideoState> {
     const position = this._currentQueuePosition;
     if (position === this.state.history.length - 1) {
       const details = await MediaManager.random();
-      this.setState(s => ({
+      this.setState((s) => ({
         current: details,
         history: s.history.concat(details)
       }));
@@ -76,7 +76,7 @@ export default class RandomMedia extends Component<{}, VideoState> {
 
   private get _currentQueuePosition() {
     return this.state.history.findIndex(
-      item => item._id === this.state.current!._id
+      (item) => item._id === this.state.current!._id
     );
   }
 }

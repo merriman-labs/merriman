@@ -23,12 +23,7 @@ export const MobileNavbar = () => {
     setIsOpen(false);
   }, [history.location]);
   return (
-    <Navbar
-      color="dark"
-      expand="lg"
-      dark
-      className="d-md-none"
-    >
+    <Navbar color="dark" expand="lg" dark className="d-md-none">
       <a className="navbar-brand" href="/">
         Merriman
       </a>
@@ -82,7 +77,8 @@ export const MobileNavbar = () => {
         <form className="form-inline my-2 my-lg-0">
           <SearchBox />
         </form>
-        <div className="dropdown-divider"></div><ul className="navbar-nav mr-auto">
+        <div className="dropdown-divider"></div>
+        <ul className="navbar-nav mr-auto">
           <li className="nav-item">
             <Link to="/admin" className="nav-link">
               <FaLock className="mr-3" />

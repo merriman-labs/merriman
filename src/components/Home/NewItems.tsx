@@ -12,7 +12,12 @@ export const NewItems = () => {
 
   return (
     <>
-      <h2 className="h5 m-3">Recently Added <Link className="ml-3" to="/media/recent">see all</Link></h2>
+      <h2 className="h5 m-3">
+        Recently Added{' '}
+        <Link className="ml-3" to="/media/recent">
+          see all
+        </Link>
+      </h2>
       <MediaCarousel items={items} />
     </>
   );
