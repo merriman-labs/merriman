@@ -62,7 +62,7 @@
     "prettier": "prettier --write \"**/*.{ts,tsx}\""
   },
   "lint-staged": {
-    "*.js|*.ts": [
+    "*.js|*.ts|*.tsx": [
       "prettier --write",
       "git add"
     ]
