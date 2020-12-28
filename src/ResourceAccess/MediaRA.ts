@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { MediaItem, RegisterLocalPayload } from '../../server/models';
+import { TagStatistic } from '../../server/ViewModels';
 
 class MediaRA {
   registerLocal(
@@ -48,7 +49,7 @@ class MediaRA {
       }
     });
   }
-  tags(): Promise<{ tags: Array<string> }> {
+  tags(): Promise<{ tags: Array<TagStatistic> }> {
     return fetch(`/api/media/tags`, { credentials: 'include' }).then((x) =>
       x.json()
     );

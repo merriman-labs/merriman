@@ -3,7 +3,7 @@ import { withRouter } from 'react-router';
 import { useUserDispatchContext } from './hooks/useUserDispatchContext';
 import AuthManager from './managers/AuthManager';
 
-export const Login = withRouter(props => {
+export const Login = withRouter((props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useUserDispatchContext();

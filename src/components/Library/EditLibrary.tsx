@@ -16,7 +16,7 @@ export const EditLibrary = () => {
 
   useEffect(() => {
     LibraryManager.getById(params.library).then(setLibrary);
-  }, []);
+  }, [params.library]);
 
   const setVisibility = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (!library) return;
@@ -31,10 +31,11 @@ export const EditLibrary = () => {
       });
   };
   const deleteLibrary = () => {
-      if(library) LibraryManager.delete(library._id.toString()).then(() => {
+    if (library)
+      LibraryManager.delete(library._id.toString()).then(() => {
         history.push('/libraries');
-      })
-  }
+      });
+  };
 
   return library === null ? null : (
     <div className="container mt-2">
@@ -72,15 +73,24 @@ export const EditLibrary = () => {
           </button>
           {isDeleting ? (
             <>
-              <button className="btn btn-outline-danger ml-2" onClick={deleteLibrary}>
+              <button
+                className="btn btn-outline-danger ml-2"
+                onClick={deleteLibrary}
+              >
                 <FaCheck /> Yup
               </button>
-              <button className="btn btn-outline-warning ml-2" onClick={() => setIsDeleting(false)}>
+              <button
+                className="btn btn-outline-warning ml-2"
+                onClick={() => setIsDeleting(false)}
+              >
                 <FaTimes /> Cancel
               </button>
             </>
           ) : (
-            <button className="btn btn-outline-danger ml-2" onClick={() => setIsDeleting(true)}>
+            <button
+              className="btn btn-outline-danger ml-2"
+              onClick={() => setIsDeleting(true)}
+            >
               <FaTrashAlt /> Delete
             </button>
           )}

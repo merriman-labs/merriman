@@ -86,18 +86,24 @@ export const RequestLogs = () => {
                   <span aria-hidden="true">&laquo;</span>
                 </Link>
               </li>
-              {R.range(R.clamp(0, page, page - 3), R.clamp(0, page, page - 3) + 8).map(
-                (pageNumber) => (
-                  <li className={c({ 'page-item': true, active: pageNumber === page })}>
-                    <Link
-                      className="page-link"
-                      to={`/admin/request-logs?page=${pageNumber}`}
-                    >
-                      {pageNumber}
-                    </Link>
-                  </li>
-                )
-              )}
+              {R.range(
+                R.clamp(0, page, page - 3),
+                R.clamp(0, page, page - 3) + 8
+              ).map((pageNumber) => (
+                <li
+                  className={c({
+                    'page-item': true,
+                    active: pageNumber === page
+                  })}
+                >
+                  <Link
+                    className="page-link"
+                    to={`/admin/request-logs?page=${pageNumber}`}
+                  >
+                    {pageNumber}
+                  </Link>
+                </li>
+              ))}
               <li className="page-item">
                 <Link
                   className="page-link"

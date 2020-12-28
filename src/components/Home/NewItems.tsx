@@ -4,17 +4,17 @@ import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
 import { MediaCarousel } from '../MediaCarousel/MediaCarousel';
 
-export const RecentlyPlayed = () => {
+export const NewItems = () => {
   const [items, setItems] = useState<Array<MediaItem>>([]);
   useEffect(() => {
-    MediaManager.recentlyPlayed(12).then(setItems);
+    MediaManager.latest(6).then(setItems);
   }, []);
 
   return (
     <>
       <h2 className="h5 m-3">
-        Recently Viewed{' '}
-        <Link className="ml-3" to="/media/recently-viewed">
+        Recently Added{' '}
+        <Link className="ml-3" to="/media/recent">
           see all
         </Link>
       </h2>

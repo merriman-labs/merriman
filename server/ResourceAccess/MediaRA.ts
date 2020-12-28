@@ -4,6 +4,7 @@ import { Db, ObjectId } from 'mongodb';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import { ItemVisibility } from '../Constant/ItemVisibility';
+import { TagStatistic } from '../ViewModels/TagStatistic';
 
 @injectable()
 export default class MediaRA {
@@ -90,26 +91,17 @@ export default class MediaRA {
   /**
    * Get all unique tags from the server.
    */
-  async getTags(): Promise<Array<string>> {
-    const [{ items }] = await this._db
+  async getTags(): Promise<Array<TagStatistic>> {
+    const tags = await this._db
       .collection<MediaItem>('media')
-      .aggregate<{ items: Array<string> }>([
-        {
-          $project: {
-            tagList: {
-              $reduce: {
-                input: '$tags',
-                initialValue: [],
-                in: { $concatArrays: ['$$value', ['$$this']] }
-              }
-            }
-          }
-        },
-        { $unwind: '$tagList' },
-        { $group: { _id: null, items: { $addToSet: '$tagList' } } }
+      .aggregate<TagStatistic>([
+        { $unwind: '$tags' },
+        { $group: { _id: '$tags', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $project: { _id: 0, tag: '$_id', count: 1 } }
       ])
       .toArray();
-    return items.sort();
+    return tags;
   }
 
   /**

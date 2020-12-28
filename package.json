@@ -7,7 +7,7 @@
     "url": "http://github.com/jreina"
   },
   "repository": {
-    "url": "https://github.com/jreina/merriman"
+    "url": "https://github.com/merriman-labs/merriman"
   },
   "dependencies": {
     "@johnny.reina/ajv-types": "^0.1.0",
@@ -39,6 +39,7 @@
     "react-dom": "^16.13.1",
     "react-icons": "^3.2.2",
     "react-image-fallback": "^8.0.0",
+    "react-responsive-carousel": "^3.2.11",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
@@ -61,7 +62,7 @@
     "prettier": "prettier --write \"**/*.{ts,tsx}\""
   },
   "lint-staged": {
-    "*.js|*.ts": [
+    "*.js|*.ts|*.tsx": [
       "prettier --write",
       "git add"
     ]

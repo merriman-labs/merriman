@@ -14,7 +14,7 @@ export const Results = () => {
 
   useEffect(() => {
     MediaManager.search(query.q).then(setResults);
-  }, [params.search]);
+  }, [query.q]);
 
   return (
     <div className="container">
@@ -32,7 +32,9 @@ export const Results = () => {
                 <p className="font-weight-normal">
                   {result.views} views • {moment(result.createdAt).fromNow()}
                 </p>
-                <p className="font-weight-lighter"><FaUserCircle /> {result.user.username}</p>
+                <p className="font-weight-lighter">
+                  <FaUserCircle /> {result.user.username}
+                </p>
               </div>
             </Link>
           ))}

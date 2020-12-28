@@ -1,11 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Button, Row, Col } from 'reactstrap';
 import Container from 'reactstrap/lib/Container';
-type FileInfo = { uploaded: boolean; file: File };
-type AdminPanelProps = {};
-type AdminPanelState = {
-  files: Array<FileInfo>;
-};
 
 const AdminPanel = () => {
   const handleStopServer = () => {

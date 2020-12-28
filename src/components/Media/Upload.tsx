@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
-import { formatSize } from '../util/formatSize';
-import * as axios from 'axios';
-import MediaManager from '../managers/MediaManager';
+import { formatSize } from '../../util/formatSize';
+import MediaManager from '../../managers/MediaManager';
 
 type FileUpload = {
   progress: number;

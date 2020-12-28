@@ -5,7 +5,10 @@ import {
   FaAsterisk,
   FaFileUpload,
   FaDiceFive,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaLock,
+  FaTags,
+  FaInfo
 } from 'react-icons/fa';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -20,12 +23,7 @@ export const MobileNavbar = () => {
     setIsOpen(false);
   }, [history.location]);
   return (
-    <Navbar
-      color="dark"
-      expand="lg"
-      dark
-      className="d-md-none"
-    >
+    <Navbar color="dark" expand="lg" dark className="d-md-none">
       <a className="navbar-brand" href="/">
         Merriman
       </a>
@@ -46,6 +44,12 @@ export const MobileNavbar = () => {
             </Link>
           </li>
           <li className="nav-item">
+            <Link to="/media/tags" className="nav-link">
+              <FaTags className="mr-3" />
+              <span>Tags</span>
+            </Link>
+          </li>
+          <li className="nav-item">
             <Link to="/media/recent" className="nav-link">
               <FaAsterisk className="mr-3" />
               <span>Recent</span>
@@ -63,12 +67,31 @@ export const MobileNavbar = () => {
               <span>Random</span>
             </Link>
           </li>
+          <li className="nav-item">
+            <Link to="/about" className="nav-link">
+              <FaInfo className="mr-3" />
+              <span>About</span>
+            </Link>
+          </li>
         </ul>
         <form className="form-inline my-2 my-lg-0">
           <SearchBox />
         </form>
         <div className="dropdown-divider"></div>
-        <Link to="/logout" className="dropdown-item"><FaSignOutAlt /> Log out</Link>
+        <ul className="navbar-nav mr-auto">
+          <li className="nav-item">
+            <Link to="/admin" className="nav-link">
+              <FaLock className="mr-3" />
+              <span>Admin</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/logout" className="nav-link">
+              <FaSignOutAlt className="mr-3" />
+              <span>Log out</span>
+            </Link>
+          </li>
+        </ul>
       </Collapse>
     </Navbar>
   );

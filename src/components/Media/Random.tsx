@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
-import { MediaItem } from '../../server/models';
-import { MediaPlayer } from '../components/MediaPlayer/MediaPlayer';
-import MediaManager from '../managers/MediaManager';
+import { MediaItem } from '../../../server/models';
+import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
+import MediaManager from '../../managers/MediaManager';
 
 type VideoState = {
   current: MediaItem | null;
@@ -57,7 +57,7 @@ export default class RandomMedia extends Component<{}, VideoState> {
     const position = this._currentQueuePosition;
     if (position === this.state.history.length - 1) {
       const details = await MediaManager.random();
-      this.setState(s => ({
+      this.setState((s) => ({
         current: details,
         history: s.history.concat(details)
       }));
@@ -76,7 +76,7 @@ export default class RandomMedia extends Component<{}, VideoState> {
 
   private get _currentQueuePosition() {
     return this.state.history.findIndex(
-      item => item._id === this.state.current!._id
+      (item) => item._id === this.state.current!._id
     );
   }
 }

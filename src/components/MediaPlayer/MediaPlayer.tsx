@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Col, Row } from 'reactstrap';
-import { FaFolderPlus, FaTimes, FaPlus } from 'react-icons/fa';
+import { FaFolderPlus, FaTimes, FaPlus, FaPencilAlt } from 'react-icons/fa';
 import Dropdown from 'reactstrap/lib/Dropdown';
 import DropdownItem from 'reactstrap/lib/DropdownItem';
 import DropdownMenu from 'reactstrap/lib/DropdownMenu';
@@ -11,6 +11,8 @@ import LibraryManager from '../../managers/LibraryManager';
 import MediaManager from '../../managers/MediaManager';
 import { MediaSwitch } from './MediaSwitch';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { useUserContext } from '../../hooks/useUserContext';
 
 type MediaPlayerProps = {
   id: string;
@@ -21,12 +23,13 @@ type LibraryDropdownItem = Library & { isMember: boolean };
 
 export const MediaPlayer = (props: MediaPlayerProps) => {
   const { id, onFinished = () => {} } = props;
+  const user = useUserContext();
   const [details, setDetails] = useState<MediaPlayerState>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [libraries, setLibraries] = useState<Array<LibraryDropdownItem>>([]);
   const [newLibraryName, setNewLibraryName] = useState<string>('');
 
-  const getLibraries = async () => {
+  const getLibraries = useCallback(async () => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
       (lib) => ({
         ...lib,
@@ -34,7 +37,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       })
     );
     setLibraries(libs);
-  };
+  }, [setLibraries, id]);
 
   const handleLibraryClick = async (library: Library) => {
     if (library === null || details === null) return;
@@ -55,7 +58,8 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       setDetails(details);
     };
     effect();
-  }, [id]);
+    window.scrollTo(0, 0);
+  }, [id, getLibraries]);
 
   const handleLibraryKeyPress = async (
     event: React.KeyboardEvent<HTMLInputElement>
@@ -76,9 +80,20 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
       </Col>
       <Row>
         {details ? (
-          <Col md="6" sm="12">
-            <strong>{details.name}</strong>
-          </Col>
+          <>
+            <Col md="6" sm="12">
+              <strong>{details.name}</strong>
+            </Col>
+
+            <Col md="3" sm="12"></Col>
+            <Col md="3" sm="12">
+              {details.tags.map((tag) => (
+                <Link to={`/media/tag/${tag}`} className="mr-1" key={tag}>
+                  #{tag}
+                </Link>
+              ))}
+            </Col>
+          </>
         ) : null}
       </Row>
       <Row>
@@ -91,8 +106,9 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
               </p>
             </Col>
             <Col md="6" sm="12" />
-            <Col md="3" sm="12">
+            <Col md="3" sm="12" className="mb-3">
               <Dropdown
+                className="d-inline-block"
                 isOpen={dropdownOpen}
                 toggle={() => setDropdownOpen(R.not)}
               >
@@ -125,6 +141,15 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
                   ))}
                 </DropdownMenu>
               </Dropdown>
+              {details.user.userId.toString() === user?._id.toString() ? (
+                <Link
+                  to={`/media/edit/${details._id}`}
+                  className="btn btn-outline-secondary"
+                  title="edit details"
+                >
+                  <FaPencilAlt />
+                </Link>
+              ) : null}
             </Col>
           </>
         )}

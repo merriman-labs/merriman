@@ -1,18 +1,13 @@
-import React, {
-  createContext,
-  Dispatch,
-  useEffect,
-  useState
-} from 'react';
+import React, { createContext, Dispatch, useEffect, useState } from 'react';
 import { Props } from 'reactstrap/lib/Dropdown';
 import { UserInfo } from '../../server/models/User/UserInfo';
 import UserManager from '../managers/UserManager';
 import { CircleLoader } from 'react-spinners';
 
 export const UserContext = createContext<UserInfo | null>(null);
-export const UserDispatchContext = createContext<
-  Dispatch<UserInfo | null>
->(() => null);
+export const UserDispatchContext = createContext<Dispatch<UserInfo | null>>(
+  () => null
+);
 
 export const AuthProvider = (props: Props<any>) => {
   const [user, dispatch] = useState<UserInfo | null>(null);
@@ -30,7 +25,11 @@ export const AuthProvider = (props: Props<any>) => {
   }, []);
 
   if (loading) {
-    return <div className="d-inline-block mx-auto mt-5"><CircleLoader color="#36D7B7" /></div>;
+    return (
+      <div className="d-inline-block mx-auto mt-5">
+        <CircleLoader color="#36D7B7" />
+      </div>
+    );
   }
 
   return (

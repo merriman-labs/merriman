@@ -13,6 +13,7 @@ import ThumbProvider from '../thumb-provider';
 import LibraryRA from '../ResourceAccess/LibraryRA';
 import { NotFoundError } from '../Errors/NotFoundError';
 import { UnauthorizedError } from '../Errors/UnauthorizedError';
+import { TagStatistic } from '../ViewModels/TagStatistic';
 
 @injectable()
 export class MediaManager {
@@ -24,6 +25,10 @@ export class MediaManager {
     @inject(DependencyType.ResourceAccess.Library)
     private _libraryRA: LibraryRA
   ) {}
+
+  async search(term: string, userId: string) {
+    return this._mediaRA.search(term, userId);
+  }
 
   random(userId: string) {
     return this._mediaRA.random(userId);
@@ -109,7 +114,7 @@ export class MediaManager {
     return this._mediaRA.incrementPlayCount(id);
   }
 
-  getTags(): Promise<Array<string>> {
+  getTags(): Promise<Array<TagStatistic>> {
     return this._mediaRA.getTags();
   }
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MediaItem } from '../../server/models';
-import MediaManager from '../managers/MediaManager';
+import { MediaItem } from '../../../server/models';
+import MediaManager from '../../managers/MediaManager';
 import { FaTimesCircle } from 'react-icons/fa';
 import { RouterProps } from 'react-router';
-import { ItemVisibility } from '../constant/ItemVisibility';
-import { c } from '../util/classList';
-import { MediaType } from '../constant/MediaType';
+import { ItemVisibility } from '../../constant/ItemVisibility';
+import { c } from '../../util/classList';
+import { MediaType } from '../../constant/MediaType';
 
 type MediaEditProps = RouterProps & {
   match: {
@@ -21,11 +21,8 @@ export const MediaEdit = (props: MediaEditProps) => {
   const [srtTrack, setSrtTrack] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadMedia = () =>
-    MediaManager.details(props.match.params.id).then(setMedia);
-
   useEffect(() => {
-    loadMedia();
+    MediaManager.details(props.match.params.id).then(setMedia);
   }, [props.match.params.id]);
 
   const handleDelete = async (hard: boolean) => {

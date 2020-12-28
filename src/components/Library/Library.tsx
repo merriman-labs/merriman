@@ -1,17 +1,14 @@
 import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, useCallback, useEffect, useState } from 'react';
 import {
   FaArrowDown,
   FaArrowLeft,
   FaArrowRight,
   FaArrowUp,
-  FaSortAlphaDown,
-  FaSortAlphaUp,
-  FaSortNumericDown,
-  FaSortNumericUp
+  FaSort
 } from 'react-icons/fa';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Library as LibraryModel, MediaItem } from '../../../server/models';
 import { useUserContext } from '../../hooks/useUserContext';
@@ -20,68 +17,136 @@ import MediaManager from '../../managers/MediaManager';
 import { c } from '../../util/classList';
 import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
 import { ItemVisibilityLabel } from '../ItemVisibility';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle
+} from 'reactstrap';
 
-type SortMode = 'ORDERINGASC' | 'ORDERINGDESC' | 'ALPHAASC' | 'ALPHADESC';
+const SortDropdown = (props: {
+  mode: SortMode;
+  setSortmode: Dispatch<SortMode>;
+}) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-const sortByOrdering = (
-  ordering: Array<{ id: string | ObjectId; order: number }>,
-  direction: 'desc' | 'asc' = 'asc'
-) => (items: Array<MediaItem>) => {
-  const ordered = _.orderBy(ordering, 'order', direction);
-  const orderedItems = ordered
-    .map(({ id }) =>
-      items.find((item) => item._id.toString() === id.toString())
-    )
-    .filter(Boolean) as Array<MediaItem>;
-  return orderedItems;
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+
+  return (
+    <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+      <DropdownToggle>
+        Sorting <FaSort />
+      </DropdownToggle>
+      <DropdownMenu>
+        <DropdownItem onClick={() => props.setSortmode('ORDERASC')}>
+          Track # Ascending
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('ORDERDESC')}>
+          Track # Descending
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('ALPHAASC')}>
+          Name (A-Z)
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('ALPHADESC')}>
+          Name (Z-A)
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('CREATEDASC')}>
+          Date (Newest First)
+        </DropdownItem>
+        <DropdownItem onClick={() => props.setSortmode('CREATEDDESC')}>
+          Date (Oldest First)
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
 };
 
-const sortByName = (direction: 'desc' | 'asc' = 'asc') => (
-  items: Array<MediaItem>
-) => {
-  return _.orderBy(items, 'name', direction);
-};
+type OrderedMediaItem = { order: number } & MediaItem;
 
-export const Library = () => {
-  const [sortMode, setSortMode] = useState<SortMode>('ORDERINGASC');
-  const params = useParams<{ library: string; media: string }>();
-  const [library, setLibrary] = useState<LibraryModel | null>(null);
-  const [media, setMedia] = useState<Array<MediaItem>>([]);
-  const [currentMedia, setCurrentMedia] = useState<MediaItem | null>(null);
-  const user = useUserContext();
+type SortMode =
+  | 'ORDERASC'
+  | 'ORDERDESC'
+  | 'ALPHAASC'
+  | 'ALPHADESC'
+  | 'CREATEDASC'
+  | 'CREATEDDESC';
+type Ordering = { id: string | ObjectId; order: number };
 
-  const getSortFunc = (): ((items: Array<MediaItem>) => Array<MediaItem>) => {
-    if (!library?.items) return _.identity;
-    switch (sortMode) {
+function mergeOrderings(orderings: Array<Ordering>) {
+  return function (items: Array<MediaItem>): Array<OrderedMediaItem> {
+    return items.map((item) => ({
+      ...item,
+      order: orderings.find((ord) => ord.id.toString() === item._id.toString())
+        ?.order as number // since the orderings is the source of the media items, we can assume we will always find one
+    }));
+  };
+}
+
+function getSortFunction(mode: SortMode) {
+  return function sortItems(
+    items: Array<OrderedMediaItem>
+  ): Array<OrderedMediaItem> {
+    switch (mode) {
       case 'ALPHAASC':
-        return sortByName('asc');
+        return _.orderBy(items, ['name'], 'asc');
       case 'ALPHADESC':
-        return sortByName('desc');
-      case 'ORDERINGASC':
-        return sortByOrdering(library.items, 'asc');
-      case 'ORDERINGDESC':
-        return sortByOrdering(library.items, 'desc');
-      default:
-        throw Error('Invalid sort mode');
+        return _.orderBy(items, ['name'], 'desc');
+      case 'CREATEDASC':
+        return _.orderBy(items, ['_id'], 'asc');
+      case 'CREATEDDESC':
+        return _.orderBy(items, ['_id'], 'desc');
+      case 'ORDERASC':
+        return _.orderBy(items, ['order'], 'asc');
+      case 'ORDERDESC':
+        return _.orderBy(items, ['order'], 'desc');
     }
   };
+}
 
-  const loadLibrary = async () => {
+export const Library = () => {
+  const params = useParams<{ library: string; media: string }>();
+  const history = useHistory();
+  const [library, setLibrary] = useState<LibraryModel | null>(null);
+  const [media, setMedia] = useState<Array<OrderedMediaItem>>([]);
+  const [sortedMedia, setSortedMedia] = useState<Array<OrderedMediaItem>>([]);
+  const [currentMedia, setCurrentMedia] = useState<OrderedMediaItem | null>(
+    null
+  );
+  const [sortMode, setSortMode] = useState<SortMode>('ORDERASC');
+  const user = useUserContext();
+
+  const loadLibrary = useCallback(async () => {
     const lib = await LibraryManager.getById(params.library);
     setLibrary(lib);
+  }, [params.library]);
+
+  const loadMedia = useCallback(() => {
+    if (!library) return;
+
     MediaManager.getByLibrary(params.library)
-      .then(getSortFunc())
+      .then(mergeOrderings(library.items))
       .then(setMedia);
-  };
+  }, [library, params.library]);
 
   useEffect(() => {
     loadLibrary();
-  }, [params.library]);
+  }, [params.library, loadLibrary]);
 
   useEffect(() => {
-    if (!params.media) return setCurrentMedia(null);
-    MediaManager.details(params.media).then(setCurrentMedia);
-  }, [params.media]);
+    loadMedia();
+  }, [library, loadMedia]);
+
+  useEffect(() => {
+    setSortedMedia(getSortFunction(sortMode)(media));
+  }, [media, sortMode]);
+
+  useEffect(() => {
+    if (!params.media || media.length === 0) return setCurrentMedia(null);
+    const item = media.find((item) => item._id.toString() === params.media);
+    if (!item) return;
+    setCurrentMedia(item);
+  }, [params.media, media]);
+
   const handleReorder = async (direction: 'up' | 'down', mediaId: string) => {
     if (library === null) return;
     await LibraryManager.setMediaOrder({
@@ -89,67 +154,52 @@ export const Library = () => {
       direction,
       mediaId
     });
-    loadLibrary();
+    await loadLibrary();
   };
 
-  // these two should just be a ll or queue
+  const setMediaLocation = (id: string) =>
+    library &&
+    history.push(`/library/${library._id.toString()}/${id.toString()}`);
+
   const getNext = () => {
     if (!currentMedia) {
-      const first = library?.items.reduce((memo, item) =>
-        memo.order < item.order ? memo : item
-      );
+      const first = _.first(sortedMedia);
       if (!first) return;
-      const firstItem = media.find(
-        (item) => item._id.toString() === first.id.toString()
-      );
-      if (!firstItem) return;
-      return setCurrentMedia(firstItem);
+      return setMediaLocation(first._id.toString());
     }
-    if (!library?.items) return;
-    const currentLibraryItem = library?.items.find(
-      (item) => item.id.toString() === currentMedia._id.toString()
-    );
-    if (!currentLibraryItem) return;
-    const nextLibraryItem = library?.items.find(
-      (item) => item.order === currentLibraryItem?.order + 1
-    );
-    if (!nextLibraryItem) return;
-    const nextMediaItem = media.find(
-      (item) => item._id.toString() === nextLibraryItem.id.toString()
-    );
-    if (!nextMediaItem) return;
-    setCurrentMedia(nextMediaItem);
+    const currentLibraryItem = sortedMedia.indexOf(currentMedia);
+    if (currentLibraryItem < 0 || currentLibraryItem >= sortedMedia.length)
+      return;
+    const nextMediaItem = sortedMedia[currentLibraryItem + 1];
+    console.log(nextMediaItem);
+    setMediaLocation(nextMediaItem._id.toString());
   };
 
   const getPrev = () => {
-    if (!currentMedia || !library?.items) return;
-    const currentLibraryItem = library?.items.find(
-      (item) => item.id.toString() === currentMedia._id.toString()
-    );
-    if (!currentLibraryItem) return;
-    const nextLibraryItem = library?.items.find(
-      (item) => item.order === currentLibraryItem?.order - 1
-    );
-    if (!nextLibraryItem) return;
-    const nextMediaItem = media.find(
-      (item) => item._id.toString() === nextLibraryItem.id.toString()
-    );
-    if (!nextMediaItem) return;
-    setCurrentMedia(nextMediaItem);
+    if (!currentMedia || !sortedMedia.length) return;
+    const currentLibraryItem = sortedMedia.indexOf(currentMedia);
+    if (currentLibraryItem < 1) return;
+    const nextLibraryItem = sortedMedia[currentLibraryItem - 1];
+    setMediaLocation(nextLibraryItem._id.toString());
   };
 
   return library === null ? null : (
     <div className="container">
-      <div className="row my-3">
-        <div className="col">
-          <h2 className="h5">
-            {library ? library.name : 'No Library Selected'}{' '}
-            <ItemVisibilityLabel visibility={library.visibility} includeIcon />
-          </h2>
-          <p>{library.user.username}</p>
-          <p>{library.items.length} items</p>
+      {currentMedia ? null : (
+        <div className="row my-3">
+          <div className="col">
+            <h2 className="h5">
+              <span className="mr-2">{library.name}</span>
+              <ItemVisibilityLabel
+                visibility={library.visibility}
+                includeIcon
+              />
+            </h2>
+            <p>{library.user.username}</p>
+            <p>{library.items.length} items</p>
+          </div>
         </div>
-      </div>
+      )}
       <div className="row">
         <div className="col">
           {currentMedia ? (
@@ -178,48 +228,20 @@ export const Library = () => {
               <FaArrowRight />
             </button>
           </div>
-          <div className="btn-group ml-3">
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ALPHADESC')}
-              disabled={sortMode === 'ALPHADESC'}
-              title="Sort by name descending"
-            >
-              <FaSortAlphaUp />
-            </button>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ALPHAASC')}
-              disabled={sortMode === 'ALPHAASC'}
-              title="Sort by name ascending"
-            >
-              <FaSortAlphaDown />
-            </button>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ORDERINGDESC')}
-              disabled={sortMode === 'ORDERINGDESC'}
-              title="Sort by library order descending"
-            >
-              <FaSortNumericUp />
-            </button>
-            <button
-              className="btn btn-outline-info"
-              onClick={() => setSortMode('ORDERINGASC')}
-              disabled={sortMode === 'ORDERINGASC'}
-              title="Sort by library order ascending"
-            >
-              <FaSortNumericDown />
-            </button>
-          </div>
+        </div>
+        <div className="col">
+          <SortDropdown mode={sortMode} setSortmode={setSortMode} />
         </div>
       </div>
       <div className="row">
         <div className="col">
           <div className="list-group mt-3">
-            {getSortFunc()(media).map((mediaItem: MediaItem) => {
+            {sortedMedia.map((mediaItem: MediaItem) => {
               return (
-                <div className="list-group-item d-flex justify-content-between">
+                <div
+                  className="list-group-item d-flex justify-content-between"
+                  key={mediaItem._id.toString()}
+                >
                   <Link
                     to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
                     key={mediaItem._id.toString()}

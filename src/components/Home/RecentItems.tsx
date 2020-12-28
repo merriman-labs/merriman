@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
-import { MediaGrid } from '../../Media/MediaGrid';
+import { MediaGrid } from '../Media/MediaGrid';
 
 export const RecentItems = (props: { items?: number }) => {
   const [items, setItems] = useState<Array<MediaItem>>([]);
@@ -12,7 +12,7 @@ export const RecentItems = (props: { items?: number }) => {
 
   return (
     <>
-      <h4 className="m-3">New stuff</h4>
+      <h4 className="h5 m-3">New stuff</h4>
       <MediaGrid items={items} />
     </>
   );
