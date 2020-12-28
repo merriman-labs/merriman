@@ -7,7 +7,8 @@ import {
   FaDiceFive,
   FaSignOutAlt,
   FaLock,
-  FaTags
+  FaTags,
+  FaInfo
 } from 'react-icons/fa';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -69,6 +70,12 @@ export const MobileNavbar = () => {
             <Link to="/random" className="nav-link">
               <FaDiceFive className="mr-3" />
               <span>Random</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/about" className="nav-link">
+              <FaInfo className="mr-3" />
+              <span>About</span>
             </Link>
           </li>
         </ul>

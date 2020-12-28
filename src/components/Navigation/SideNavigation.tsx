@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaAsterisk, FaBars, FaDiceFive, FaFileUpload, FaFolderOpen, FaHome, FaTags } from 'react-icons/fa';
+import { FaAsterisk, FaBars, FaDiceFive, FaFileUpload, FaFolderOpen, FaHome, FaInfo, FaTags } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { c } from '../../util/classList';
 
@@ -33,6 +33,9 @@ export const SideNavigation = () => {
       </Link>
       <Link to="/random" className="list-group-item">
         <FaDiceFive className="mr-3" /><span>Random</span>
+      </Link>
+      <Link to="/about" className="list-group-item">
+        <FaInfo className="mr-3" /><span>About</span>
       </Link>
     </div>
   );

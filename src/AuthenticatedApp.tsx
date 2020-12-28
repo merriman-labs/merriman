@@ -22,6 +22,7 @@ import { EditLibrary } from './components/Library/EditLibrary';
 import { UserAdmin } from './admin/UserAdmin';
 import { RecentlyViewedPage } from './components/Media/RecentlyViewedPage';
 import { TagsPage } from './components/Media/TagsPage';
+import { About } from './components/About/About';
 
 export const AuthenticatedApp = () => {
   return (
@@ -41,6 +42,7 @@ export const AuthenticatedApp = () => {
             <SideNavigation />
             <div className="main-content flex-grow-1">
               <Switch>
+                <Route path="/about" component={About} />
                 <Route path="/random" component={RandomMedia} />
                 <Route path="/results" component={Results} />
                 <Route
