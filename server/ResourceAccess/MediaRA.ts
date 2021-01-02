@@ -48,8 +48,7 @@ export default class MediaRA {
         name: { $regex: `.*${term}.*`, $options: 'i' },
         $or: [
           {
-            'user.userId': new ObjectId(userId),
-            visibility: ItemVisibility.private
+            'user.userId': new ObjectId(userId)
           },
           {
             visibility: ItemVisibility.public
