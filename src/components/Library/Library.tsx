@@ -38,22 +38,40 @@ const SortDropdown = (props: {
         Sorting <FaSort />
       </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem onClick={() => props.setSortmode('ORDERASC')}>
+        <DropdownItem
+          active={props.mode === 'ORDERASC'}
+          onClick={() => props.setSortmode('ORDERASC')}
+        >
           Track # Ascending
         </DropdownItem>
-        <DropdownItem onClick={() => props.setSortmode('ORDERDESC')}>
+        <DropdownItem
+          active={props.mode === 'ORDERDESC'}
+          onClick={() => props.setSortmode('ORDERDESC')}
+        >
           Track # Descending
         </DropdownItem>
-        <DropdownItem onClick={() => props.setSortmode('ALPHAASC')}>
+        <DropdownItem
+          active={props.mode === 'ALPHAASC'}
+          onClick={() => props.setSortmode('ALPHAASC')}
+        >
           Name (A-Z)
         </DropdownItem>
-        <DropdownItem onClick={() => props.setSortmode('ALPHADESC')}>
+        <DropdownItem
+          active={props.mode === 'ALPHADESC'}
+          onClick={() => props.setSortmode('ALPHADESC')}
+        >
           Name (Z-A)
         </DropdownItem>
-        <DropdownItem onClick={() => props.setSortmode('CREATEDASC')}>
+        <DropdownItem
+          active={props.mode === 'CREATEDASC'}
+          onClick={() => props.setSortmode('CREATEDASC')}
+        >
           Date (Newest First)
         </DropdownItem>
-        <DropdownItem onClick={() => props.setSortmode('CREATEDDESC')}>
+        <DropdownItem
+          active={props.mode === 'CREATEDDESC'}
+          onClick={() => props.setSortmode('CREATEDDESC')}
+        >
           Date (Oldest First)
         </DropdownItem>
       </DropdownMenu>
@@ -112,7 +130,7 @@ export const Library = () => {
   const [currentMedia, setCurrentMedia] = useState<OrderedMediaItem | null>(
     null
   );
-  const [sortMode, setSortMode] = useState<SortMode>('ORDERASC');
+  const [sortMode, setSortMode] = useState<SortMode>('ALPHAASC');
   const user = useUserContext();
 
   const loadLibrary = useCallback(async () => {
