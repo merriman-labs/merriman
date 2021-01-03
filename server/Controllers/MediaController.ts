@@ -150,7 +150,7 @@ export class MediaController implements IController {
   };
 
   listTags: RequestHandler = async (req, res) => {
-    const tags = await this._mediaManager.getTags();
+    const tags = await this._mediaManager.getTags(req.user._id);
     res.json({ tags });
   };
 

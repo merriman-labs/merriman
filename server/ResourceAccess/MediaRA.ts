@@ -90,10 +90,18 @@ export default class MediaRA {
   /**
    * Get all unique tags from the server.
    */
-  async getTags(): Promise<Array<TagStatistic>> {
+  async getTags(userId: string): Promise<Array<TagStatistic>> {
     const tags = await this._db
       .collection<MediaItem>('media')
       .aggregate<TagStatistic>([
+        {
+          $match: {
+            $or: [
+              { 'user.id': new ObjectId(userId) },
+              { visibility: ItemVisibility.public }
+            ]
+          }
+        },
         { $unwind: '$tags' },
         { $group: { _id: '$tags', count: { $sum: 1 } } },
         { $sort: { count: -1 } },

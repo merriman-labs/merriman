@@ -119,8 +119,8 @@ export class MediaManager {
     return this._mediaRA.incrementPlayCount(id);
   }
 
-  getTags(): Promise<Array<TagStatistic>> {
-    return this._mediaRA.getTags();
+  getTags(userId: string): Promise<Array<TagStatistic>> {
+    return this._mediaRA.getTags(userId);
   }
 
   async requestMeta(id: string, userId: string) {
