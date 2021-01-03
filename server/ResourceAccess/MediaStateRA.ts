@@ -51,4 +51,10 @@ export class MediaStateRA {
       { $set: R.omit(['mediaId', 'userId', 'createdAt'], mediaState) }
     );
   }
+
+  deleteAllForMedia(mediaId: string) {
+    return this._db
+      .collection<MediaState>('media-state')
+      .deleteMany({ mediaId: new ObjectId(mediaId) });
+  }
 }

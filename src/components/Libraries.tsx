@@ -50,36 +50,37 @@ export const Libraries = () => {
             </div>
           </div>
           {libraries.map((result) => (
-            <>
-              <Link className="media mt-3" to={`/library/${result._id}`}>
-                <div className="media-body">
-                  <h5 className="d-flex justify-content-between">
-                    <span>{result.name}</span>
-                    {user?._id.toString() === result.user.userId.toString() ? (
-                      <Link to={`/library/edit/${result._id}`}>
-                        <FaPencilAlt />
-                      </Link>
-                    ) : null}
-                  </h5>
-                  <p className="font-weight-normal">
-                    {result.items.length} items •{' '}
-                    {moment(result.createdAt).fromNow()}
-                  </p>
-                  <p className="font-weight-lighter">
-                    <FaUserCircle /> {result.user.username}
-                  </p>
-                  <p>
-                    <span className="badge bg-secondary">
-                      <ItemVisibilityLabel
-                        visibility={result.visibility}
-                        includeIcon
-                      />
-                    </span>
-                  </p>
-                </div>
-              </Link>
-              <hr />
-            </>
+            <Link
+              className="media mt-3"
+              to={`/library/${result._id}`}
+              key={result._id.toString()}
+            >
+              <div className="media-body">
+                <h5 className="d-flex justify-content-between">
+                  <span>{result.name}</span>
+                  {user?._id.toString() === result.user.userId.toString() ? (
+                    <Link to={`/library/edit/${result._id}`}>
+                      <FaPencilAlt />
+                    </Link>
+                  ) : null}
+                </h5>
+                <p className="font-weight-normal">
+                  {result.items.length} items •{' '}
+                  {moment(result.createdAt).fromNow()}
+                </p>
+                <p className="font-weight-lighter">
+                  <FaUserCircle /> {result.user.username}
+                </p>
+                <p>
+                  <span className="badge bg-secondary">
+                    <ItemVisibilityLabel
+                      visibility={result.visibility}
+                      includeIcon
+                    />
+                  </span>
+                </p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

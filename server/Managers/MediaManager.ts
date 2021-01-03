@@ -14,6 +14,7 @@ import LibraryRA from '../ResourceAccess/LibraryRA';
 import { NotFoundError } from '../Errors/NotFoundError';
 import { UnauthorizedError } from '../Errors/UnauthorizedError';
 import { TagStatistic } from '../ViewModels/TagStatistic';
+import { MediaStateRA } from '../ResourceAccess/MediaStateRA';
 
 @injectable()
 export class MediaManager {
@@ -23,7 +24,9 @@ export class MediaManager {
     @inject(DependencyType.Engines.Media)
     private _mediaEngine: MediaEngine,
     @inject(DependencyType.ResourceAccess.Library)
-    private _libraryRA: LibraryRA
+    private _libraryRA: LibraryRA,
+    @inject(DependencyType.ResourceAccess.MediaState)
+    private _mediaStateRA: MediaStateRA
   ) {}
 
   async search(term: string, userId: string) {
@@ -99,6 +102,8 @@ export class MediaManager {
       const path = media.path ? media.path : config.mediaLocation;
       MediaUtils.deleteMedia(path, media.filename);
     }
+    await this._libraryRA.removeMediaFromLibraries(id);
+    await this._mediaStateRA.deleteAllForMedia(id);
     return this._mediaRA.deleteById(id);
   }
 

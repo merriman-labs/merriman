@@ -76,7 +76,7 @@ export default class MediaRA {
         {
           $lookup: {
             from: 'media',
-            localField: 'items.id',
+            localField: 'items',
             foreignField: '_id',
             as: 'items'
           }
