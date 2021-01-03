@@ -70,6 +70,19 @@ export default class LibraryRA {
   }
 
   /**
+   * Remove a given media ID from all libraries
+   * @param mediaId
+   */
+  removeMediaFromLibraries(mediaId: string) {
+    return this._db
+      .collection<Library>('libraries')
+      .updateMany(
+        { items: new ObjectId(mediaId) },
+        { $pull: { items: new ObjectId(mediaId) } }
+      );
+  }
+
+  /**
    * @param {string} id
    */
   async delete(id: string) {
