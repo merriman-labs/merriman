@@ -7,7 +7,7 @@ export type Library = {
     username: string;
     userId: ObjectId;
   };
-  items: Array<{ id: string | ObjectId; order: number }>;
+  items: Array<ObjectId>;
   name: string;
   visibility: ItemVisibility;
   createdAt: Date;

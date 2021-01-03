@@ -49,25 +49,22 @@ export default class LibraryRA {
   ) {
     const items = Array.isArray(media) ? media : [media];
     const update = {
-      $each: items.map((id) => ({
-        id: new ObjectId(id.id),
-        order: id.order
-      }))
+      $each: items.map((id) => new ObjectId(id.id))
     };
     return this._db
       .collection<Library>('libraries')
       .findOneAndUpdate(
         { _id: new ObjectId(library) },
-        { $push: { items: update } }
+        { $addToSet: { items: update } }
       )
       .then((x) => x.value);
   }
-  removeMediaToLibrary(media: string, library: string) {
+  removeMediaFromLibrary(media: string, library: string) {
     return this._db
       .collection<Library>('libraries')
       .findOneAndUpdate(
         { _id: new ObjectId(library) },
-        { $pull: { items: { id: new ObjectId(media) } } }
+        { $pull: { items: new ObjectId(media) } }
       )
       .then((x) => x.value);
   }

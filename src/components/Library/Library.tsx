@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import _ from 'lodash';
 import React, { Dispatch, useCallback, useEffect, useState } from 'react';
 import {
@@ -79,8 +78,6 @@ const SortDropdown = (props: {
   );
 };
 
-type OrderedMediaItem = { order: number } & MediaItem;
-
 type SortMode =
   | 'ORDERASC'
   | 'ORDERDESC'
@@ -88,48 +85,34 @@ type SortMode =
   | 'ALPHADESC'
   | 'CREATEDASC'
   | 'CREATEDDESC';
-type Ordering = { id: string | ObjectId; order: number };
 
-function mergeOrderings(orderings: Array<Ordering>) {
-  return function (items: Array<MediaItem>): Array<OrderedMediaItem> {
-    return items.map((item) => ({
-      ...item,
-      order: orderings.find((ord) => ord.id.toString() === item._id.toString())
-        ?.order as number // since the orderings is the source of the media items, we can assume we will always find one
-    }));
-  };
-}
-
-function getSortFunction(mode: SortMode) {
-  return function sortItems(
-    items: Array<OrderedMediaItem>
-  ): Array<OrderedMediaItem> {
-    switch (mode) {
-      case 'ALPHAASC':
-        return _.orderBy(items, ['name'], 'asc');
-      case 'ALPHADESC':
-        return _.orderBy(items, ['name'], 'desc');
-      case 'CREATEDASC':
-        return _.orderBy(items, ['_id'], 'asc');
-      case 'CREATEDDESC':
-        return _.orderBy(items, ['_id'], 'desc');
-      case 'ORDERASC':
-        return _.orderBy(items, ['order'], 'asc');
-      case 'ORDERDESC':
-        return _.orderBy(items, ['order'], 'desc');
-    }
-  };
+function getSortFunction(
+  mode: SortMode,
+  items: Array<MediaItem>
+): Array<MediaItem> {
+  switch (mode) {
+    case 'ALPHAASC':
+      return _.orderBy(items, ['name'], 'asc');
+    case 'ALPHADESC':
+      return _.orderBy(items, ['name'], 'desc');
+    case 'CREATEDASC':
+      return _.orderBy(items, ['_id'], 'asc');
+    case 'CREATEDDESC':
+      return _.orderBy(items, ['_id'], 'desc');
+    case 'ORDERASC':
+      return items;
+    case 'ORDERDESC':
+      return _.reverse([...items]);
+  }
 }
 
 export const Library = () => {
   const params = useParams<{ library: string; media: string }>();
   const history = useHistory();
   const [library, setLibrary] = useState<LibraryModel | null>(null);
-  const [media, setMedia] = useState<Array<OrderedMediaItem>>([]);
-  const [sortedMedia, setSortedMedia] = useState<Array<OrderedMediaItem>>([]);
-  const [currentMedia, setCurrentMedia] = useState<OrderedMediaItem | null>(
-    null
-  );
+  const [media, setMedia] = useState<Array<MediaItem>>([]);
+  const [sortedMedia, setSortedMedia] = useState<Array<MediaItem>>([]);
+  const [currentMedia, setCurrentMedia] = useState<MediaItem | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('ALPHAASC');
   const user = useUserContext();
 
@@ -142,7 +125,14 @@ export const Library = () => {
     if (!library) return;
 
     MediaManager.getByLibrary(params.library)
-      .then(mergeOrderings(library.items))
+      .then((items) => {
+        return library.items.map(
+          (libItem) =>
+            items.find(
+              (item) => item._id.toString() === libItem.toString()
+            ) as MediaItem
+        );
+      })
       .then(setMedia);
   }, [library, params.library]);
 
@@ -155,8 +145,9 @@ export const Library = () => {
   }, [library, loadMedia]);
 
   useEffect(() => {
-    setSortedMedia(getSortFunction(sortMode)(media));
-  }, [media, sortMode]);
+    const items = getSortFunction(sortMode, media);
+    setSortedMedia(items);
+  }, [sortMode, media]);
 
   useEffect(() => {
     if (!params.media || media.length === 0) return setCurrentMedia(null);
@@ -189,7 +180,6 @@ export const Library = () => {
     if (currentLibraryItem < 0 || currentLibraryItem >= sortedMedia.length)
       return;
     const nextMediaItem = sortedMedia[currentLibraryItem + 1];
-    console.log(nextMediaItem);
     setMediaLocation(nextMediaItem._id.toString());
   };
 

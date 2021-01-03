@@ -46,7 +46,7 @@ export class LibraryManager {
   }
 
   removeMediaFromLibrary(mediaId: string, libraryId: string) {
-    return this._libraryRA.removeMediaToLibrary(mediaId, libraryId);
+    return this._libraryRA.removeMediaFromLibrary(mediaId, libraryId);
   }
 
   delete(libraryId: string) {
@@ -57,24 +57,23 @@ export class LibraryManager {
     const library = await this._libraryRA.findById(payload.libraryId);
     if (!library) throw new NotFoundError('Library not found');
 
-    const changeItem = library.items.find(
-      (item) => item.id.toString() === payload.mediaId
+    const idx = library.items.findIndex(
+      (item) => item.toString() === payload.mediaId
     );
-    if (!changeItem) throw new NotFoundError('Media not in library');
+    if (idx === -1) throw new NotFoundError('Media not in library');
 
     if (payload.direction === 'down') {
-      if (changeItem.order === 0) return;
-      const previousItem = library.items.find(
-        (item) => item.order === changeItem.order - 1
-      );
-      previousItem.order++;
-      changeItem.order--;
+      if (idx === 0) return;
+
+      const tmp = library.items[idx];
+      library.items[idx] = library.items[idx - 1];
+      library.items[idx - 1] = tmp;
     } else if (payload.direction === 'up') {
-      const nextItem = library.items.find(
-        (item) => item.order === changeItem.order + 1
-      );
-      nextItem.order--;
-      changeItem.order++;
+      if (idx === library.items.length - 1) return;
+
+      const tmp = library.items[idx];
+      library.items[idx] = library.items[idx + 1];
+      library.items[idx + 1] = tmp;
     }
     await this._libraryRA.update(library);
     return library;
