@@ -21,12 +21,17 @@ export class StreamController implements IController {
   }
 
   streamMedia: RequestHandler = async (req, res) => {
-    const { mediaLocation } = AppContext.get(AppContext.WellKnown.Config);
+    const { mediaLocation, pathRewrites } = AppContext.get(
+      AppContext.WellKnown.Config
+    );
     const videoId = req.params.video.replace('.mp4', '');
     const userId = req.user?._id ?? undefined;
     const video = await this._mediaManager.findById(videoId, userId);
     const vDir = video.path ? video.path : mediaLocation;
-    const vPath = path.join(vDir, video.filename);
+    const mediaPath = Object.keys(pathRewrites).includes(vDir)
+      ? pathRewrites[vDir]
+      : vDir;
+    const vPath = path.join(mediaPath, video.filename);
 
     const stat = fs.statSync(vPath);
     const fileSize = stat.size;

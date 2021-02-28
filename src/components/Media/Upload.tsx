@@ -19,14 +19,23 @@ const FileListItem = ({
 }) => {
   return (
     <div className="list-group-item">
-      <button
-        className="btn btn-outline-danger mr-2"
-        onClick={() => removePending(file)}
-      >
-        <FaTrash />
-      </button>
-      {file.name} {formatSize(file.size)} {file.type}
-      <div className="progress">
+      <div className="d-inline-flex align-items-start flex-column w-75">
+        {file.name}
+
+        <small>{formatSize(file.size)}</small>
+
+        <small>{file.type}</small>
+      </div>
+      <div className="d-inline-flex align-items-end flex-column w-25">
+        <button
+          className="btn btn-outline-danger mr-2"
+          onClick={() => removePending(file)}
+        >
+          <FaTrash />
+        </button>
+      </div>
+
+      <div className="progress position-relative mt-3 mb-3">
         <div
           className="progress-bar"
           role="progressbar"
@@ -35,7 +44,9 @@ const FileListItem = ({
           aria-valuemin={0}
           aria-valuemax={100}
         >
-          {progress + '%'}
+          <small className="justify-content-center d-flex position-absolute w-100">
+            {progress + '%'}
+          </small>
         </div>
       </div>
     </div>
@@ -70,41 +81,55 @@ export const Upload = () => {
     });
   };
 
+  const clearFiles = () => {
+    setFiles([]);
+  };
+
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-md-3">
-          <div className="form-group">
-            <label htmlFor="files">Select file(s)</label>
-            <input
-              type="file"
-              className="form-control-file"
-              name="files"
-              id="files"
-              multiple
-              onChange={handleInputChange}
-            />
+        {files.length ? (
+          <div className="mx-auto w-50 mt-5">
+            <div className="list-group">
+              {files.map(({ file, progress }) => (
+                <FileListItem
+                  file={file}
+                  removePending={removePending}
+                  progress={progress}
+                />
+              ))}
+            </div>
+
+            <div className="btn-group d-flex">
+              <button
+                className="btn btn-outline-success"
+                onClick={handleUploadall}
+              >
+                Upload All
+              </button>
+              <button className="btn btn-outline-success" onClick={clearFiles}>
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="col-md-6">
-          <div className="list-group">
-            {files.map(({ file, progress }) => (
-              <FileListItem
-                file={file}
-                removePending={removePending}
-                progress={progress}
-              />
-            ))}
+        ) : (
+          <div className="mx-auto mt-5">
+            <div className="form-group">
+              <label className="btn btn-outline-success btn-file">
+                <input
+                  type="file"
+                  className="form-control-file"
+                  name="files"
+                  id="files"
+                  multiple
+                  onChange={handleInputChange}
+                  style={{ display: 'none' }}
+                />
+                Upload Media
+              </label>
+            </div>
           </div>
-          {files.length ? (
-            <button
-              className="btn btn-outline-success btn-block"
-              onClick={handleUploadall}
-            >
-              Upload All
-            </button>
-          ) : null}
-        </div>
+        )}
       </div>
     </div>
   );

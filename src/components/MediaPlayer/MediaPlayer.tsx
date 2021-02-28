@@ -33,7 +33,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
       (lib) => ({
         ...lib,
-        isMember: lib.items.some((item) => item.id === id)
+        isMember: lib.items.some((item) => item.toString() === id.toString())
       })
     );
     setLibraries(libs);
@@ -42,7 +42,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
   const handleLibraryClick = async (library: Library) => {
     if (library === null || details === null) return;
 
-    const method = library.items.some((item) => item.id === id)
+    const method = library.items.some((item) => item.toString() === id)
       ? LibraryManager.removeMedia
       : LibraryManager.addMedia;
 
