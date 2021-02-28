@@ -23,6 +23,9 @@ export class Configuration {
   session: {
     secret: string;
   };
+  pathRewrites: {
+    [documentPath: string]: string;
+  };
 
   public static fromJson(data: string) {
     const obj = new Configuration();
@@ -38,7 +41,8 @@ export class Configuration {
       session: this.session,
       server: this.server,
       mongo: this.mongo,
-      allowUnsafeFileAccess: this.allowUnsafeFileAccess
+      allowUnsafeFileAccess: this.allowUnsafeFileAccess,
+      pathRewrites: this.pathRewrites
     });
   }
 
@@ -55,6 +59,7 @@ export class Configuration {
     };
     this.name = data.name;
     this.port = data.port;
+    this.pathRewrites = data.pathRewrites;
 
     if (data.server) {
       this.server = data.server;
@@ -82,7 +87,8 @@ export class Configuration {
       secret: _.isString
     }),
     name: _.isString,
-    port: _.isInteger
+    port: _.isInteger,
+    pathRewrites: (value) => _.values(value).every(_.isString)
   });
 }
 
