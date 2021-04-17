@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
+import { toast } from 'react-toastify';
 import { useUserDispatchContext } from './hooks/useUserDispatchContext';
 import UserManager from './managers/UserManager';
 
@@ -11,9 +12,14 @@ export const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const user = await UserManager.create({ username, password });
-    dispatch(user);
-    history.push('/');
+    UserManager.create({ username, password })
+      .then((user) => {
+        dispatch(user);
+        history.push('/');
+      })
+      .catch((error) => {
+        error.errors.forEach((err: string) => toast(err));
+      });
   };
 
   return (
