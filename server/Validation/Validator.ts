@@ -54,6 +54,9 @@ class Validator {
   Utility = {
     ObjectId(item: any) {
       return ValidationEngine.validate<string>(item, 'utility.ObjectId');
+    },
+    Configuration(item: any) {
+      return ValidationEngine.validate<any>(item, 'utility.Configuration');
     }
   };
 }
