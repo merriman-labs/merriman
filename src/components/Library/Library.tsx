@@ -62,14 +62,14 @@ const SortDropdown = (props: {
           Name (Z-A)
         </DropdownItem>
         <DropdownItem
-          active={props.mode === 'CREATEDASC'}
-          onClick={() => props.setSortmode('CREATEDASC')}
+          active={props.mode === 'CREATEDDESC'}
+          onClick={() => props.setSortmode('CREATEDDESC')}
         >
           Date (Newest First)
         </DropdownItem>
         <DropdownItem
-          active={props.mode === 'CREATEDDESC'}
-          onClick={() => props.setSortmode('CREATEDDESC')}
+          active={props.mode === 'CREATEDASC'}
+          onClick={() => props.setSortmode('CREATEDASC')}
         >
           Date (Oldest First)
         </DropdownItem>
