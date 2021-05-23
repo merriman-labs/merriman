@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { readFileSync } from 'fs';
+import Validator from '../Validation/Validator';
 
 export class Configuration {
   mediaLocation: string;
@@ -23,9 +24,16 @@ export class Configuration {
   session: {
     secret: string;
   };
-  pathRewrites: {
+  pathRewrites?: {
     [documentPath: string]: string;
   };
+
+  public rewritePath(path: string) {
+    if (!this.pathRewrites) return path;
+    return Object.keys(this.pathRewrites).includes(path)
+      ? this.pathRewrites[path]
+      : path;
+  }
 
   public static fromJson(data: string) {
     const obj = new Configuration();
@@ -67,29 +75,13 @@ export class Configuration {
     return this;
   }
 
-  private _isvalid = _.conforms({
-    mediaLocation: _.isString,
-    thumbLocation: _.isString,
-    server: (value) =>
-      _.conforms({
-        useSsl: _.negate(_.identity)
-      })(value) ||
-      _.conforms({
-        useSsl: _.identity,
-        certPath: _.isString,
-        keyPath: _.isString
-      })(value),
-    mongo: _.conforms({
-      connectionString: _.isString,
-      database: _.isString
-    }),
-    session: _.conforms({
-      secret: _.isString
-    }),
-    name: _.isString,
-    port: _.isInteger,
-    pathRewrites: (value) => _.values(value).every(_.isString)
-  });
+  private _isvalid(data: any) {
+    try {
+      return Validator.Utility.Configuration(data);
+    } catch (error) {
+      throw new Error(error.message.replace('body', 'configuration'));
+    }
+  }
 }
 
 export const ConfigUtil = {
