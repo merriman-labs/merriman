@@ -1,4 +1,5 @@
 import * as path from 'path';
+import fs from 'fs';
 import MediaRA from '../ResourceAccess/MediaRA';
 import { MediaEngine } from '../Engines/MediaEngine';
 import { MediaItem, MediaType } from '../models';
@@ -88,6 +89,48 @@ export class MediaManager {
       path
     );
     return this._mediaRA.add(newMediaItem);
+  }
+
+  upload(
+    user: {
+      userId: string;
+      username: string;
+    },
+    busboy: busboy.Busboy
+  ) {
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
+    return new Promise<MediaItem>((res, rej) => {
+      busboy.on('file', (field, file, filename) => {
+        const newMediaItem = this._mediaEngine.initializeUploadedMedia(
+          filename,
+          user.userId,
+          user.username,
+          serverConfig.mediaLocation
+        );
+
+        file
+          .pipe(
+            fs.createWriteStream(
+              path.join(serverConfig.mediaLocation, newMediaItem.filename)
+            )
+          )
+          .on('finish', async () => {
+            if (filename.toLowerCase().includes('.mp4')) {
+              // Make sure media has a thumbnail
+              await ThumbProvider.ensureThumbs(
+                [filename],
+                serverConfig.mediaLocation,
+                serverConfig.thumbLocation
+              );
+            }
+            const result = await this._mediaRA.add(newMediaItem);
+            return res(result);
+          })
+          .on('error', () => {
+            return rej('An error occurred while storing the upload');
+          });
+      });
+    });
   }
 
   findById(id: string, userId: string) {
