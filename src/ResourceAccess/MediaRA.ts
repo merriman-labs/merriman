@@ -35,8 +35,8 @@ class MediaRA {
       x.json()
     );
   }
-  random(): Promise<MediaItem> {
-    return fetch(`/api/media/random`).then((x) => x.json());
+  random(count: number): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/random?count=${count}`).then((x) => x.json());
   }
 
   search(term: string): Promise<Array<MediaItem>> {
