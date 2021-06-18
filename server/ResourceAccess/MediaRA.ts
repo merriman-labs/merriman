@@ -10,16 +10,15 @@ import { TagStatistic } from '../ViewModels/TagStatistic';
 export default class MediaRA {
   constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
 
-  async random(userId: string): Promise<MediaItem> {
+  async random(count: number, userId: string): Promise<Array<MediaItem>> {
     const results = await this._db
       .collection('media')
       .aggregate([
         { $match: this.unlistedOrPrivateOwner(userId) },
-        { $sample: { size: 1 } }
+        { $sample: { size: count } }
       ])
       .toArray();
-    if (results.length === 0) return;
-    return results[0];
+    return results;
   }
 
   latest(skip: number, limit: number, userId: string) {

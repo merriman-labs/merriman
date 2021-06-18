@@ -34,8 +34,8 @@ export class MediaManager {
     return this._mediaRA.search(term, userId);
   }
 
-  random(userId: string) {
-    return this._mediaRA.random(userId);
+  random(count: number, userId: string) {
+    return this._mediaRA.random(count, userId);
   }
 
   latest(skip: number, limit: number, userId: string) {

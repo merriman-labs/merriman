@@ -109,8 +109,8 @@ export class MediaController implements IController {
   };
 
   getRandom: RequestHandler = async (req, res) => {
-    const media = await this._mediaManager.random(req.user._id);
-    if (!media) throw new NotFoundError('NO_MEDIA');
+    const { count = 1 } = req.query;
+    const media = await this._mediaManager.random(+count, req.user._id);
     res.json(media);
   };
 
