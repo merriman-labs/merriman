@@ -115,10 +115,10 @@ export class MediaManager {
             )
           )
           .on('finish', async () => {
-            if (filename.toLowerCase().includes('.mp4')) {
+            if (newMediaItem.filename.toLowerCase().includes('.mp4')) {
               // Make sure media has a thumbnail
               await ThumbProvider.ensureThumbs(
-                [filename],
+                [newMediaItem.filename],
                 serverConfig.mediaLocation,
                 serverConfig.thumbLocation
               );

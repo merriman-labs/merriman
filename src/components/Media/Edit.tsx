@@ -6,6 +6,7 @@ import { RouterProps } from 'react-router';
 import { ItemVisibility } from '../../constant/ItemVisibility';
 import { c } from '../../util/classList';
 import { MediaType } from '../../constant/MediaType';
+import { Link } from 'react-router-dom';
 
 type MediaEditProps = RouterProps & {
   match: {
@@ -192,6 +193,12 @@ export const MediaEdit = (props: MediaEditProps) => {
                 >
                   Delete
                 </button>
+                <Link
+                  to={`/media/${media._id}`}
+                  className="btn btn-outline-info"
+                >
+                  View Media
+                </Link>
               </>
             )}
           </div>

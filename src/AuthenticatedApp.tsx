@@ -14,7 +14,6 @@ import { RequestLogs } from './admin/RequestLogs';
 import { Results } from './components/Results';
 import { SideNavigation } from './components/Navigation/SideNavigation';
 import { RecentlyAddedPage } from './components/Media/RecentlyAddedPage';
-import { Upload } from './components/Media/Upload';
 import { MobileNavbar } from './components/Navigation/MobileNavbar';
 import { Library } from './components/Library/Library';
 import { Libraries } from './components/Libraries';
@@ -23,6 +22,8 @@ import { UserAdmin } from './admin/UserAdmin';
 import { RecentlyViewedPage } from './components/Media/RecentlyViewedPage';
 import { TagsPage } from './components/Media/TagsPage';
 import { About } from './components/About/About';
+import { UploadWizard } from './components/Media/UploadWizard';
+import { SingleUpload } from './components/Media/Upload/Single';
 
 export const AuthenticatedApp = () => {
   return (
@@ -53,7 +54,12 @@ export const AuthenticatedApp = () => {
                 <Route path="/media/edit/:id" component={MediaEdit} exact />
                 <Route path="/media/tags" component={TagsPage} exact />
                 <Route path="/media/tag/:tag" component={MediaByTag} exact />
-                <Route path="/media/upload" component={Upload} exact />
+                <Route path="/media/upload" component={UploadWizard} exact />
+                <Route
+                  path="/media/upload/single"
+                  component={SingleUpload}
+                  exact
+                />
                 <Route
                   path="/media/recently-viewed"
                   component={RecentlyViewedPage}
