@@ -1,15 +1,17 @@
+import { UserInfo } from '../../server/models/User/UserInfo';
+import { get, post } from '../util/HttpMethods';
+
+type UsernamePasswordCredentials = { username: string; password: string };
+
 class AuthRA {
-  login(creds: { username: string; password: string }) {
-    return fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(creds)
-    }).then((x) => x.json());
+  login(creds: UsernamePasswordCredentials) {
+    return post<UsernamePasswordCredentials, UserInfo>(
+      '/api/auth/login',
+      creds
+    );
   }
   logout() {
-    return fetch('/api/auth/logout');
+    return get('/api/auth/logout');
   }
 }
 

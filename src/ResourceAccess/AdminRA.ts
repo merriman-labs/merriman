@@ -1,13 +1,12 @@
 import { RequestLogResponse } from '../../server/models';
+import { get } from '../util/HttpMethods';
 
 class AdminRA {
   getRequestLogs(
     skip: number,
     limit: number
   ): Promise<Array<RequestLogResponse>> {
-    return fetch(
-      `/api/admin/request-logs?skip=${skip}&limit=${limit}`
-    ).then((x) => x.json());
+    return get('/api/admin/request-logs', { skip, limit });
   }
 }
 
