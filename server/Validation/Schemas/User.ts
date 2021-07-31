@@ -13,7 +13,7 @@ export const UserSchema: Record<string, ObjectSchema> = {
       },
       password: {
         type: 'string',
-        minLength: 16
+        minLength: 8
       }
     }
   },

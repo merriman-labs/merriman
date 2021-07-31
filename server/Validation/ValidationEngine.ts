@@ -1,4 +1,5 @@
 import ajv from 'ajv';
+import { PayloadValidationError } from '../Errors/PayloadValidationError';
 import { Schema } from './Schemas/index';
 
 class ValidationEngine {
@@ -24,12 +25,13 @@ class ValidationEngine {
       return item as T;
     } else {
       // @ts-ignore
-      throw new Error(
+      throw new PayloadValidationError(
+        'VALIDATION_ERROR',
         this._ajv.errors
-          ? this._ajv.errors
-              .map((error) => `body${error.dataPath} ${error.message}`)
-              .join('\n')
-          : 'VALIDATION_ERROR'
+          ? this._ajv.errors.map(
+              (error) => `${error.dataPath.slice(1)} ${error.message}`
+            )
+          : []
       );
     }
   }

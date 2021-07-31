@@ -15,7 +15,15 @@ export function post<T, U>(
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
-  }).then((x) => x.json());
+  }).then((x) => {
+    const resp = x.json();
+    if (x.ok) {
+      return resp;
+    }
+    return resp.then((e) => {
+      throw e;
+    });
+  });
 }
 export function patch<T, U>(
   uri: string,
