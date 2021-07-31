@@ -1,17 +1,11 @@
 import { UserInfo } from '../../server/models/User/UserInfo';
-import { patch } from '../util/HttpMethods';
+import { patch, post } from '../util/HttpMethods';
 class UserRA {
   list(): Promise<Array<UserInfo>> {
     return fetch('/api/users/').then((x) => x.json());
   }
   create(creds: { username: string; password: string }): Promise<UserInfo> {
-    return fetch('/api/users/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(creds)
-    }).then((x) => x.json());
+    return post('/api/users/create', creds);
   }
 
   currentUser(): Promise<UserInfo> {

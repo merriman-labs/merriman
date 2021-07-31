@@ -22,6 +22,7 @@ import AuthenticationStrategy from './Middleware/AuthenticationStrategy';
 import mongoSession from 'connect-mongodb-session';
 import Logger from './Middleware/Logger';
 import { HttpError } from './Errors/HttpError';
+import { PayloadValidationError } from './Errors/PayloadValidationError';
 
 export class Merriman {
   private _app = express();
@@ -44,17 +45,6 @@ export class Merriman {
     this._app.use(morgan(logFormat));
     this._app.use(cors());
     this._app.use(busboy());
-    this._app.use(
-      (err: Error, req: Request, res: Response, next: NextFunction) => {
-        if (err instanceof HttpError) {
-          return res.status(err.statusCode).send(err.message);
-        }
-        if (err) {
-          return res.status(500).send('SERVER_ERROR');
-        }
-        next();
-      }
-    );
   }
 
   private _setupApi(container: Container) {
@@ -135,6 +125,25 @@ export class Merriman {
     });
   }
 
+  private _setupErrorHandling() {
+    this._app.use(
+      (err: Error, req: Request, res: Response, next: NextFunction) => {
+        if (err instanceof PayloadValidationError) {
+          return res
+            .status(400)
+            .send({ message: err.message, errors: err.errors });
+        }
+        if (err instanceof HttpError) {
+          return res.status(err.statusCode).send(err.message);
+        }
+        if (err) {
+          return res.status(500).send('SERVER_ERROR');
+        }
+        next();
+      }
+    );
+  }
+
   public async start() {
     // Set up dependency-injection container, make the MongoDB connection injectable
     const container = await setupIoc(this._config);
@@ -144,6 +153,7 @@ export class Merriman {
     this._setupAuth(container);
     this._setupApi(container);
     this._setupStaticAssets();
+    this._setupErrorHandling();
     printHeader();
     if (this._config.server.useSsl) {
       this._setupHttpsServer();
