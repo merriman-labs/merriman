@@ -97,7 +97,7 @@ export default class MediaRA {
         {
           $match: {
             $or: [
-              { 'user.id': new ObjectId(userId) },
+              { 'user.userId': new ObjectId(userId) },
               { visibility: ItemVisibility.public }
             ]
           }

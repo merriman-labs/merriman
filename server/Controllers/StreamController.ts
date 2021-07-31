@@ -31,6 +31,7 @@ export class StreamController implements IController {
     const mediaPath = Object.keys(pathRewrites).includes(vDir)
       ? pathRewrites[vDir]
       : vDir;
+
     const vPath = path.join(mediaPath, video.filename);
 
     const stat = fs.statSync(vPath);
