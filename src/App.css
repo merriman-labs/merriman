@@ -113,3 +113,9 @@ a {
 .slide > a {
   max-height: 600px;
 }
+
+input.upload-title, input.upload-title:focus {
+  background-color: transparent;
+  border: none;
+  color: white;
+}

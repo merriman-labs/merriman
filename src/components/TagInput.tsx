@@ -4,6 +4,7 @@ import { FaTimesCircle } from 'react-icons/fa';
 type TagInputProps = {
   tags?: Array<string>;
   updateTags: (tags: Array<string>) => void;
+  disabled?: boolean;
 };
 
 export const TagInput = (props: TagInputProps) => {
@@ -43,6 +44,7 @@ export const TagInput = (props: TagInputProps) => {
           placeholder="type here and press enter to add a tag"
           onChange={(x) => setCurrentTag(x.target.value)}
           onKeyDown={handleKeyPress}
+          disabled={props.disabled}
         />
       </div>
     </>

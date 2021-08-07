@@ -1,35 +1,45 @@
 import React, { useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
-import { formatSize } from '../../util/formatSize';
-import MediaManager from '../../managers/MediaManager';
-
-type FileUpload = {
-  progress: number;
-  file: File;
-};
+import { formatSize } from '../../../util/formatSize';
+import MediaManager from '../../../managers/MediaManager';
+import * as R from 'ramda';
+import { FileUpload } from '../UploadWizard';
+import { TagInput } from '../../TagInput';
 
 const FileListItem = ({
-  file,
+  upload,
   removePending,
-  progress
+  setMetadata
 }: {
-  file: File;
+  upload: FileUpload;
   removePending: (file: File) => void;
-  progress: number;
+  setMetadata: (file: FileUpload) => void;
 }) => {
   return (
     <div className="list-group-item">
-      <div className="d-inline-flex align-items-start flex-column w-75">
-        {file.name}
+      <div className="d-inline-flex align-items-start flex-column w-50">
+        <div className="input-group">
+          <input
+            value={upload.name}
+            onChange={(e) => {
+              setMetadata(R.assoc('name', e.target.value, upload));
+            }}
+            className="form-control upload-title"
+          />
+        </div>
 
-        <small>{formatSize(file.size)}</small>
+        <small>{formatSize(upload.file.size)}</small>
 
-        <small>{file.type}</small>
+        <small>{upload.file.type}</small>
+        <TagInput
+          tags={upload.tags}
+          updateTags={(tags) => setMetadata(R.assoc('tags', tags, upload))}
+        />
       </div>
-      <div className="d-inline-flex align-items-end flex-column w-25">
+      <div className="d-inline-flex align-items-end flex-column w-50">
         <button
           className="btn btn-outline-danger mr-2"
-          onClick={() => removePending(file)}
+          onClick={() => removePending(upload.file)}
         >
           <FaTrash />
         </button>
@@ -39,13 +49,13 @@ const FileListItem = ({
         <div
           className="progress-bar"
           role="progressbar"
-          style={{ width: `${progress}%` }}
-          aria-valuenow={progress}
+          style={{ width: `${upload.progress}%` }}
+          aria-valuenow={upload.progress}
           aria-valuemin={0}
           aria-valuemax={100}
         >
           <small className="justify-content-center d-flex position-absolute w-100">
-            {progress + '%'}
+            {upload.progress + '%'}
           </small>
         </div>
       </div>
@@ -53,8 +63,11 @@ const FileListItem = ({
   );
 };
 
-export const Upload = () => {
+export const MultiUpload = () => {
   const [files, setFiles] = useState<Array<FileUpload>>([]);
+  const [isBulkTagging, setIsBulkTagging] = useState(false);
+  const [bulkTags, setBulkTags] = useState<Array<string>>([]);
+
   const removePending = (file: File) => {
     setFiles(files.filter((f) => f.file.name !== file.name));
   };
@@ -63,7 +76,12 @@ export const Upload = () => {
     event.persist();
     if (!event.target.files) return;
     const fs = [...event.target.files];
-    const items = fs.map((file) => ({ file, progress: 0 }));
+    const items = fs.map((file) => ({
+      file,
+      progress: 0,
+      name: file.name,
+      tags: []
+    }));
     setFiles(items);
   };
 
@@ -85,17 +103,41 @@ export const Upload = () => {
     setFiles([]);
   };
 
+  const setAllTags = (tags: Array<string>) => {
+    setFiles(R.map(R.assoc('tags', tags)));
+    setBulkTags(tags);
+  };
+
   return (
     <div className="container-fluid">
       <div className="row">
         {files.length ? (
           <div className="mx-auto w-50 mt-5">
             <div className="list-group">
-              {files.map(({ file, progress }) => (
+              <div className="list-group-item">
+                <div className="form-group form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="sync-tags"
+                    checked={isBulkTagging}
+                    onChange={(e) => setIsBulkTagging(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="sync-tags">
+                    Bulk tag
+                  </label>
+                </div>
+                {isBulkTagging && (
+                  <TagInput tags={bulkTags} updateTags={setAllTags} />
+                )}
+              </div>
+              {files.map((upload, index) => (
                 <FileListItem
-                  file={file}
+                  upload={upload}
                   removePending={removePending}
-                  progress={progress}
+                  setMetadata={(file) => {
+                    setFiles(R.update(index, file));
+                  }}
                 />
               ))}
             </div>
@@ -125,7 +167,7 @@ export const Upload = () => {
                   onChange={handleInputChange}
                   style={{ display: 'none' }}
                 />
-                Upload Media
+                Select media to upload
               </label>
             </div>
           </div>
