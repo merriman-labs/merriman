@@ -28,6 +28,7 @@ class Validator {
         name: string;
         userId: string;
         username: string;
+        isSeason: boolean;
       }>(item, 'library.create');
     },
     Update(item: any) {

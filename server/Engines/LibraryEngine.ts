@@ -11,6 +11,7 @@ export class LibraryEngine {
     name: string;
     userId: string;
     username: string;
+    isSeason: boolean;
   }): Library {
     const createdAt = new Date();
     return {
@@ -23,7 +24,8 @@ export class LibraryEngine {
       },
       createdAt,
       updatedAt: createdAt,
-      visibility: ItemVisibility.public
+      visibility: ItemVisibility.public,
+      isSeason: library.isSeason
     };
   }
 }
