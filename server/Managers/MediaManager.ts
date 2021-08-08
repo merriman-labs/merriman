@@ -100,6 +100,17 @@ export class MediaManager {
   ) {
     const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     return new Promise<MediaItem>((res, rej) => {
+      const item = {
+        name: null,
+        tags: null,
+        libraryIds: null
+      };
+      busboy.on('field', (name, val) => {
+        if (name === 'info') {
+          const info = JSON.parse(val);
+          Object.assign(item, info);
+        }
+      });
       busboy.on('file', (field, file, filename) => {
         const newMediaItem = this._mediaEngine.initializeUploadedMedia(
           filename,
@@ -123,7 +134,19 @@ export class MediaManager {
                 serverConfig.thumbLocation
               );
             }
+            newMediaItem.name = item.name || newMediaItem.name;
+            newMediaItem.tags = item.tags || newMediaItem.tags;
+
             const result = await this._mediaRA.add(newMediaItem);
+            // Add item to any selected libraries
+            if (item.libraryIds) {
+              for (let libraryId of item.libraryIds) {
+                await this._libraryRA.addMediaToLibrary(
+                  { id: result._id.toString(), order: 0 },
+                  libraryId
+                );
+              }
+            }
             return res(result);
           })
           .on('error', () => {

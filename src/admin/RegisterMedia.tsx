@@ -149,7 +149,7 @@ export const RegisterMedia = () => {
       <div className="row mt-3">
         <div className="col-md-6">
           <h4>Set tags</h4>
-          <TagInput updateTags={updateTags} />
+          <TagInput updateTags={updateTags} tags={tags} />
         </div>
         <div className="col-md-6">
           <h4>Add to libraries</h4>

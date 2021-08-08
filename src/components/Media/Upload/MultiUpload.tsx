@@ -3,8 +3,16 @@ import { FaTrash } from 'react-icons/fa';
 import { formatSize } from '../../../util/formatSize';
 import MediaManager from '../../../managers/MediaManager';
 import * as R from 'ramda';
-import { FileUpload } from '../UploadWizard';
 import { TagInput } from '../../TagInput';
+import { LibrarySelector } from '../../LibrarySelector';
+import { Library } from '../../../../server/models';
+
+type FileUpload = {
+  progress: number;
+  file: File;
+  name: string;
+  tags: Array<string>;
+};
 
 const FileListItem = ({
   upload,
@@ -40,6 +48,7 @@ const FileListItem = ({
         <button
           className="btn btn-outline-danger mr-2"
           onClick={() => removePending(upload.file)}
+          disabled={upload.progress > 0}
         >
           <FaTrash />
         </button>
@@ -67,6 +76,9 @@ export const MultiUpload = () => {
   const [files, setFiles] = useState<Array<FileUpload>>([]);
   const [isBulkTagging, setIsBulkTagging] = useState(false);
   const [bulkTags, setBulkTags] = useState<Array<string>>([]);
+  const [selectedLibraries, setSelectedLibraries] = useState<Array<Library>>(
+    []
+  );
 
   const removePending = (file: File) => {
     setFiles(files.filter((f) => f.file.name !== file.name));
@@ -95,6 +107,14 @@ export const MultiUpload = () => {
     files.forEach(async (file) => {
       const data = new FormData();
       data.append('file', file.file);
+      data.append(
+        'info',
+        JSON.stringify({
+          name: file.name,
+          tags: file.tags,
+          libraryIds: selectedLibraries.map(R.prop('_id'))
+        })
+      );
       await MediaManager.upload(data, handleProgressUpdate(file.file));
     });
   };
@@ -114,6 +134,13 @@ export const MultiUpload = () => {
         {files.length ? (
           <div className="mx-auto w-50 mt-5">
             <div className="list-group">
+              <div className="list-group-item">
+                <h3 className="h5">Add to library</h3>
+                <LibrarySelector
+                  selectedLibraries={selectedLibraries}
+                  setSelectedLibraries={setSelectedLibraries}
+                />
+              </div>
               <div className="list-group-item">
                 <div className="form-group form-check">
                   <input
