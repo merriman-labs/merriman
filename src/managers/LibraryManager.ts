@@ -5,7 +5,7 @@ class LibraryManager {
   getById(id: string): Promise<Library> {
     return LibraryRA.getById(id);
   }
-  create(library: { name: string }): Promise<Library> {
+  create(library: { name: string; isSeason: boolean }): Promise<Library> {
     return LibraryRA.create(library);
   }
   list() {

@@ -17,6 +17,9 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
       username: {
         type: 'string',
         minLength: 3
+      },
+      isSeason: {
+        type: 'boolean'
       }
     }
   },
@@ -34,6 +37,9 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
       },
       visibility: {
         type: 'number'
+      },
+      isSeason: {
+        type: 'boolean'
       }
     }
   },

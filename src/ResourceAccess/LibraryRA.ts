@@ -4,7 +4,7 @@ class LibraryRA {
   getById(id: string): Promise<Library> {
     return fetch(`/api/library/${id}`).then((x) => x.json());
   }
-  async create(library: { name: string }): Promise<Library> {
+  async create(library: { name: string; isSeason: boolean }): Promise<Library> {
     return fetch('/api/library', {
       method: 'POST',
       headers: {
@@ -20,7 +20,8 @@ class LibraryRA {
     const payload: Partial<Library> = {
       _id: library._id,
       name: library.name,
-      visibility: library.visibility
+      visibility: library.visibility,
+      isSeason: library.isSeason
     };
     await fetch('/api/library', {
       method: 'PUT',
