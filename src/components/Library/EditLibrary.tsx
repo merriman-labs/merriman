@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { toast } from 'react-toastify';
+import * as R from 'ramda';
 
 import { Library } from '../../../server/models';
 import LibraryManager from '../../managers/LibraryManager';
@@ -54,6 +55,21 @@ export const EditLibrary = () => {
               value={library.name}
               onChange={(e) => setLibrary({ ...library, name: e.target.value })}
             />
+          </div>
+          <div className="form-check mb-3">
+            <input
+              className="form-check-input"
+              name="name"
+              id="name"
+              type="checkbox"
+              checked={library.isSeason}
+              onChange={(evt) =>
+                setLibrary(R.assoc('isSeason', evt.target.checked))
+              }
+            />
+            <label htmlFor="name" className="form-check-label">
+              Is season/series?
+            </label>
           </div>
           <div className="form-group">
             <label htmlFor="library-visibility">Visibility</label>
