@@ -6,6 +6,13 @@ import * as R from 'ramda';
 import { TagInput } from '../../TagInput';
 import { LibrarySelector } from '../../LibrarySelector';
 import { Library } from '../../../../server/models';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  ResponderProvided
+} from 'react-beautiful-dnd';
 
 type FileUpload = {
   progress: number;
@@ -103,8 +110,8 @@ export const MultiUpload = () => {
     );
   };
 
-  const handleUploadall = () => {
-    files.forEach(async (file) => {
+  const handleUploadall = async () => {
+    for (let file of files) {
       const data = new FormData();
       data.append('file', file.file);
       data.append(
@@ -116,7 +123,7 @@ export const MultiUpload = () => {
         })
       );
       await MediaManager.upload(data, handleProgressUpdate(file.file));
-    });
+    }
   };
 
   const clearFiles = () => {
@@ -128,6 +135,12 @@ export const MultiUpload = () => {
     setBulkTags(tags);
   };
 
+  const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
+    if (!result.destination) {
+      return;
+    }
+    setFiles(R.move(result.source.index, result.destination?.index));
+  };
   return (
     <div className="container-fluid">
       <div className="row">
@@ -158,15 +171,37 @@ export const MultiUpload = () => {
                   <TagInput tags={bulkTags} updateTags={setAllTags} />
                 )}
               </div>
-              {files.map((upload, index) => (
-                <FileListItem
-                  upload={upload}
-                  removePending={removePending}
-                  setMetadata={(file) => {
-                    setFiles(R.update(index, file));
-                  }}
-                />
-              ))}
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="upload-queue">
+                  {(provided, snapshot) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {files.map((upload, index) => (
+                        <Draggable
+                          key={upload.file.name}
+                          draggableId={upload.file.name}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <FileListItem
+                                upload={upload}
+                                removePending={removePending}
+                                setMetadata={(file) => {
+                                  setFiles(R.update(index, file));
+                                }}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </div>
 
             <div className="btn-group d-flex">
