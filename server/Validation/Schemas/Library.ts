@@ -34,6 +34,13 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
       },
       visibility: {
         type: 'number'
+      },
+      items: {
+        type: 'array',
+        items: {
+          type: 'string',
+          pattern: '[a-g0-9]{24}'
+        }
       }
     }
   },

@@ -20,7 +20,8 @@ class LibraryRA {
     const payload: Partial<Library> = {
       _id: library._id,
       name: library.name,
-      visibility: library.visibility
+      visibility: library.visibility,
+      items: library.items
     };
     await fetch('/api/library', {
       method: 'PUT',
