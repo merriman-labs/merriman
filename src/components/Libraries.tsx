@@ -18,11 +18,13 @@ export const Libraries = () => {
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      LibraryManager.create({ name: newLibraryName }).then(() => {
-        setNewLibraryName('');
-        toast('Library created!');
-        loadLibraries();
-      });
+      LibraryManager.create({ name: newLibraryName, isSeason: false }).then(
+        () => {
+          setNewLibraryName('');
+          toast('Library created!');
+          loadLibraries();
+        }
+      );
     }
   };
 

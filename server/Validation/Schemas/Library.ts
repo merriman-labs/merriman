@@ -17,6 +17,9 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
       username: {
         type: 'string',
         minLength: 3
+      },
+      isSeason: {
+        type: 'boolean'
       }
     }
   },
@@ -41,6 +44,9 @@ export const LibrarySchema: Record<string, ObjectSchema> = {
           type: 'string',
           pattern: '[a-g0-9]{24}'
         }
+      },
+      isSeason: {
+        type: 'boolean'
       }
     }
   },

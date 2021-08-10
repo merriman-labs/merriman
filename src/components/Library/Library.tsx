@@ -17,6 +17,15 @@ import {
 } from 'reactstrap';
 import { useUserContext } from '../../hooks/useUserContext';
 
+const SortModeLabel: { [key in SortMode]: string } = {
+  ALPHAASC: 'Name (A-Z)',
+  ALPHADESC: 'Name (Z-A)',
+  CREATEDASC: 'Date (Oldest First)',
+  CREATEDDESC: 'Date (Newest First)',
+  ORDERASC: 'Track # Ascending',
+  ORDERDESC: 'Track # Descending'
+};
+
 const SortDropdown = (props: {
   mode: SortMode;
   setSortmode: Dispatch<SortMode>;
@@ -28,45 +37,17 @@ const SortDropdown = (props: {
   return (
     <Dropdown isOpen={dropdownOpen} toggle={toggle} className="d-inline">
       <DropdownToggle>
-        Sorting <FaSort />
+        {SortModeLabel[props.mode]} <FaSort />
       </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem
-          active={props.mode === 'ORDERASC'}
-          onClick={() => props.setSortmode('ORDERASC')}
-        >
-          Track # Ascending
-        </DropdownItem>
-        <DropdownItem
-          active={props.mode === 'ORDERDESC'}
-          onClick={() => props.setSortmode('ORDERDESC')}
-        >
-          Track # Descending
-        </DropdownItem>
-        <DropdownItem
-          active={props.mode === 'ALPHAASC'}
-          onClick={() => props.setSortmode('ALPHAASC')}
-        >
-          Name (A-Z)
-        </DropdownItem>
-        <DropdownItem
-          active={props.mode === 'ALPHADESC'}
-          onClick={() => props.setSortmode('ALPHADESC')}
-        >
-          Name (Z-A)
-        </DropdownItem>
-        <DropdownItem
-          active={props.mode === 'CREATEDDESC'}
-          onClick={() => props.setSortmode('CREATEDDESC')}
-        >
-          Date (Newest First)
-        </DropdownItem>
-        <DropdownItem
-          active={props.mode === 'CREATEDASC'}
-          onClick={() => props.setSortmode('CREATEDASC')}
-        >
-          Date (Oldest First)
-        </DropdownItem>
+        {Object.entries(SortModeLabel).map(([key, label]) => (
+          <DropdownItem
+            active={props.mode === key}
+            onClick={() => props.setSortmode(key as SortMode)}
+          >
+            {label}
+          </DropdownItem>
+        ))}
       </DropdownMenu>
     </Dropdown>
   );
@@ -113,6 +94,9 @@ export const Library = () => {
   const loadLibrary = useCallback(async () => {
     const lib = await LibraryManager.getById(params.library);
     setLibrary(lib);
+    if (lib.isSeason) {
+      setSortMode('ORDERASC');
+    }
   }, [params.library]);
 
   const loadMedia = useCallback(() => {
