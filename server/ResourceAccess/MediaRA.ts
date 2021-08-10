@@ -77,11 +77,13 @@ export default class MediaRA {
             from: 'media',
             localField: 'items',
             foreignField: '_id',
-            as: 'items'
+            as: 'media'
           }
         },
-        { $unwind: '$items' },
-        { $replaceRoot: { newRoot: '$items' } },
+        { $unwind: '$media' },
+        { $addFields: { _order: { $indexOfArray: ['$items', '$media._id'] } } },
+        { $sort: { _order: 1 } },
+        { $replaceRoot: { newRoot: '$media' } },
         { $match: this.unlistedOrPrivateOwner(userId) }
       ])
       .toArray();
