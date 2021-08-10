@@ -1,82 +1,57 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col } from 'reactstrap';
 import { MediaItem } from '../../../server/models';
 import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
 import MediaManager from '../../managers/MediaManager';
+import * as R from 'ramda';
 
-type VideoState = {
-  current: MediaItem | null;
-  history: Array<MediaItem>;
-};
+export const RandomMedia = () => {
+  const [index, setIndex] = useState(-1);
+  const [history, setHistory] = useState<Array<MediaItem>>([]);
 
-export default class RandomMedia extends Component<{}, VideoState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = { current: null, history: [] };
+  useEffect(() => {
+    next();
+  }, []);
+
+  function next() {
+    MediaManager.random(1).then(([item]) => {
+      setHistory((hist) => hist.concat(item));
+      setIndex(R.inc);
+    });
   }
-  async componentDidMount() {
-    this.fetchNext();
+
+  function back() {
+    setIndex(R.dec);
   }
-  render() {
-    window.scrollTo({ top: 0 });
-    return (
-      <Col>
-        {this.state.current ? (
-          <MediaPlayer id={this.state.current._id.toString()} />
-        ) : (
-          <div />
-        )}
-        {this.state.current ? (
-          <div>
-            <span>{this.state.current.views} views</span>
-            <br />
-            <div className="btn-group mb-1">
-              <button
-                className="btn btn-outline-primary btn-sm"
-                disabled={this._currentQueuePosition === 0}
-                onClick={this.fetchPrevious}
-              >
-                &larr;
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={this.fetchNext}
-              >
-                &rarr;
-              </button>
-            </div>
+
+  window.scrollTo({ top: 0 });
+  return (
+    <Col>
+      {index >= 0 ? (
+        <MediaPlayer id={history[index]._id.toString()} />
+      ) : (
+        <div />
+      )}
+      {index >= 0 ? (
+        <div>
+          <span>{history[index].views} views</span>
+          <br />
+          <div className="btn-group mb-1">
+            <button
+              className="btn btn-outline-primary btn-sm"
+              disabled={index === 0}
+              onClick={back}
+            >
+              &larr;
+            </button>
+            <button className="btn btn-outline-primary btn-sm" onClick={next}>
+              &rarr;
+            </button>
           </div>
-        ) : (
-          <div />
-        )}
-      </Col>
-    );
-  }
-
-  fetchNext = async () => {
-    const position = this._currentQueuePosition;
-    if (position === this.state.history.length - 1) {
-      const details = await MediaManager.random();
-      this.setState((s) => ({
-        current: details,
-        history: s.history.concat(details)
-      }));
-    } else {
-      this.setState({ current: this.state.history[position + 1] });
-    }
-  };
-
-  fetchPrevious = async () => {
-    if (this.state.current && this.state.history.length > 1) {
-      const current = this._currentQueuePosition;
-      const previous = this.state.history[current - 1];
-      this.setState({ current: previous });
-    }
-  };
-
-  private get _currentQueuePosition() {
-    return this.state.history.findIndex(
-      (item) => item._id === this.state.current!._id
-    );
-  }
-}
+        </div>
+      ) : (
+        <div />
+      )}
+    </Col>
+  );
+};

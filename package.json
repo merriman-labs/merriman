@@ -33,8 +33,9 @@
     "morgan": "^1.9.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "ramda": "^0.25.0",
+    "ramda": "^0.27.0",
     "react": "^16.13.1",
+    "react-beautiful-dnd": "^13.1.0",
     "react-cast-sender": "^0.1.8",
     "react-dom": "^16.13.1",
     "react-icons": "^3.2.2",
@@ -51,7 +52,7 @@
   },
   "scripts": {
     "cli": "ts-node -P ./server/tsconfig.json server/cli/cli.ts run C:\\Users\\Johnny\\.merriman\\server-config.Movies.json -a",
-    "server:watch": "tsnd -P ./server/tsconfig.json server/server.ts server-config.dev.json -a",
+    "server": "tsnd -P ./server/tsconfig.json server/server.ts server-config.dev.json -a",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:server": "tsc -P ./server/tsconfig.json",
@@ -84,8 +85,9 @@
     "@types/morgan": "^1.7.35",
     "@types/node": "^14.11.10",
     "@types/passport": "^1.0.4",
-    "@types/ramda": "^0.25.44",
+    "@types/ramda": "^0.27.44",
     "@types/react": "^16.7.18",
+    "@types/react-beautiful-dnd": "^13.1.1",
     "@types/react-dom": "^16.0.11",
     "@types/react-image-fallback": "^8.0.1",
     "@types/react-router-dom": "^4.3.5",
@@ -100,7 +102,7 @@
     "rimraf": "^3.0.2",
     "ts-node": "^7.0.1",
     "ts-node-dev": "^1.0.0",
-    "typescript": "^3.7"
+    "typescript": "^4.3.5"
   },
   "bin": {
     "merriman": ".\\dist_server\\cli\\cli.js"

@@ -19,6 +19,9 @@ export default class LibraryRA {
   }
 
   async update(library: Library) {
+    if (library.items) {
+      library.items = library.items.map((id) => new ObjectId(id));
+    }
     const result = await this._db
       .collection<Library>('libraries')
       .findOneAndUpdate(

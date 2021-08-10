@@ -52,14 +52,10 @@ export const Libraries = () => {
             </div>
           </div>
           {libraries.map((result) => (
-            <Link
-              className="media mt-3"
-              to={`/library/${result._id}`}
-              key={result._id.toString()}
-            >
+            <div className="media mt-3" key={result._id.toString()}>
               <div className="media-body">
                 <h5 className="d-flex justify-content-between">
-                  <span>{result.name}</span>
+                  <Link to={`/library/${result._id}`}>{result.name}</Link>
                   {user?._id.toString() === result.user.userId.toString() ? (
                     <Link to={`/library/edit/${result._id}`}>
                       <FaPencilAlt />
@@ -82,7 +78,7 @@ export const Libraries = () => {
                   </span>
                 </p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

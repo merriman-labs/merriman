@@ -1,12 +1,7 @@
-import { RequestHandler, Router } from 'express';
-import ThumbProvider from '../thumb-provider';
-import * as fs from 'fs';
+import { RequestHandler } from 'express';
 import * as path from 'path';
 import Busboy from 'busboy';
-import * as chance from 'chance';
-import moment = require('moment');
 import { MediaManager } from '../Managers/MediaManager';
-import { AppContext } from '../appContext';
 import { IController } from './IController';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
@@ -14,8 +9,7 @@ import Validator from '../Validation/Validator';
 import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
 import { NotFoundError } from '../Errors/NotFoundError';
 import { AsyncRouter } from '../Utilities/AsyncRouter';
-
-const Chance = chance.Chance();
+import { HttpStatus } from '../Constant/HttpStatus';
 
 @injectable()
 export class MediaController implements IController {
@@ -97,49 +91,26 @@ export class MediaController implements IController {
     return res.json(media);
   };
 
-  upload: RequestHandler = (req, res) => {
+  upload: RequestHandler = async (req, res) => {
     // @ts-ignore
     const userId = Validator.Utility.ObjectId(req.user._id);
-    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     const busboy = new Busboy({ headers: req.headers });
-    busboy.on('file', async (fieldname, file, filename) => {
-      // Enter media into database
-      const mediaItem = await this._mediaManager.add(
-        filename,
+
+    req.pipe(busboy);
+
+    const result = await this._mediaManager.upload(
+      {
         userId,
-        req.user.username,
-        serverConfig.mediaLocation
-      );
-      file.pipe(
-        fs.createWriteStream(
-          path.join(serverConfig.mediaLocation, mediaItem.filename)
-        )
-      );
-
-      busboy.on('finish', function () {
-        if (filename.toLowerCase().includes('.mp4')) {
-          // Make sure media has a thumbnail
-          ThumbProvider.ensureThumbs(
-            [mediaItem.filename],
-            serverConfig.mediaLocation,
-            serverConfig.thumbLocation
-          );
-        }
-      });
-    });
-
-    busboy.on('finish', function () {
-      console.log('Upload complete');
-      res.writeHead(200, { Connection: 'close' });
-      res.end("That's all folks!");
-    });
-
-    return req.pipe(busboy);
+        username: req.user.username
+      },
+      busboy
+    );
+    return res.status(HttpStatus.Created).send(result);
   };
 
   getRandom: RequestHandler = async (req, res) => {
-    const media = await this._mediaManager.random(req.user._id);
-    if (!media) throw new NotFoundError('NO_MEDIA');
+    const { count = 1 } = req.query;
+    const media = await this._mediaManager.random(+count, req.user._id);
     res.json(media);
   };
 

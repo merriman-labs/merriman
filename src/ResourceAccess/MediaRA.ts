@@ -35,19 +35,24 @@ class MediaRA {
       x.json()
     );
   }
-  random(): Promise<MediaItem> {
-    return fetch(`/api/media/random`).then((x) => x.json());
+  random(count: number): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/random?count=${count}`).then((x) => x.json());
   }
 
   search(term: string): Promise<Array<MediaItem>> {
     return fetch(`/api/media/search/${term}`).then((x) => x.json());
   }
-  async upload(data: FormData, updateProgress: (progress: number) => void) {
-    await axios.post('/api/media/upload', data, {
-      onUploadProgress: (p) => {
-        updateProgress(Math.ceil((p.loaded / p.total) * 100));
-      }
-    });
+  async upload(
+    data: FormData,
+    updateProgress: (progress: number) => void
+  ): Promise<MediaItem> {
+    return axios
+      .post('/api/media/upload', data, {
+        onUploadProgress: (p) => {
+          updateProgress(Math.ceil((p.loaded / p.total) * 100));
+        }
+      })
+      .then((x) => x.data);
   }
   tags(): Promise<{ tags: Array<TagStatistic> }> {
     return fetch(`/api/media/tags`, { credentials: 'include' }).then((x) =>

@@ -25,8 +25,8 @@ class MediaManager {
   latest(count: number): Promise<Array<MediaItem>> {
     return MediaRA.latest(count);
   }
-  random(): Promise<MediaItem> {
-    return MediaRA.random();
+  random(count: number): Promise<Array<MediaItem>> {
+    return MediaRA.random(count);
   }
   upload(data: FormData, updateProgress: (progress: number) => void) {
     return MediaRA.upload(data, updateProgress);

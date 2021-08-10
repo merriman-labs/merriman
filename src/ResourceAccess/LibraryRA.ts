@@ -21,6 +21,7 @@ class LibraryRA {
       _id: library._id,
       name: library.name,
       visibility: library.visibility,
+      items: library.items,
       isSeason: library.isSeason
     };
     await fetch('/api/library', {

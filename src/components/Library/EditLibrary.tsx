@@ -3,10 +3,20 @@ import { useHistory, useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import * as R from 'ramda';
 
-import { Library } from '../../../server/models';
+import { Library, MediaItem } from '../../../server/models';
 import LibraryManager from '../../managers/LibraryManager';
 import { ItemVisibility } from '../../constant/ItemVisibility';
-import { FaCheck, FaTimes, FaTrashAlt } from 'react-icons/fa';
+import { FaCheck, FaLock, FaTimes, FaTrashAlt, FaUnlock } from 'react-icons/fa';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from 'react-beautiful-dnd';
+import { Link } from 'react-router-dom';
+import * as R from 'ramda';
+import MediaManager from '../../managers/MediaManager';
+import { c } from '../../util/classList';
 
 export const EditLibrary = () => {
   const params = useParams<{ library: string }>();
@@ -14,9 +24,13 @@ export const EditLibrary = () => {
 
   const [library, setLibrary] = useState<Library | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [media, setMedia] = useState<Array<MediaItem>>([]);
+  const [didReorder, setDidReorder] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
 
   useEffect(() => {
     LibraryManager.getById(params.library).then(setLibrary);
+    MediaManager.getByLibrary(params.library).then(setMedia);
   }, [params.library]);
 
   const setVisibility = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,12 +51,29 @@ export const EditLibrary = () => {
         history.push('/libraries');
       });
   };
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination || !library) {
+      return;
+    }
+    setMedia(R.move(result.source.index, result.destination?.index));
+    setDidReorder(true);
+  };
+  const handleReorderClick = () => {
+    if (didReorder) {
+      LibraryManager.update({
+        ...library,
+        items: media.map(R.prop('_id'))
+      } as Library);
+    }
+    setIsReordering(R.not);
+  };
 
   return library === null ? null : (
     <div className="container mt-2">
       <div className="row">
         <div className="col-md-4">
-          <div className="h4">Edit Library</div>
+          <h3 className="h4">Edit Library</h3>
+          <Link to={`/library/${library._id}`}>Go to library &rarr;</Link>
           <div className="form-group">
             <label htmlFor="library-name" className="form-label">
               Name
@@ -110,6 +141,64 @@ export const EditLibrary = () => {
               <FaTrashAlt /> Delete
             </button>
           )}
+        </div>
+      </div>
+      <div className="row">
+        <div className="col mt-3 mb-5">
+          <h3 className="h5">
+            Reorder items{' '}
+            <button
+              className={c({
+                'btn btn-sm': true,
+                'btn-outline-warning': isReordering,
+                'btn-outline-success': !isReordering
+              })}
+              onClick={handleReorderClick}
+            >
+              {isReordering ? <FaUnlock /> : <FaLock />}
+            </button>
+          </h3>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable
+              droppableId="upload-queue"
+              isDropDisabled={!isReordering}
+            >
+              {(provided, snapshot) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  <div className="list-group mt-3">
+                    {media.map((mediaItem, index) => (
+                      <Draggable
+                        key={mediaItem._id.toString()}
+                        draggableId={mediaItem._id.toString()}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <div
+                              className="list-group-item d-flex justify-content-between"
+                              key={mediaItem._id.toString()}
+                            >
+                              <Link
+                                to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
+                                key={mediaItem._id.toString()}
+                              >
+                                {mediaItem.name}{' '}
+                              </Link>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
       </div>
     </div>

@@ -1,16 +1,9 @@
 import _ from 'lodash';
 import React, { Dispatch, useCallback, useEffect, useState } from 'react';
-import {
-  FaArrowDown,
-  FaArrowLeft,
-  FaArrowRight,
-  FaArrowUp,
-  FaSort
-} from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaCog, FaSort } from 'react-icons/fa';
 import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Library as LibraryModel, MediaItem } from '../../../server/models';
-import { useUserContext } from '../../hooks/useUserContext';
 import LibraryManager from '../../managers/LibraryManager';
 import MediaManager from '../../managers/MediaManager';
 import { c } from '../../util/classList';
@@ -22,6 +15,7 @@ import {
   DropdownMenu,
   DropdownToggle
 } from 'reactstrap';
+import { useUserContext } from '../../hooks/useUserContext';
 
 const SortModeLabel: { [key in SortMode]: string } = {
   ALPHAASC: 'Name (A-Z)',
@@ -41,7 +35,7 @@ const SortDropdown = (props: {
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   return (
-    <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+    <Dropdown isOpen={dropdownOpen} toggle={toggle} className="d-inline">
       <DropdownToggle>
         {SortModeLabel[props.mode]} <FaSort />
       </DropdownToggle>
@@ -120,10 +114,12 @@ export const Library = () => {
       .then(setMedia);
   }, [library, params.library]);
 
+  // Load initial library object when library state or param, or isReordering changes
   useEffect(() => {
     loadLibrary();
   }, [params.library, loadLibrary]);
 
+  // Load full media items when library state
   useEffect(() => {
     loadMedia();
   }, [library, loadMedia]);
@@ -139,16 +135,6 @@ export const Library = () => {
     if (!item) return;
     setCurrentMedia(item);
   }, [params.media, media]);
-
-  const handleReorder = async (direction: 'up' | 'down', mediaId: string) => {
-    if (library === null) return;
-    await LibraryManager.setMediaOrder({
-      libraryId: library._id.toString(),
-      direction,
-      mediaId
-    });
-    await loadLibrary();
-  };
 
   const setMediaLocation = (id: string) =>
     library &&
@@ -186,6 +172,11 @@ export const Library = () => {
                 visibility={library.visibility}
                 includeIcon
               />
+              {user?._id.toString() === library.user.userId.toString() && (
+                <Link to={`/library/edit/${library._id}`} className="ml-1">
+                  <FaCog />
+                </Link>
+              )}
             </h2>
             <p>{library.user.username}</p>
             <p>{library.items.length} items</p>
@@ -228,43 +219,19 @@ export const Library = () => {
       <div className="row">
         <div className="col">
           <div className="list-group mt-3">
-            {sortedMedia.map((mediaItem: MediaItem) => {
-              return (
-                <div
-                  className="list-group-item d-flex justify-content-between"
+            {sortedMedia.map((mediaItem, index) => (
+              <div
+                className="list-group-item d-flex justify-content-between"
+                key={mediaItem._id.toString()}
+              >
+                <Link
+                  to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
                   key={mediaItem._id.toString()}
                 >
-                  <Link
-                    to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
-                    key={mediaItem._id.toString()}
-                  >
-                    {mediaItem.name}{' '}
-                  </Link>
-                  {library.user.userId.toString() !== user?._id ? null : (
-                    <div className="btn-group">
-                      <button
-                        className="btn btn-outline-success"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleReorder('down', mediaItem._id.toString());
-                        }}
-                      >
-                        <FaArrowUp />
-                      </button>
-                      <button
-                        className="btn btn-outline-success"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleReorder('up', mediaItem._id.toString());
-                        }}
-                      >
-                        <FaArrowDown />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  {mediaItem.name}{' '}
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </div>
