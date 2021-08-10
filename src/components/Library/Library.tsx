@@ -1,19 +1,9 @@
 import _ from 'lodash';
-import * as R from 'ramda';
 import React, { Dispatch, useCallback, useEffect, useState } from 'react';
-import {
-  FaArrowDown,
-  FaArrowLeft,
-  FaArrowRight,
-  FaArrowUp,
-  FaLock,
-  FaSort,
-  FaUnlock
-} from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaCog, FaSort } from 'react-icons/fa';
 import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Library as LibraryModel, MediaItem } from '../../../server/models';
-import { useUserContext } from '../../hooks/useUserContext';
 import LibraryManager from '../../managers/LibraryManager';
 import MediaManager from '../../managers/MediaManager';
 import { c } from '../../util/classList';
@@ -25,13 +15,7 @@ import {
   DropdownMenu,
   DropdownToggle
 } from 'reactstrap';
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult
-} from 'react-beautiful-dnd';
-import { ObjectId } from 'mongodb';
+import { useUserContext } from '../../hooks/useUserContext';
 
 const SortDropdown = (props: {
   mode: SortMode;
@@ -124,18 +108,15 @@ export const Library = () => {
   const [sortedMedia, setSortedMedia] = useState<Array<MediaItem>>([]);
   const [currentMedia, setCurrentMedia] = useState<MediaItem | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('ALPHAASC');
-  const [isReordering, setIsReordering] = useState(false);
-  const [didReorder, setDidReorder] = useState(false); // :(
   const user = useUserContext();
 
   const loadLibrary = useCallback(async () => {
-    if (isReordering) return;
     const lib = await LibraryManager.getById(params.library);
     setLibrary(lib);
-  }, [params.library, isReordering]);
+  }, [params.library]);
 
   const loadMedia = useCallback(() => {
-    if (!library || isReordering) return;
+    if (!library) return;
 
     MediaManager.getByLibrary(params.library)
       .then((items) => {
@@ -149,17 +130,17 @@ export const Library = () => {
       .then(setMedia);
   }, [library, params.library]);
 
+  // Load initial library object when library state or param, or isReordering changes
   useEffect(() => {
     loadLibrary();
   }, [params.library, loadLibrary]);
 
+  // Load full media items when library state
   useEffect(() => {
-    if (isReordering) return;
     loadMedia();
   }, [library, loadMedia]);
 
   useEffect(() => {
-    if (isReordering) return;
     const items = getSortFunction(sortMode, media);
     setSortedMedia(items);
   }, [sortMode, media]);
@@ -170,14 +151,6 @@ export const Library = () => {
     if (!item) return;
     setCurrentMedia(item);
   }, [params.media, media]);
-
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination || !library) {
-      return;
-    }
-    setMedia(R.move(result.source.index, result.destination?.index));
-    setDidReorder(true);
-  };
 
   const setMediaLocation = (id: string) =>
     library &&
@@ -204,16 +177,6 @@ export const Library = () => {
     setMediaLocation(nextLibraryItem._id.toString());
   };
 
-  const handleReorderClick = () => {
-    if (didReorder) {
-      LibraryManager.update({
-        ...library,
-        items: media.map(R.prop('_id'))
-      } as LibraryModel);
-    }
-    setIsReordering(R.not);
-  };
-
   return library === null ? null : (
     <div className="container">
       {currentMedia ? null : (
@@ -225,6 +188,11 @@ export const Library = () => {
                 visibility={library.visibility}
                 includeIcon
               />
+              {user?._id.toString() === library.user.userId.toString() && (
+                <Link to={`/library/edit/${library._id}`} className="ml-1">
+                  <FaCog />
+                </Link>
+              )}
             </h2>
             <p>{library.user.username}</p>
             <p>{library.items.length} items</p>
@@ -261,62 +229,26 @@ export const Library = () => {
           </div>
         </div>
         <div className="col">
-          {user?._id === library.user.userId.toString() &&
-            sortMode === 'ORDERASC' && (
-              <button
-                className="btn btn-outline-warn"
-                onClick={handleReorderClick}
-              >
-                {isReordering ? <FaUnlock /> : <FaLock />}
-              </button>
-            )}
           <SortDropdown mode={sortMode} setSortmode={setSortMode} />
         </div>
       </div>
       <div className="row">
         <div className="col">
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              droppableId="upload-queue"
-              isDropDisabled={!isReordering}
-            >
-              {(provided, snapshot) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  <div className="list-group mt-3">
-                    {(isReordering ? media : sortedMedia).map(
-                      (mediaItem, index) => (
-                        <Draggable
-                          key={mediaItem._id.toString()}
-                          draggableId={mediaItem._id.toString()}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <div
-                                className="list-group-item d-flex justify-content-between"
-                                key={mediaItem._id.toString()}
-                              >
-                                <Link
-                                  to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
-                                  key={mediaItem._id.toString()}
-                                >
-                                  {mediaItem.name}{' '}
-                                </Link>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      )
-                    )}
-                  </div>
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          <div className="list-group mt-3">
+            {sortedMedia.map((mediaItem, index) => (
+              <div
+                className="list-group-item d-flex justify-content-between"
+                key={mediaItem._id.toString()}
+              >
+                <Link
+                  to={`/library/${library._id.toString()}/${mediaItem._id.toString()}`}
+                  key={mediaItem._id.toString()}
+                >
+                  {mediaItem.name}{' '}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
