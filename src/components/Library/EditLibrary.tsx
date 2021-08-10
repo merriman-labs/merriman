@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import * as R from 'ramda';
 import MediaManager from '../../managers/MediaManager';
+import { c } from '../../util/classList';
 
 export const EditLibrary = () => {
   const params = useParams<{ library: string }>();
@@ -70,7 +71,8 @@ export const EditLibrary = () => {
     <div className="container mt-2">
       <div className="row">
         <div className="col-md-4">
-          <div className="h4">Edit Library</div>
+          <h3 className="h4">Edit Library</h3>
+          <Link to={`/library/${library._id}`}>Go to library &rarr;</Link>
           <div className="form-group">
             <label htmlFor="library-name" className="form-label">
               Name
@@ -130,7 +132,11 @@ export const EditLibrary = () => {
           <h3 className="h5">
             Reorder items{' '}
             <button
-              className="btn btn-outline-warn"
+              className={c({
+                'btn btn-sm': true,
+                'btn-outline-warning': isReordering,
+                'btn-outline-success': !isReordering
+              })}
               onClick={handleReorderClick}
             >
               {isReordering ? <FaUnlock /> : <FaLock />}
