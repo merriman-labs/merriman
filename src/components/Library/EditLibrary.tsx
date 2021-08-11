@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { toast } from 'react-toastify';
-import * as R from 'ramda';
-
 import { Library, MediaItem } from '../../../server/models';
 import LibraryManager from '../../managers/LibraryManager';
 import { ItemVisibility } from '../../constant/ItemVisibility';
@@ -58,12 +56,13 @@ export const EditLibrary = () => {
     setMedia(R.move(result.source.index, result.destination?.index));
     setDidReorder(true);
   };
-  const handleReorderClick = () => {
+  const handleReorderClick = async () => {
     if (didReorder) {
-      LibraryManager.update({
+      await LibraryManager.update({
         ...library,
         items: media.map(R.prop('_id'))
       } as Library);
+      toast('Items successfully reordered.');
     }
     setIsReordering(R.not);
   };
