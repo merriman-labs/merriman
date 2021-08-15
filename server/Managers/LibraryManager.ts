@@ -4,8 +4,6 @@ import { Library } from '../models';
 import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import Validator from '../Validation/Validator';
-import { SetMediaOrderPayload } from '../models/SetMediaOrderPayload';
-import { NotFoundError } from '../Errors/NotFoundError';
 
 @injectable()
 export class LibraryManager {
@@ -51,31 +49,5 @@ export class LibraryManager {
 
   delete(libraryId: string) {
     return this._libraryRA.delete(libraryId);
-  }
-
-  async setMediaOrder(payload: SetMediaOrderPayload) {
-    const library = await this._libraryRA.findById(payload.libraryId);
-    if (!library) throw new NotFoundError('Library not found');
-
-    const idx = library.items.findIndex(
-      (item) => item.toString() === payload.mediaId
-    );
-    if (idx === -1) throw new NotFoundError('Media not in library');
-
-    if (payload.direction === 'down') {
-      if (idx === 0) return;
-
-      const tmp = library.items[idx];
-      library.items[idx] = library.items[idx - 1];
-      library.items[idx - 1] = tmp;
-    } else if (payload.direction === 'up') {
-      if (idx === library.items.length - 1) return;
-
-      const tmp = library.items[idx];
-      library.items[idx] = library.items[idx + 1];
-      library.items[idx + 1] = tmp;
-    }
-    await this._libraryRA.update(library);
-    return library;
   }
 }
