@@ -1,4 +1,4 @@
-import { Library, SetMediaOrderPayload } from '../../server/models';
+import { Library } from '../../server/models';
 import LibraryRA from '../ResourceAccess/LibraryRA';
 
 class LibraryManager {
@@ -22,9 +22,6 @@ class LibraryManager {
   }
   removeMedia(libraryId: string, mediaId: string) {
     return LibraryRA.removeItem(libraryId, mediaId);
-  }
-  setMediaOrder(payload: SetMediaOrderPayload) {
-    return LibraryRA.setMediaOrder(payload);
   }
 }
 

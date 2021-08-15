@@ -21,7 +21,6 @@ export class LibraryController implements IController {
     this.router.put('/', this.update);
     this.router.get('/:id', this.getById);
     this.router.delete('/:id', this.deleteLibrary);
-    this.router.post('/setMediaOrder', this.setMediaOrder);
   }
   /**
    * Create a new libary.
@@ -90,11 +89,5 @@ export class LibraryController implements IController {
     if (!library)
       return res.status(500).json({ message: 'Library not found!' });
     res.json(library);
-  };
-
-  setMediaOrder: RequestHandler = async (req, res) => {
-    const payload = Validator.Library.SetMediaOrder(req.body);
-    const lib = await this._libraryManager.setMediaOrder(payload);
-    res.json(lib);
   };
 }
