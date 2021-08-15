@@ -1,7 +1,6 @@
 import { UserCreatePayload } from '../Managers/UserManager';
 import { Library } from '../models';
 import { RegisterLocalPayload } from '../models/RegisterLocalPayload';
-import { SetMediaOrderPayload } from '../models/SetMediaOrderPayload';
 import ValidationEngine from './ValidationEngine';
 
 class Validator {
@@ -33,12 +32,6 @@ class Validator {
     },
     Update(item: any) {
       return ValidationEngine.validate<Library>(item, 'library.update');
-    },
-    SetMediaOrder(item: any) {
-      return ValidationEngine.validate<SetMediaOrderPayload>(
-        item,
-        'library.setMediaOrder'
-      );
     }
   };
   User = {

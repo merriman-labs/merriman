@@ -2,7 +2,6 @@ export type { Library } from './Library';
 export type { MediaState } from './MediaState';
 export type { RegisterLocalPayload } from './RegisterLocalPayload';
 export type { RequestLog, RequestLogResponse } from './RequestLog';
-export type { SetMediaOrderPayload } from './SetMediaOrderPayload';
 export type { MediaItem } from './MediaItem';
 export { MediaType } from './MediaType';
 export { ItemVisibility } from '../Constant/ItemVisibility';

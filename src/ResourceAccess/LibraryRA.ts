@@ -1,4 +1,4 @@
-import { Library, SetMediaOrderPayload } from '../../server/models';
+import { Library } from '../../server/models';
 
 class LibraryRA {
   getById(id: string): Promise<Library> {
@@ -63,16 +63,6 @@ class LibraryRA {
     await fetch(`/api/library/${id}`, {
       method: 'DELETE'
     });
-  }
-
-  async setMediaOrder(payload: SetMediaOrderPayload): Promise<Library> {
-    return fetch('/api/library/setMediaOrder', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }).then((x) => x.json());
   }
 }
 
