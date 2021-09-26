@@ -6,7 +6,7 @@ import Home from './components/Home/Home';
 import { MediaEdit } from './components/Media/Edit';
 import { MediaByTag } from './components/Media/MediaByTag';
 import Navigation from './components/Navigation/Navigation';
-import { RandomMedia } from './components/Media/Random';
+import { Random } from './components/Media/Random';
 import { StandaloneMedia } from './components/Media/StandaloneMedia';
 import { Logout } from './Logout';
 import AdminNavigation from './admin/AdminNavigation';
@@ -43,7 +43,7 @@ export const AuthenticatedApp = () => {
             <div className="main-content flex-grow-1">
               <Switch>
                 <Route path="/about" component={About} />
-                <Route path="/random" component={RandomMedia} />
+                <Route path="/random" component={Random} />
                 <Route path="/results" component={Results} />
                 <Route
                   path="/media/recent"
