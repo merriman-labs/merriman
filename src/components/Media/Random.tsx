@@ -7,7 +7,7 @@ import Row from 'reactstrap/lib/Row';
 import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
 
-type MediaByTagProps = {
+type RandomMediaProps = {
   match: {
     params: {
       tag: string;
@@ -15,7 +15,7 @@ type MediaByTagProps = {
   };
 };
 
-export const Random = (props: MediaByTagProps) => {
+export const Random = (props: RandomMediaProps) => {
   const [media, setMedia] = useState<Array<MediaItem>>([]);
   useEffect(() => {
     const effect = async () => {
