@@ -15,7 +15,7 @@ type RandomMediaProps = {
   };
 };
 
-export const Random = (props: RandomMediaProps) => {
+export const RandomMedia = (props: RandomMediaProps) => {
   const [media, setMedia] = useState<Array<MediaItem>>([]);
   useEffect(() => {
     const effect = async () => {
@@ -31,14 +31,19 @@ export const Random = (props: RandomMediaProps) => {
         {R.splitEvery(4, media).map((group) =>
           group.map((item, i) => {
             return (
-              <Col sm="6" lg="3" xl="2" key={i} className="video-cell">
+              <Col xs="6" sm="6" lg="3" xl="2" key={i} className="video-cell">
                 <Card>
                   <Link to={`/media/${item._id.toString()}`}>
                     <CardImg src={`/${item.filename}.png` as string} />
-                    <CardImgOverlay className="thumbnail-link">
-                      <CardText>{item.name}</CardText>
-                    </CardImgOverlay>
                   </Link>
+                  <div className="card-body">
+                    <Link
+                      to={`/media/${item._id.toString()}`}
+                      className="card-title"
+                    >
+                      {item.name}
+                    </Link>
+                  </div>
                 </Card>
               </Col>
             );
