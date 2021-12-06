@@ -145,7 +145,7 @@ export const MultiUpload = () => {
     <div className="container-fluid">
       <div className="row">
         {files.length ? (
-          <div className="mx-auto w-50 mt-5">
+          <div className="col-6 col-sm-12 mt-5">
             <div className="list-group">
               <div className="list-group-item">
                 <h3 className="h5">Add to library</h3>
@@ -217,7 +217,7 @@ export const MultiUpload = () => {
             </div>
           </div>
         ) : (
-          <div className="mx-auto mt-5">
+          <div className="col-6 col-sm-12 mx-auto mt-5">
             <div className="form-group">
               <label className="btn btn-outline-success btn-file">
                 <input
