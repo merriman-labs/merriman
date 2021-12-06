@@ -24,4 +24,5 @@ export type MediaItem = {
   webvtt?: string;
   isHidden: boolean;
   visibility: ItemVisibility;
+  storageScheme: 'filesystem' | 's3';
 };

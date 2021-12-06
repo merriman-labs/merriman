@@ -86,16 +86,6 @@ export class MediaManager {
     return this._mediaRA.getByLibraryId(libraryId, userId);
   }
 
-  add(filename: string, userId: string, username: string, path?: string) {
-    const newMediaItem = this._mediaEngine.initializeUploadedMedia(
-      filename,
-      userId,
-      username,
-      path
-    );
-    return this._mediaRA.add(newMediaItem);
-  }
-
   upload(
     user: {
       userId: string;
@@ -121,6 +111,7 @@ export class MediaManager {
           filename,
           user.userId,
           user.username,
+          serverConfig.storage.scheme,
           serverConfig.mediaLocation
         );
 
@@ -209,6 +200,10 @@ export class MediaManager {
       }
     });
     await upload.done();
+  }
+
+  getMediaUrl(id: string) {
+    return this._mediaRA.getMediaUrl(id);
   }
 
   findById(id: string, userId: string) {

@@ -36,7 +36,7 @@ export const VideoPlayer = (props: MediaHandlerComponentProps) => {
       className="video-player"
       id="video-player"
       controls
-      src={`/api/media/play/${media._id.toString()}`}
+      src={props.url}
       onTimeUpdate={(e) => updateTime(e.currentTarget.currentTime)}
       ref={ref}
     >

@@ -65,6 +65,9 @@ class MediaRA {
   getByLibrary(library: string): Promise<Array<MediaItem>> {
     return fetch(`/api/media/list/byLibrary/${library}`).then((x) => x.json());
   }
+  getMediaUrl(id: string): Promise<string> {
+    return fetch(`/api/media/external/${id}`).then((x) => x.text());
+  }
   details(id: string): Promise<MediaItem> {
     return fetch(`/api/media/detail/${id}`).then((x) => x.json());
   }

@@ -27,16 +27,13 @@ export class Configuration {
   pathRewrites?: {
     [documentPath: string]: string;
   };
-  storage:
-    | {
-        scheme: 's3';
-        bucket: string;
-        accessKeyId: string;
-        accessKeySecret: string;
-        region: string;
-      }
-    | { scheme: 'filesystem' };
-
+  storage: {
+    scheme: 's3' | 'filesystem';
+    bucket: string;
+    accessKeyId: string;
+    accessKeySecret: string;
+    region: string;
+  };
   public rewritePath(path: string) {
     if (!this.pathRewrites) return path;
     return Object.keys(this.pathRewrites).includes(path)

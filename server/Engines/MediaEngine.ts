@@ -16,6 +16,7 @@ export class MediaEngine {
     filename: string,
     userId: string,
     username: string,
+    storageScheme: 'filesystem' | 's3',
     path?: string
   ): MediaItem {
     const ext = this._getExtension(filename);
@@ -37,7 +38,8 @@ export class MediaEngine {
       },
       views: 0,
       visibility: ItemVisibility.public,
-      path
+      path,
+      storageScheme
     };
   }
 
@@ -63,7 +65,8 @@ export class MediaEngine {
         username: payload.username
       },
       views: 0,
-      visibility: ItemVisibility.public
+      visibility: ItemVisibility.public,
+      storageScheme: 'filesystem'
     };
   }
 
