@@ -16,6 +16,9 @@ import { NotFoundError } from '../Errors/NotFoundError';
 import { UnauthorizedError } from '../Errors/UnauthorizedError';
 import { TagStatistic } from '../ViewModels/TagStatistic';
 import { MediaStateRA } from '../ResourceAccess/MediaStateRA';
+import { S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import { FileSystemRA } from '../ResourceAccess/FileSystemRA';
 
 @injectable()
 export class MediaManager {
@@ -27,7 +30,9 @@ export class MediaManager {
     @inject(DependencyType.ResourceAccess.Library)
     private _libraryRA: LibraryRA,
     @inject(DependencyType.ResourceAccess.MediaState)
-    private _mediaStateRA: MediaStateRA
+    private _mediaStateRA: MediaStateRA,
+    @inject(DependencyType.ResourceAccess.FileSystem)
+    private _fileSystemRA: FileSystemRA
   ) {}
 
   async search(term: string, userId: string) {
@@ -111,7 +116,7 @@ export class MediaManager {
           Object.assign(item, info);
         }
       });
-      busboy.on('file', (field, file, filename) => {
+      busboy.on('file', async (field, file, filename) => {
         const newMediaItem = this._mediaEngine.initializeUploadedMedia(
           filename,
           user.userId,
@@ -119,41 +124,91 @@ export class MediaManager {
           serverConfig.mediaLocation
         );
 
-        file
-          .pipe(
-            fs.createWriteStream(
-              path.join(serverConfig.mediaLocation, newMediaItem.filename)
-            )
-          )
-          .on('finish', async () => {
-            if (newMediaItem.filename.toLowerCase().includes('.mp4')) {
-              // Make sure media has a thumbnail
-              await ThumbProvider.ensureThumbs(
-                [newMediaItem.filename],
-                serverConfig.mediaLocation,
-                serverConfig.thumbLocation
-              );
-            }
-            newMediaItem.name = item.name || newMediaItem.name;
-            newMediaItem.tags = item.tags || newMediaItem.tags;
+        await this._saveMediaLocal(
+          file,
+          serverConfig.mediaLocation,
+          newMediaItem.filename
+        );
+        if (newMediaItem.filename.toLowerCase().includes('.mp4')) {
+          // Make sure media has a thumbnail
+          await ThumbProvider.ensureThumbs(
+            [newMediaItem.filename],
+            serverConfig.mediaLocation,
+            serverConfig.thumbLocation
+          );
 
-            const result = await this._mediaRA.add(newMediaItem);
-            // Add item to any selected libraries
-            if (item.libraryIds) {
-              for (let libraryId of item.libraryIds) {
-                await this._libraryRA.addMediaToLibrary(
-                  { id: result._id.toString(), order: 0 },
-                  libraryId
-                );
-              }
-            }
-            return res(result);
-          })
-          .on('error', () => {
-            return rej('An error occurred while storing the upload');
-          });
+          if (serverConfig.storage.scheme === 's3') {
+            await this._saveMediaS3(
+              this._fileSystemRA.getStream(
+                newMediaItem.path,
+                newMediaItem.filename
+              ),
+              newMediaItem.filename
+            );
+            // We don't need to keep the file on disk if we're using s3
+            await this._fileSystemRA.rm(
+              newMediaItem.path,
+              newMediaItem.filename
+            );
+          }
+        }
+        newMediaItem.name = item.name || newMediaItem.name;
+        newMediaItem.tags = item.tags || newMediaItem.tags;
+
+        const result = await this._mediaRA.add(newMediaItem);
+        // Add item to any selected libraries
+        if (item.libraryIds) {
+          for (let libraryId of item.libraryIds) {
+            await this._libraryRA.addMediaToLibrary(
+              { id: result._id.toString(), order: 0 },
+              libraryId
+            );
+          }
+        }
+        return res(result);
       });
     });
+  }
+
+  private _saveMediaLocal(
+    file: NodeJS.ReadableStream,
+    location: string,
+    key: string
+  ) {
+    // ignore this little guy please
+    return new Promise<void>((res, rej) => {
+      file
+        .pipe(fs.createWriteStream(path.join(location, key)))
+        .on('finish', async () => {
+          res();
+        })
+        .on('error', (error) => {
+          console.log(error);
+          return rej('An error occurred while storing the upload');
+        });
+    });
+  }
+
+  private async _saveMediaS3(file: NodeJS.ReadableStream, key: string) {
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
+    if (serverConfig.storage.scheme !== 's3')
+      throw new Error('Cannot save media to S3');
+    const client = new S3Client({
+      region: serverConfig.storage.region,
+      credentials: {
+        accessKeyId: serverConfig.storage.accessKeyId,
+        secretAccessKey: serverConfig.storage.accessKeySecret
+      }
+    });
+    const upload = new Upload({
+      client,
+      params: {
+        Bucket: serverConfig.storage.bucket,
+        Key: key,
+        Body: file
+      }
+    });
+    await upload.done();
   }
 
   findById(id: string, userId: string) {

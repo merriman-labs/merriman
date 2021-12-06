@@ -27,6 +27,15 @@ export class Configuration {
   pathRewrites?: {
     [documentPath: string]: string;
   };
+  storage:
+    | {
+        scheme: 's3';
+        bucket: string;
+        accessKeyId: string;
+        accessKeySecret: string;
+        region: string;
+      }
+    | { scheme: 'filesystem' };
 
   public rewritePath(path: string) {
     if (!this.pathRewrites) return path;
@@ -72,6 +81,7 @@ export class Configuration {
     if (data.server) {
       this.server = data.server;
     }
+    this.storage = data.storage;
     return this;
   }
 
