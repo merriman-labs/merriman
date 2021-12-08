@@ -199,11 +199,16 @@ export class MediaManager {
         Body: file
       }
     });
-    await upload.done();
+
+    return upload.done();
   }
 
   getMediaUrl(id: string) {
     return this._mediaRA.getMediaUrl(id);
+  }
+
+  getByStorageScheme(storageScheme: 's3' | 'filesystem') {
+    return this._mediaRA.getByStorageScheme(storageScheme);
   }
 
   findById(id: string, userId: string) {
@@ -271,5 +276,20 @@ export class MediaManager {
 
     await this._mediaRA.update(media);
     return webvtt;
+  }
+
+  async migrateToS3(mediaId: string, userId: string) {
+    const config = AppContext.get(AppContext.WellKnown.Config);
+    if (config.storage.scheme !== 's3')
+      throw new Error('Unable to migrate to S3 without configuration present.');
+    const media = await this._mediaRA.findById(mediaId, userId);
+    const stream = this._fileSystemRA.getStream(media.path, media.filename);
+    await this._saveMediaS3(stream, media.filename);
+    await this._mediaRA.update({
+      ...media,
+      storageScheme: 's3',
+      updatedAt: new Date(),
+      path: ''
+    });
   }
 }

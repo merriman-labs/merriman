@@ -27,6 +27,9 @@ const AdminNavigation = () => {
               <NavLink href="/admin/register-media">Register Media</NavLink>
             </NavItem>
             <NavItem>
+              <NavLink href="/admin/migrate-media">Migrate Media</NavLink>
+            </NavItem>
+            <NavItem>
               <NavLink href="/admin/request-logs">Request Logs</NavLink>
             </NavItem>
             <NavItem>

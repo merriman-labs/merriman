@@ -202,6 +202,22 @@ export const MediaEdit = (props: MediaEditProps) => {
               </>
             )}
           </div>
+          <div className="col-md-3">
+            <p className="h5">Storage scheme</p>
+            {media.storageScheme === 's3' ? (
+              <>
+                <span className="badge bg-info">S3</span>
+              </>
+            ) : (
+              <>
+                <span className="badge bg-primary">Filesystem</span>
+                <br />
+                <button disabled className="btn btn-primary">
+                  Move to S3
+                </button>
+              </>
+            )}
+          </div>
         </div>
         <hr />
         <div

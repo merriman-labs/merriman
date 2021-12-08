@@ -91,6 +91,10 @@ export default class MediaRA {
       ])
       .toArray();
   }
+
+  getByStorageScheme(storageScheme: 's3' | 'filesystem') {
+    return this._db.collection('media').find({ storageScheme }).toArray();
+  }
   /**
    * Get all unique tags from the server.
    */
