@@ -235,6 +235,7 @@ export class MediaManager {
           level: ServerLogSeverity.info,
           message: `There was an error: ${err}`
         });
+        throw err;
       });
   }
 
