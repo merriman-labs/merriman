@@ -2,7 +2,7 @@ import * as path from 'path';
 import fs from 'fs';
 import MediaRA from '../ResourceAccess/MediaRA';
 import { MediaEngine } from '../Engines/MediaEngine';
-import { MediaItem, MediaType } from '../models';
+import { MediaItem, MediaType, ServerLogSeverity } from '../models';
 import { requestMeta, generateSubs } from '../ffmpeg';
 import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
 import { MediaUtils } from '../Utilities/MediaUtils';
@@ -19,6 +19,7 @@ import { MediaStateRA } from '../ResourceAccess/MediaStateRA';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { FileSystemRA } from '../ResourceAccess/FileSystemRA';
+import ServerLogRA from '../ResourceAccess/ServerLogRA';
 
 @injectable()
 export class MediaManager {
@@ -31,6 +32,8 @@ export class MediaManager {
     private _libraryRA: LibraryRA,
     @inject(DependencyType.ResourceAccess.MediaState)
     private _mediaStateRA: MediaStateRA,
+    @inject(DependencyType.ResourceAccess.ServerLog)
+    private _serverLogRA: ServerLogRA,
     @inject(DependencyType.ResourceAccess.FileSystem)
     private _fileSystemRA: FileSystemRA
   ) {}
@@ -134,7 +137,9 @@ export class MediaManager {
                 newMediaItem.path,
                 newMediaItem.filename
               ),
-              newMediaItem.filename
+              newMediaItem.filename,
+              newMediaItem._id.toString(),
+              user.userId
             );
             // We don't need to keep the file on disk if we're using s3
             await this._fileSystemRA.rm(
@@ -180,7 +185,12 @@ export class MediaManager {
     });
   }
 
-  private async _saveMediaS3(file: NodeJS.ReadableStream, key: string) {
+  private async _saveMediaS3(
+    file: NodeJS.ReadableStream,
+    key: string,
+    mediaId: string,
+    userId: string
+  ) {
     const serverConfig = AppContext.get(AppContext.WellKnown.Config);
     if (serverConfig.storage.scheme !== 's3')
       throw new Error('Cannot save media to S3');
@@ -191,6 +201,12 @@ export class MediaManager {
         secretAccessKey: serverConfig.storage.accessKeySecret
       }
     });
+    const logId = await this._serverLogRA.createMigrationLog({
+      entries: [],
+      mediaId,
+      userId,
+      startTime: new Date()
+    });
     const upload = new Upload({
       client,
       params: {
@@ -199,8 +215,27 @@ export class MediaManager {
         Body: file
       }
     });
+    upload.on('httpUploadProgress', (progress) => {
+      this._serverLogRA.addMigrationLogEntry(logId.toHexString(), {
+        createdAt: new Date(),
+        level: ServerLogSeverity.info,
+        message: `Uploaded ${progress.loaded} of ${progress.total} to ${progress.Bucket}/${progress.Key}`
+      });
+    });
 
-    return upload.done();
+    return upload
+      .done()
+      .then((value) => {
+        this._serverLogRA.finishMigrationLogEntry(logId.toHexString());
+        return value;
+      })
+      .catch((err) => {
+        this._serverLogRA.addMigrationLogEntry(logId.toHexString(), {
+          createdAt: new Date(),
+          level: ServerLogSeverity.info,
+          message: `There was an error: ${err}`
+        });
+      });
   }
 
   getMediaUrl(id: string) {
@@ -284,7 +319,12 @@ export class MediaManager {
       throw new Error('Unable to migrate to S3 without configuration present.');
     const media = await this._mediaRA.findById(mediaId, userId);
     const stream = this._fileSystemRA.getStream(media.path, media.filename);
-    await this._saveMediaS3(stream, media.filename);
+    await this._saveMediaS3(
+      stream,
+      media.filename,
+      media._id.toString(),
+      userId
+    );
     await this._mediaRA.update({
       ...media,
       storageScheme: 's3',
