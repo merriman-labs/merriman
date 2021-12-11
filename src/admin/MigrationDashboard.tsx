@@ -6,7 +6,7 @@ import AdminManager from '../managers/AdminManager';
 
 export const MigrationDashboard = () => {
   const [items, setItems] = useState<
-    Array<MediaItem & { migrating?: boolean }>
+    Array<MediaItem & { isMigrating?: boolean }>
   >([]);
 
   useEffect(loadItems, []);
@@ -14,7 +14,7 @@ export const MigrationDashboard = () => {
   function migrateItem(mediaId: string) {
     setItems((media) =>
       media.map((item) =>
-        item._id === mediaId ? { ...item, migrating: true } : item
+        item._id === mediaId ? { ...item, isMigrating: true } : item
       )
     );
     AdminManager.migrateItem(mediaId).then((_) => {
@@ -42,6 +42,7 @@ export const MigrationDashboard = () => {
                 <button
                   className="btn btn-primary"
                   onClick={() => migrateItem(item._id.toString())}
+                  disabled={item.isMigrating}
                 >
                   Migrate
                 </button>
