@@ -12,11 +12,5 @@ export const AudioPlayer = (props: MediaHandlerComponentProps) => {
     }
   });
 
-  return (
-    <audio
-      ref={ref}
-      controls
-      src={`/api/media/play/${props.media._id.toString()}`}
-    />
-  );
+  return <audio ref={ref} controls src={props.url} />;
 };

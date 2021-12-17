@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardImg, CardImgOverlay, CardText, Col } from 'reactstrap';
+import { Card, CardImg, Col } from 'reactstrap';
 import Container from 'reactstrap/lib/Container';
 import Row from 'reactstrap/lib/Row';
 import { MediaItem } from '../../../server/models';

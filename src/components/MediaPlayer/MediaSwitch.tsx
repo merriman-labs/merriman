@@ -9,12 +9,24 @@ import { VideoPlayer } from './VideoPlayer';
 export const MediaSwitch = (props: MediaHandlerComponentProps) => {
   switch (props.media.type) {
     case MediaType.Audio:
-      return <AudioPlayer media={props.media} onFinished={props.onFinished} />;
+      return (
+        <AudioPlayer
+          media={props.media}
+          onFinished={props.onFinished}
+          url={props.url}
+        />
+      );
     case MediaType.Image:
-      return <ImagePlayer media={props.media} />;
+      return <ImagePlayer media={props.media} url={props.url} />;
     case MediaType.Video:
-      return <VideoPlayer media={props.media} onFinished={props.onFinished} />;
+      return (
+        <VideoPlayer
+          media={props.media}
+          onFinished={props.onFinished}
+          url={props.url}
+        />
+      );
     default:
-      return <UnhandledTypePlayer media={props.media} />;
+      return <UnhandledTypePlayer media={props.media} url={props.url} />;
   }
 };

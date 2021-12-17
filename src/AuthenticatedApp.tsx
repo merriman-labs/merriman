@@ -23,6 +23,7 @@ import { RecentlyViewedPage } from './components/Media/RecentlyViewedPage';
 import { TagsPage } from './components/Media/TagsPage';
 import { About } from './components/About/About';
 import { MultiUpload } from './components/Media/Upload/MultiUpload';
+import { MigrationDashboard } from './admin/MigrationDashboard';
 
 export const AuthenticatedApp = () => {
   return (
@@ -32,6 +33,7 @@ export const AuthenticatedApp = () => {
           <AdminNavigation />
           <Route exact path="/admin" component={AdminPanel} />
           <Route path="/admin/register-media" component={RegisterMedia} />
+          <Route path="/admin/migrate-media" component={MigrationDashboard} />
           <Route path="/admin/request-logs" component={RequestLogs} />
           <Route path="/admin/users" component={UserAdmin} />
         </Route>

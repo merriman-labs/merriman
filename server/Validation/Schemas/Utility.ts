@@ -74,6 +74,47 @@ export const UtilitySchema = {
       },
       pathRewrites: {
         type: 'object'
+      },
+      storage: {
+        type: 'object',
+        anyOf: [
+          {
+            type: 'object',
+            required: [
+              'scheme',
+              'bucket',
+              'accessKeyId',
+              'accessKeySecret',
+              'region'
+            ],
+            properties: {
+              scheme: {
+                type: 'string',
+                enum: ['s3']
+              },
+              bucket: {
+                type: 'string'
+              },
+              accessKeyId: {
+                type: 'string'
+              },
+              accessKeySecret: {
+                type: 'string'
+              },
+              region: { type: 'string' }
+            }
+          },
+          {
+            type: 'object',
+            required: ['scheme'],
+            properties: {
+              scheme: {
+                type: 'string',
+                enum: ['filesystem']
+              }
+            }
+          }
+        ]
       }
     }
   }

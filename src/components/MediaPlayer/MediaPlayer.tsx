@@ -28,6 +28,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [libraries, setLibraries] = useState<Array<LibraryDropdownItem>>([]);
   const [newLibraryName, setNewLibraryName] = useState<string>('');
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
 
   const getLibraries = useCallback(async () => {
     const libs = (await LibraryManager.list()).map<LibraryDropdownItem>(
@@ -61,6 +62,10 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
     window.scrollTo(0, 0);
   }, [id, getLibraries]);
 
+  useEffect(() => {
+    MediaManager.getMediaUrl(id).then(setMediaUrl);
+  }, [id]);
+
   const handleLibraryKeyPress = async (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -74,8 +79,8 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
   return (
     <>
       <Col>
-        {details ? (
-          <MediaSwitch media={details} onFinished={onFinished} />
+        {details && mediaUrl ? (
+          <MediaSwitch media={details} onFinished={onFinished} url={mediaUrl} />
         ) : null}
       </Col>
       <Row>

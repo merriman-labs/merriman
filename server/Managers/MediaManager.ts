@@ -2,7 +2,7 @@ import * as path from 'path';
 import fs from 'fs';
 import MediaRA from '../ResourceAccess/MediaRA';
 import { MediaEngine } from '../Engines/MediaEngine';
-import { MediaItem, MediaType } from '../models';
+import { MediaItem, MediaType, ServerLogSeverity } from '../models';
 import { requestMeta, generateSubs } from '../ffmpeg';
 import { fromSrt, toWebVTT } from '@johnny.reina/convert-srt';
 import { MediaUtils } from '../Utilities/MediaUtils';
@@ -16,6 +16,10 @@ import { NotFoundError } from '../Errors/NotFoundError';
 import { UnauthorizedError } from '../Errors/UnauthorizedError';
 import { TagStatistic } from '../ViewModels/TagStatistic';
 import { MediaStateRA } from '../ResourceAccess/MediaStateRA';
+import { S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
+import { FileSystemRA } from '../ResourceAccess/FileSystemRA';
+import ServerLogRA from '../ResourceAccess/ServerLogRA';
 
 @injectable()
 export class MediaManager {
@@ -27,7 +31,11 @@ export class MediaManager {
     @inject(DependencyType.ResourceAccess.Library)
     private _libraryRA: LibraryRA,
     @inject(DependencyType.ResourceAccess.MediaState)
-    private _mediaStateRA: MediaStateRA
+    private _mediaStateRA: MediaStateRA,
+    @inject(DependencyType.ResourceAccess.ServerLog)
+    private _serverLogRA: ServerLogRA,
+    @inject(DependencyType.ResourceAccess.FileSystem)
+    private _fileSystemRA: FileSystemRA
   ) {}
 
   async search(term: string, userId: string) {
@@ -81,16 +89,6 @@ export class MediaManager {
     return this._mediaRA.getByLibraryId(libraryId, userId);
   }
 
-  add(filename: string, userId: string, username: string, path?: string) {
-    const newMediaItem = this._mediaEngine.initializeUploadedMedia(
-      filename,
-      userId,
-      username,
-      path
-    );
-    return this._mediaRA.add(newMediaItem);
-  }
-
   upload(
     user: {
       userId: string;
@@ -111,49 +109,142 @@ export class MediaManager {
           Object.assign(item, info);
         }
       });
-      busboy.on('file', (field, file, filename) => {
+      busboy.on('file', async (field, file, filename) => {
         const newMediaItem = this._mediaEngine.initializeUploadedMedia(
           filename,
           user.userId,
           user.username,
+          serverConfig.storage.scheme,
           serverConfig.mediaLocation
         );
 
-        file
-          .pipe(
-            fs.createWriteStream(
-              path.join(serverConfig.mediaLocation, newMediaItem.filename)
-            )
-          )
-          .on('finish', async () => {
-            if (newMediaItem.filename.toLowerCase().includes('.mp4')) {
-              // Make sure media has a thumbnail
-              await ThumbProvider.ensureThumbs(
-                [newMediaItem.filename],
-                serverConfig.mediaLocation,
-                serverConfig.thumbLocation
-              );
-            }
-            newMediaItem.name = item.name || newMediaItem.name;
-            newMediaItem.tags = item.tags || newMediaItem.tags;
+        await this._saveMediaLocal(
+          file,
+          serverConfig.mediaLocation,
+          newMediaItem.filename
+        );
+        if (newMediaItem.filename.toLowerCase().includes('.mp4')) {
+          // Make sure media has a thumbnail
+          await ThumbProvider.ensureThumbs(
+            [newMediaItem.filename],
+            serverConfig.mediaLocation,
+            serverConfig.thumbLocation
+          );
 
-            const result = await this._mediaRA.add(newMediaItem);
-            // Add item to any selected libraries
-            if (item.libraryIds) {
-              for (let libraryId of item.libraryIds) {
-                await this._libraryRA.addMediaToLibrary(
-                  { id: result._id.toString(), order: 0 },
-                  libraryId
-                );
-              }
-            }
-            return res(result);
-          })
-          .on('error', () => {
-            return rej('An error occurred while storing the upload');
-          });
+          if (serverConfig.storage.scheme === 's3') {
+            await this._saveMediaS3(
+              this._fileSystemRA.getStream(
+                newMediaItem.path,
+                newMediaItem.filename
+              ),
+              newMediaItem.filename,
+              newMediaItem._id.toString(),
+              user.userId
+            );
+            // We don't need to keep the file on disk if we're using s3
+            await this._fileSystemRA.rm(
+              newMediaItem.path,
+              newMediaItem.filename
+            );
+          }
+        }
+        newMediaItem.name = item.name || newMediaItem.name;
+        newMediaItem.tags = item.tags || newMediaItem.tags;
+
+        const result = await this._mediaRA.add(newMediaItem);
+        // Add item to any selected libraries
+        if (item.libraryIds) {
+          for (let libraryId of item.libraryIds) {
+            await this._libraryRA.addMediaToLibrary(
+              { id: result._id.toString(), order: 0 },
+              libraryId
+            );
+          }
+        }
+        return res(result);
       });
     });
+  }
+
+  private _saveMediaLocal(
+    file: NodeJS.ReadableStream,
+    location: string,
+    key: string
+  ) {
+    // ignore this little guy please
+    return new Promise<void>((res, rej) => {
+      file
+        .pipe(fs.createWriteStream(path.join(location, key)))
+        .on('finish', async () => {
+          res();
+        })
+        .on('error', (error) => {
+          console.log(error);
+          return rej('An error occurred while storing the upload');
+        });
+    });
+  }
+
+  private async _saveMediaS3(
+    file: NodeJS.ReadableStream,
+    key: string,
+    mediaId: string,
+    userId: string
+  ) {
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
+    if (serverConfig.storage.scheme !== 's3')
+      throw new Error('Cannot save media to S3');
+    const client = new S3Client({
+      region: serverConfig.storage.region,
+      credentials: {
+        accessKeyId: serverConfig.storage.accessKeyId,
+        secretAccessKey: serverConfig.storage.accessKeySecret
+      }
+    });
+    const logId = await this._serverLogRA.createMigrationLog({
+      entries: [],
+      mediaId,
+      userId,
+      startTime: new Date()
+    });
+    const upload = new Upload({
+      client,
+      params: {
+        Bucket: serverConfig.storage.bucket,
+        Key: key,
+        Body: file
+      }
+    });
+    upload.on('httpUploadProgress', (progress) => {
+      this._serverLogRA.addMigrationLogEntry(logId.toHexString(), {
+        createdAt: new Date(),
+        level: ServerLogSeverity.info,
+        message: `Uploaded ${progress.loaded} of ${progress.total} to ${progress.Bucket}/${progress.Key}`
+      });
+    });
+
+    return upload
+      .done()
+      .then((value) => {
+        this._serverLogRA.finishMigrationLogEntry(logId.toHexString());
+        return value;
+      })
+      .catch((err) => {
+        this._serverLogRA.addMigrationLogEntry(logId.toHexString(), {
+          createdAt: new Date(),
+          level: ServerLogSeverity.info,
+          message: `There was an error: ${err}`
+        });
+        throw err;
+      });
+  }
+
+  getMediaUrl(id: string) {
+    return this._mediaRA.getMediaUrl(id);
+  }
+
+  getByStorageScheme(storageScheme: 's3' | 'filesystem') {
+    return this._mediaRA.getByStorageScheme(storageScheme);
   }
 
   findById(id: string, userId: string) {
@@ -221,5 +312,25 @@ export class MediaManager {
 
     await this._mediaRA.update(media);
     return webvtt;
+  }
+
+  async migrateToS3(mediaId: string, userId: string) {
+    const config = AppContext.get(AppContext.WellKnown.Config);
+    if (config.storage.scheme !== 's3')
+      throw new Error('Unable to migrate to S3 without configuration present.');
+    const media = await this._mediaRA.findById(mediaId, userId);
+    const stream = this._fileSystemRA.getStream(media.path, media.filename);
+    await this._saveMediaS3(
+      stream,
+      media.filename,
+      media._id.toString(),
+      userId
+    );
+    await this._mediaRA.update({
+      ...media,
+      storageScheme: 's3',
+      updatedAt: new Date(),
+      path: ''
+    });
   }
 }

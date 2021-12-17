@@ -5,6 +5,9 @@ import { inject, injectable } from 'inversify';
 import { DependencyType } from '../Constant/DependencyType';
 import { ItemVisibility } from '../Constant/ItemVisibility';
 import { TagStatistic } from '../ViewModels/TagStatistic';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { AppContext } from '../appContext';
 
 @injectable()
 export default class MediaRA {
@@ -88,6 +91,10 @@ export default class MediaRA {
       ])
       .toArray();
   }
+
+  getByStorageScheme(storageScheme: 's3' | 'filesystem') {
+    return this._db.collection('media').find({ storageScheme }).toArray();
+  }
   /**
    * Get all unique tags from the server.
    */
@@ -110,6 +117,29 @@ export default class MediaRA {
       ])
       .toArray();
     return tags;
+  }
+
+  async getMediaUrl(id: string) {
+    const item = await this._db
+      .collection<MediaItem>('media')
+      .findOne({ _id: new ObjectId(id) });
+    if (item.storageScheme === 's3') {
+      const config = AppContext.get(AppContext.WellKnown.Config);
+      const client = new S3Client({
+        region: config.storage.region,
+        credentials: {
+          accessKeyId: config.storage.accessKeyId,
+          secretAccessKey: config.storage.accessKeySecret
+        }
+      });
+      const command = new GetObjectCommand({
+        Key: item.filename,
+        Bucket: config.storage.bucket
+      });
+      const url = await getSignedUrl(client, command, { expiresIn: 18400 });
+      return url;
+    }
+    return `/api/media/play/${item._id.toString()}`;
   }
 
   /**

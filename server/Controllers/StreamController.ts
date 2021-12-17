@@ -18,7 +18,13 @@ export class StreamController implements IController {
   ) {
     this.router.get('/play/:video', this.streamMedia);
     this.router.get('/captions/:id', this.getCaptions);
+    this.router.get('/external/:video', this.getMediaUrl);
   }
+
+  getMediaUrl: RequestHandler = async (req, res) => {
+    const url = await this._mediaManager.getMediaUrl(req.params.video);
+    return res.send(url).status(200);
+  };
 
   streamMedia: RequestHandler = async (req, res) => {
     const config = AppContext.get(AppContext.WellKnown.Config);

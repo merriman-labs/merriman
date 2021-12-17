@@ -15,6 +15,10 @@ class MediaManager {
     return MediaRA.registerLocal(payload);
   }
 
+  getMediaUrl(id: string) {
+    return MediaRA.getMediaUrl(id);
+  }
+
   recentlyPlayed(limit: number) {
     return MediaRA.recentlyPlayed(limit);
   }
