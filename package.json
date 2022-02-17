@@ -13,7 +13,7 @@
     "@johnny.reina/ajv-types": "^0.2.0",
     "@johnny.reina/convert-srt": "^0.2.1",
     "ajv": "^6.12.6",
-    "axios": "^0.21.0",
+    "axios": "^0.21.2",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.5.2",
     "bootswatch": "^4.5.1",
