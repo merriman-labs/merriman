@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
-import { FaPlus, FaTimesCircle } from 'react-icons/fa';
 import { RouterProps } from 'react-router';
 import { ItemVisibility } from '../../constant/ItemVisibility';
 import { c } from '../../util/classList';
@@ -18,7 +17,7 @@ type MediaEditProps = RouterProps & {
 };
 
 function validateTimestamp(str: string) {
-  return /^\d{2}:\d{2}:\d{2}$/;
+  return /^\d{2}:\d{2}:\d{2}$/.test(str);
 }
 
 export const MediaEdit = (props: MediaEditProps) => {
@@ -26,12 +25,14 @@ export const MediaEdit = (props: MediaEditProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [thumbnailTimestamp, setThumbnailTimestamp] = useState('00:00:10');
 
-  const getMediaDetails = () =>
-    MediaManager.details(props.match.params.id).then(setMedia);
+  const getMediaDetails = useCallback(
+    () => MediaManager.details(props.match.params.id).then(setMedia),
+    [props.match.params.id]
+  );
 
   useEffect(() => {
     getMediaDetails();
-  }, [props.match.params.id]);
+  }, [getMediaDetails]);
 
   const handleDelete = async (hard: boolean) => {
     if (media === null) return;
@@ -51,13 +52,6 @@ export const MediaEdit = (props: MediaEditProps) => {
 
   const handleTagAdd = async (tags: Array<string>) => {
     if (!media) return;
-    const item = { ...media, tags };
-    setMedia(item);
-  };
-
-  const handleTagRemove = async (tag: string) => {
-    if (media === null) return;
-    const tags = media.tags.filter((t) => t !== tag);
     const item = { ...media, tags };
     setMedia(item);
   };
@@ -125,6 +119,7 @@ export const MediaEdit = (props: MediaEditProps) => {
                 <img
                   className="card-image-top mb-2 d-block"
                   src={`/${media.filename}.png`}
+                  alt={`Thumbnail for ${media.name}`}
                 />
                 <label htmlFor="new-thumbnail-timestamp">
                   Update thumbnail from timestamp

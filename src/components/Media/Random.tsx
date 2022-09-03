@@ -1,18 +1,9 @@
 import * as R from 'ramda';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaRedo } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import {
-  Button,
-  Card,
-  CardImg,
-  CardImgOverlay,
-  CardText,
-  Col,
-  InputGroup
-} from 'reactstrap';
+import { Button, Card, CardImg, Col, InputGroup } from 'reactstrap';
 import Container from 'reactstrap/lib/Container';
-import Input from 'reactstrap/lib/Input';
 import Row from 'reactstrap/lib/Row';
 import { MediaItem } from '../../../server/models';
 import MediaManager from '../../managers/MediaManager';
@@ -29,9 +20,12 @@ export const RandomMedia = (props: RandomMediaProps) => {
   const [media, setMedia] = useState<Array<MediaItem>>([]);
   const [count, setCount] = useState<number>(24);
 
-  function loadMedia() {
-    MediaManager.random(count).then(setMedia);
-  }
+  const loadMedia = useCallback(
+    function () {
+      MediaManager.random(count).then(setMedia);
+    },
+    [count]
+  );
 
   function handleRerollClick() {
     loadMedia();
@@ -39,7 +33,7 @@ export const RandomMedia = (props: RandomMediaProps) => {
 
   useEffect(() => {
     loadMedia();
-  }, [count]);
+  }, [count, loadMedia]);
   return (
     <Container fluid>
       <Row className="my-2">
