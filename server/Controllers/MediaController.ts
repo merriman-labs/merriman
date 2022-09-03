@@ -10,6 +10,7 @@ import { ensureSuperadmin } from '../Middleware/EnsureSuperadmin';
 import { NotFoundError } from '../Errors/NotFoundError';
 import { AsyncRouter } from '../Utilities/AsyncRouter';
 import { HttpStatus } from '../Constant/HttpStatus';
+import { ensureLoggedIn } from '../Middleware/EnsureLoggedIn';
 
 @injectable()
 export class MediaController implements IController {
@@ -32,6 +33,11 @@ export class MediaController implements IController {
     this.router.post('/request-srt/:id/:track', this.requestSrt);
     this.router.post('/request-webvtt/:id', this.requestWebVTT);
     this.router.post('/registerLocal', ensureSuperadmin, this.registerLocal);
+    this.router.post(
+      '/regenerate-thumbnail',
+      ensureLoggedIn,
+      this.regenerateThumbnail
+    );
     this.router.put('/', this.update);
     this.router.delete('/:id', this.delete);
   }
@@ -60,6 +66,17 @@ export class MediaController implements IController {
     const payload = Validator.Media.RegisterLocal(body);
     const item = await this._mediaManager.registerLocal(payload);
     return res.json(item);
+  };
+
+  regenerateThumbnail: RequestHandler = async (req, res) => {
+    const userId = Validator.Utility.ObjectId(req.user._id);
+
+    await this._mediaManager.regenerateThumb(
+      req.body.mediaId,
+      userId,
+      req.body.timestamp
+    );
+    return res.json({ status: 'ok' });
   };
 
   recentlyPlayed: RequestHandler = async (req, res) => {

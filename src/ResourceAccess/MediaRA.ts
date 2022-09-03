@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { MediaItem, RegisterLocalPayload } from '../../server/models';
 import { TagStatistic } from '../../server/ViewModels';
+import { post } from '../util/HttpMethods';
 
 class MediaRA {
   registerLocal(
@@ -88,6 +89,10 @@ class MediaRA {
     return fetch(`/api/media/request-webvtt/${id}`, {
       method: 'POST'
     }).then((x) => x.json());
+  }
+
+  regenerateThumbnail(mediaId: string, timestamp: string): Promise<void> {
+    return post('/api/media/regenerate-thumbnail', { mediaId, timestamp });
   }
 }
 

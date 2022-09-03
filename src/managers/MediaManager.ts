@@ -19,6 +19,10 @@ class MediaManager {
     return MediaRA.recentlyPlayed(limit);
   }
 
+  updateThumbnail(mediaId: string, timestamp: string) {
+    return MediaRA.regenerateThumbnail(mediaId, timestamp);
+  }
+
   update(item: MediaItem) {
     return MediaRA.update(item);
   }

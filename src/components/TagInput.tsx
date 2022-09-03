@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTimesCircle } from 'react-icons/fa';
+import { FaPlus, FaTimesCircle } from 'react-icons/fa';
 
 type TagInputProps = {
   tags: Array<string>;
@@ -9,8 +9,8 @@ type TagInputProps = {
 
 export const TagInput = (props: TagInputProps) => {
   const [currentTag, setCurrentTag] = useState('');
-  const handleTagAdd = async (tag: string) => {
-    const tags = props.tags ? props.tags.concat(tag) : [tag];
+  const handleTagAdd = async () => {
+    const tags = props.tags ? props.tags.concat(currentTag) : [currentTag];
     props.updateTags(tags);
     setCurrentTag('');
   };
@@ -23,7 +23,7 @@ export const TagInput = (props: TagInputProps) => {
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.persist();
     if (event.key === 'Enter') {
-      handleTagAdd(currentTag);
+      handleTagAdd();
     }
   };
   return (
@@ -43,6 +43,11 @@ export const TagInput = (props: TagInputProps) => {
           onKeyDown={handleKeyPress}
           disabled={props.disabled}
         />
+        <div className="input-group-append">
+          <button className="btn btn-outline-primary" onClick={handleTagAdd}>
+            <FaPlus />
+          </button>
+        </div>
       </div>
     </>
   );

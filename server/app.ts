@@ -128,6 +128,7 @@ export class Merriman {
   private _setupErrorHandling() {
     this._app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
+        console.error(err);
         if (err instanceof PayloadValidationError) {
           return res
             .status(400)

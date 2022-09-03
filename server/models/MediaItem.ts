@@ -1,6 +1,7 @@
 import { Subtitle } from '@johnny.reina/convert-srt/dist/types';
 import { ObjectId } from 'mongodb';
 import { ItemVisibility } from '../Constant/ItemVisibility';
+import { MediaFormat } from './MediaInfo';
 import { MediaType } from './MediaType';
 
 export type MediaItem = {
@@ -24,4 +25,5 @@ export type MediaItem = {
   webvtt?: string;
   isHidden: boolean;
   visibility: ItemVisibility;
+  formatData?: MediaFormat;
 };
