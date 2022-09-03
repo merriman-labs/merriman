@@ -19,11 +19,15 @@ export class AdminController implements IController {
   }
 
   requestLogs: RequestHandler = async (req, res, next) => {
-    let { skip = '0', limit = '25' } = req.query;
-    skip = +skip;
-    limit = +limit;
+    const { skip = '0', limit = '25' } = req.query;
 
-    const logs = await this._serverLogManager.getRequestLogs({ skip, limit });
+    const skipParsed = +skip;
+    const limitParsed = +limit;
+
+    const logs = await this._serverLogManager.getRequestLogs({
+      skip: skipParsed,
+      limit: limitParsed
+    });
     res.json(logs);
   };
 
