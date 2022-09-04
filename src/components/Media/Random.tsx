@@ -47,7 +47,7 @@ export const RandomMedia = (props: RandomMediaProps) => {
           boxSizing: 'border-box'
         }}
       >
-        <Col>
+        <Col xs="6" xl="2">
           <InputGroup>
             <select
               value={count}
