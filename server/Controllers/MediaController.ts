@@ -82,7 +82,8 @@ export class MediaController implements IController {
   recentlyPlayed: RequestHandler = async (req, res) => {
     // @ts-ignore
     const userId = Validator.Utility.ObjectId(req.user._id);
-    const limit = parseInt(req.query.limit || 0);
+    const limit =
+      typeof req.query.limit === 'string' ? parseInt(req.query.limit) : 0;
     const recent = await this._mediaManager.recentlyPlayed(userId, limit);
     res.json(recent);
   };
@@ -111,7 +112,7 @@ export class MediaController implements IController {
   upload: RequestHandler = async (req, res) => {
     // @ts-ignore
     const userId = Validator.Utility.ObjectId(req.user._id);
-    const busboy = new Busboy({ headers: req.headers });
+    const busboy = Busboy({ headers: req.headers });
 
     req.pipe(busboy);
 
@@ -152,12 +153,13 @@ export class MediaController implements IController {
   };
 
   latest: RequestHandler = async (req, res) => {
-    let { skip = 0, limit = 20 } = req.query;
+    let { skip = '0', limit = '20' } = req.query;
 
-    skip = parseInt(skip, 10);
-    limit = parseInt(limit, 10);
-
-    const allItems = await this._mediaManager.latest(skip, limit, req.user._id);
+    const allItems = await this._mediaManager.latest(
+      +skip,
+      +limit,
+      req.user._id
+    );
     res.json(allItems);
   };
 

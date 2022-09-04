@@ -94,7 +94,10 @@ export const EditLibrary = () => {
               type="checkbox"
               checked={library.isSeason}
               onChange={(evt) =>
-                setLibrary(R.assoc('isSeason', evt.target.checked))
+                setLibrary(
+                  (library) =>
+                    ({ ...library, isSeason: evt.target.checked } as Library)
+                )
               }
             />
             <label htmlFor="name" className="form-check-label">

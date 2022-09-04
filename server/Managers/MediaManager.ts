@@ -17,6 +17,7 @@ import { UnauthorizedError } from '../Errors/UnauthorizedError';
 import { TagStatistic } from '../ViewModels/TagStatistic';
 import { MediaStateRA } from '../ResourceAccess/MediaStateRA';
 import { toMediaFormat } from '../Formatters/MediaFormat';
+import busboy from 'busboy';
 
 @injectable()
 export class MediaManager {
@@ -112,7 +113,7 @@ export class MediaManager {
           Object.assign(item, info);
         }
       });
-      busboy.on('file', (field, file, filename) => {
+      busboy.on('file', (field, file, { filename }) => {
         const newMediaItem = this._mediaEngine.initializeUploadedMedia(
           filename,
           user.userId,
