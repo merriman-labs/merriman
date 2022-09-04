@@ -36,7 +36,17 @@ export const RandomMedia = (props: RandomMediaProps) => {
   }, [count, loadMedia]);
   return (
     <Container fluid>
-      <Row className="my-2">
+      <Row
+        style={{
+          position: 'sticky',
+          top: '0px',
+          zIndex: 9,
+          padding: '10px 0',
+          marginBottom: '5px',
+          backgroundColor: '#222',
+          boxSizing: 'border-box'
+        }}
+      >
         <Col>
           <InputGroup>
             <select
