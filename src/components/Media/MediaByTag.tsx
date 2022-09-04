@@ -36,7 +36,7 @@ export const MediaByTag = (props: MediaByTagProps) => {
               <Col sm="6" lg="3" xl="2" key={i} className="video-cell">
                 <Card>
                   <Link to={`/media/${item._id.toString()}`}>
-                    <CardImg src={`/${item.filename}.png`} />
+                    <CardImg src={`/${item.filename}.png` as string} />
                     <CardImgOverlay className="thumbnail-link">
                       <CardText>{item.name}</CardText>
                     </CardImgOverlay>

@@ -1,36 +1,34 @@
 import React, { useState } from 'react';
-import { FaTimesCircle } from 'react-icons/fa';
+import { FaPlus, FaTimesCircle } from 'react-icons/fa';
 
 type TagInputProps = {
-  tags?: Array<string>;
+  tags: Array<string>;
   updateTags: (tags: Array<string>) => void;
+  disabled?: boolean;
 };
 
 export const TagInput = (props: TagInputProps) => {
   const [currentTag, setCurrentTag] = useState('');
-  const [tagList, setTags] = useState<Array<string>>(props.tags || []);
-  const handleTagAdd = async (tag: string) => {
-    const tags = tagList ? tagList.concat(tag) : [tag];
-    setTags(tags);
+  const handleTagAdd = async () => {
+    const tags = props.tags ? props.tags.concat(currentTag) : [currentTag];
     props.updateTags(tags);
     setCurrentTag('');
   };
 
   const handleTagRemove = async (tag: string) => {
-    const tags = tagList.filter((t) => t !== tag);
-    setTags(tags);
+    const tags = props.tags.filter((t) => t !== tag);
     props.updateTags(tags);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.persist();
     if (event.key === 'Enter') {
-      handleTagAdd(currentTag);
+      handleTagAdd();
     }
   };
   return (
     <>
-      {tagList.map((tag) => (
+      {props.tags.map((tag) => (
         <span className="badge badge-pill badge-secondary mr-1">
           {tag} <FaTimesCircle onClick={() => handleTagRemove(tag)} />
         </span>
@@ -43,7 +41,13 @@ export const TagInput = (props: TagInputProps) => {
           placeholder="type here and press enter to add a tag"
           onChange={(x) => setCurrentTag(x.target.value)}
           onKeyDown={handleKeyPress}
+          disabled={props.disabled}
         />
+        <div className="input-group-append">
+          <button className="btn btn-outline-primary" onClick={handleTagAdd}>
+            <FaPlus />
+          </button>
+        </div>
       </div>
     </>
   );

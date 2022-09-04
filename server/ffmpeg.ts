@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import { readFileSync } from 'fs';
+import { FFProbeOutput } from './models/MediaInfo';
 
 const ffmpeg = function (
   file: string,
@@ -22,16 +23,21 @@ const ffmpeg = function (
 
 export const requestMeta = function (
   file: string
-): Promise<{ stdout: string; stderr: string }> {
+): Promise<string | FFProbeOutput> {
   return new Promise((resolve, reject) => {
     if (!file) {
       return reject(new Error('All arguments are required!'));
     }
-    const command = `ffprobe "${file}"`;
+    const command = `ffprobe -v quiet -print_format json -show_format "${file}"`;
     exec(command, { windowsHide: true }, function (err, stdout, stderr) {
       if (err) return reject(err);
-
-      return resolve({ stdout, stderr });
+      let meta = stdout === '' ? stderr : stdout;
+      try {
+        meta = JSON.parse(meta);
+      } catch (err) {
+        meta = meta;
+      }
+      return resolve(meta);
     });
   });
 };

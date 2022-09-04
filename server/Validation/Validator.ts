@@ -1,7 +1,6 @@
 import { UserCreatePayload } from '../Managers/UserManager';
 import { Library } from '../models';
 import { RegisterLocalPayload } from '../models/RegisterLocalPayload';
-import { SetMediaOrderPayload } from '../models/SetMediaOrderPayload';
 import ValidationEngine from './ValidationEngine';
 
 class Validator {
@@ -28,16 +27,11 @@ class Validator {
         name: string;
         userId: string;
         username: string;
+        isSeason: boolean;
       }>(item, 'library.create');
     },
     Update(item: any) {
       return ValidationEngine.validate<Library>(item, 'library.update');
-    },
-    SetMediaOrder(item: any) {
-      return ValidationEngine.validate<SetMediaOrderPayload>(
-        item,
-        'library.setMediaOrder'
-      );
     }
   };
   User = {
@@ -54,6 +48,9 @@ class Validator {
   Utility = {
     ObjectId(item: any) {
       return ValidationEngine.validate<string>(item, 'utility.ObjectId');
+    },
+    Configuration(item: any) {
+      return ValidationEngine.validate<any>(item, 'utility.Configuration');
     }
   };
 }

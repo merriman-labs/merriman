@@ -1,11 +1,11 @@
-import { Library, SetMediaOrderPayload } from '../../server/models';
+import { Library } from '../../server/models';
 import LibraryRA from '../ResourceAccess/LibraryRA';
 
 class LibraryManager {
   getById(id: string): Promise<Library> {
     return LibraryRA.getById(id);
   }
-  create(library: { name: string }): Promise<Library> {
+  create(library: { name: string; isSeason: boolean }): Promise<Library> {
     return LibraryRA.create(library);
   }
   list() {
@@ -22,9 +22,6 @@ class LibraryManager {
   }
   removeMedia(libraryId: string, mediaId: string) {
     return LibraryRA.removeItem(libraryId, mediaId);
-  }
-  setMediaOrder(payload: SetMediaOrderPayload) {
-    return LibraryRA.setMediaOrder(payload);
   }
 }
 

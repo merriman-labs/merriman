@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { MediaItem, RegisterLocalPayload } from '../../server/models';
 import { TagStatistic } from '../../server/ViewModels';
+import { post } from '../util/HttpMethods';
 
 class MediaRA {
   registerLocal(
@@ -35,19 +36,24 @@ class MediaRA {
       x.json()
     );
   }
-  random(): Promise<MediaItem> {
-    return fetch(`/api/media/random`).then((x) => x.json());
+  random(count: number): Promise<Array<MediaItem>> {
+    return fetch(`/api/media/random?count=${count}`).then((x) => x.json());
   }
 
   search(term: string): Promise<Array<MediaItem>> {
     return fetch(`/api/media/search/${term}`).then((x) => x.json());
   }
-  async upload(data: FormData, updateProgress: (progress: number) => void) {
-    await axios.post('/api/media/upload', data, {
-      onUploadProgress: (p) => {
-        updateProgress(Math.ceil((p.loaded / p.total) * 100));
-      }
-    });
+  async upload(
+    data: FormData,
+    updateProgress: (progress: number) => void
+  ): Promise<MediaItem> {
+    return axios
+      .post('/api/media/upload', data, {
+        onUploadProgress: (p) => {
+          updateProgress(Math.ceil((p.loaded / p.total) * 100));
+        }
+      })
+      .then((x) => x.data);
   }
   tags(): Promise<{ tags: Array<TagStatistic> }> {
     return fetch(`/api/media/tags`, { credentials: 'include' }).then((x) =>
@@ -83,6 +89,10 @@ class MediaRA {
     return fetch(`/api/media/request-webvtt/${id}`, {
       method: 'POST'
     }).then((x) => x.json());
+  }
+
+  regenerateThumbnail(mediaId: string, timestamp: string): Promise<void> {
+    return post('/api/media/regenerate-thumbnail', { mediaId, timestamp });
   }
 }
 

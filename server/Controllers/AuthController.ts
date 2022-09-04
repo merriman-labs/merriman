@@ -35,7 +35,7 @@ export class AuthController implements IController {
   }
 
   logout: RequestHandler = (req, res) => {
-    req.logout();
+    req.logout(() => {});
     res.redirect('/');
   };
 }

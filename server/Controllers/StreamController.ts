@@ -21,47 +21,16 @@ export class StreamController implements IController {
   }
 
   streamMedia: RequestHandler = async (req, res) => {
-    const { mediaLocation, pathRewrites } = AppContext.get(
-      AppContext.WellKnown.Config
-    );
+    const config = AppContext.get(AppContext.WellKnown.Config);
     const videoId = req.params.video.replace('.mp4', '');
     const userId = req.user?._id ?? undefined;
     const video = await this._mediaManager.findById(videoId, userId);
-    const vDir = video.path ? video.path : mediaLocation;
-    const mediaPath = Object.keys(pathRewrites).includes(vDir)
-      ? pathRewrites[vDir]
-      : vDir;
+    const vDir = video.path ? video.path : config.mediaLocation;
+    const mediaPath = config.rewritePath(vDir);
+
     const vPath = path.join(mediaPath, video.filename);
 
-    const stat = fs.statSync(vPath);
-    const fileSize = stat.size;
-    const range = req.headers.range;
-
-    if (range) {
-      const parts = range.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0], 10);
-      if (start === 0) await this._mediaManager.incrementViewCount(videoId);
-      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-
-      const chunksize = end - start + 1;
-      const file = fs.createReadStream(vPath, { start, end });
-      const head = {
-        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunksize,
-        'Content-Type': 'video/mp4'
-      };
-
-      res.writeHead(206, head);
-      file.pipe(res);
-    } else {
-      const head = {
-        'Content-Length': fileSize,
-        'Content-Type': 'video/mp4'
-      };
-      res.writeHead(200, head);
-      fs.createReadStream(vPath).pipe(res);
-    }
+    res.sendFile(vPath);
   };
 
   getCaptions: RequestHandler = async (req, res) => {

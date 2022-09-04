@@ -1,10 +1,10 @@
-import { Library, SetMediaOrderPayload } from '../../server/models';
+import { Library } from '../../server/models';
 
 class LibraryRA {
   getById(id: string): Promise<Library> {
     return fetch(`/api/library/${id}`).then((x) => x.json());
   }
-  async create(library: { name: string }): Promise<Library> {
+  async create(library: { name: string; isSeason: boolean }): Promise<Library> {
     return fetch('/api/library', {
       method: 'POST',
       headers: {
@@ -20,7 +20,9 @@ class LibraryRA {
     const payload: Partial<Library> = {
       _id: library._id,
       name: library.name,
-      visibility: library.visibility
+      visibility: library.visibility,
+      items: library.items,
+      isSeason: library.isSeason
     };
     await fetch('/api/library', {
       method: 'PUT',
@@ -61,16 +63,6 @@ class LibraryRA {
     await fetch(`/api/library/${id}`, {
       method: 'DELETE'
     });
-  }
-
-  async setMediaOrder(payload: SetMediaOrderPayload): Promise<Library> {
-    return fetch('/api/library/setMediaOrder', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }).then((x) => x.json());
   }
 }
 

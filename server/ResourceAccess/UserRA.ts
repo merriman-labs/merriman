@@ -20,7 +20,7 @@ export class UserRA {
   }
 
   list(): Promise<Array<MongoUser>> {
-    return this._db.collection('users').find<MongoUser>().toArray();
+    return this._db.collection('users').find().toArray();
   }
 
   getByEmail(username: string): Promise<User> {

@@ -10,16 +10,15 @@ import { TagStatistic } from '../ViewModels/TagStatistic';
 export default class MediaRA {
   constructor(@inject(DependencyType.External.MongoDB) private _db: Db) {}
 
-  async random(userId: string): Promise<MediaItem> {
+  async random(count: number, userId: string): Promise<Array<MediaItem>> {
     const results = await this._db
       .collection('media')
       .aggregate([
         { $match: this.unlistedOrPrivateOwner(userId) },
-        { $sample: { size: 1 } }
+        { $sample: { size: count } }
       ])
       .toArray();
-    if (results.length === 0) return;
-    return results[0];
+    return results;
   }
 
   latest(skip: number, limit: number, userId: string) {
@@ -78,11 +77,13 @@ export default class MediaRA {
             from: 'media',
             localField: 'items',
             foreignField: '_id',
-            as: 'items'
+            as: 'media'
           }
         },
-        { $unwind: '$items' },
-        { $replaceRoot: { newRoot: '$items' } },
+        { $unwind: '$media' },
+        { $addFields: { _order: { $indexOfArray: ['$items', '$media._id'] } } },
+        { $sort: { _order: 1 } },
+        { $replaceRoot: { newRoot: '$media' } },
         { $match: this.unlistedOrPrivateOwner(userId) }
       ])
       .toArray();
@@ -97,7 +98,7 @@ export default class MediaRA {
         {
           $match: {
             $or: [
-              { 'user.id': new ObjectId(userId) },
+              { 'user.userId': new ObjectId(userId) },
               { visibility: ItemVisibility.public }
             ]
           }

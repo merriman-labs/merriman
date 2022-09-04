@@ -1,82 +1,96 @@
-import React, { Component } from 'react';
-import { Col } from 'reactstrap';
+import * as R from 'ramda';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FaRedo } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { Button, Card, CardImg, Col, InputGroup } from 'reactstrap';
+import Container from 'reactstrap/lib/Container';
+import Row from 'reactstrap/lib/Row';
 import { MediaItem } from '../../../server/models';
-import { MediaPlayer } from '../MediaPlayer/MediaPlayer';
 import MediaManager from '../../managers/MediaManager';
 
-type VideoState = {
-  current: MediaItem | null;
-  history: Array<MediaItem>;
+type RandomMediaProps = {
+  match: {
+    params: {
+      tag: string;
+    };
+  };
 };
 
-export default class RandomMedia extends Component<{}, VideoState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = { current: null, history: [] };
+export const RandomMedia = (props: RandomMediaProps) => {
+  const [media, setMedia] = useState<Array<MediaItem>>([]);
+  const [count, setCount] = useState<number>(24);
+
+  const loadMedia = useCallback(
+    function () {
+      MediaManager.random(count).then(setMedia);
+    },
+    [count]
+  );
+
+  function handleRerollClick() {
+    loadMedia();
   }
-  async componentDidMount() {
-    this.fetchNext();
-  }
-  render() {
-    window.scrollTo({ top: 0 });
-    return (
-      <Col>
-        {this.state.current ? (
-          <MediaPlayer id={this.state.current._id.toString()} />
-        ) : (
-          <div />
+
+  useEffect(() => {
+    loadMedia();
+  }, [count, loadMedia]);
+  return (
+    <Container fluid>
+      <Row
+        style={{
+          position: 'sticky',
+          top: '0px',
+          zIndex: 9,
+          padding: '10px 0',
+          marginBottom: '5px',
+          backgroundColor: '#222',
+          boxSizing: 'border-box'
+        }}
+      >
+        <Col xs="6" xl="2">
+          <InputGroup>
+            <select
+              value={count}
+              onChange={(e) => setCount(parseInt(e.target.value))}
+              className="custom-select"
+            >
+              {R.range(2, 11)
+                .map((n) => n * 12)
+                .map((n) => (
+                  <option value={n}>{n}</option>
+                ))}
+            </select>
+          </InputGroup>
+        </Col>
+        <Col>
+          <Button onClick={handleRerollClick}>
+            <FaRedo /> Reroll
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        {R.splitEvery(4, media).map((group) =>
+          group.map((item, i) => {
+            return (
+              <Col xs="6" sm="6" lg="3" xl="2" key={i} className="video-cell">
+                <Card>
+                  <Link to={`/media/${item._id.toString()}`}>
+                    <CardImg src={`/${item.filename}.png` as string} />
+                  </Link>
+                  <div className="card-body">
+                    <Link
+                      to={`/media/${item._id.toString()}`}
+                      className="card-title"
+                    >
+                      {item.name}
+                    </Link>
+                  </div>
+                </Card>
+              </Col>
+            );
+          })
         )}
-        {this.state.current ? (
-          <div>
-            <span>{this.state.current.views} views</span>
-            <br />
-            <div className="btn-group mb-1">
-              <button
-                className="btn btn-outline-primary btn-sm"
-                disabled={this._currentQueuePosition === 0}
-                onClick={this.fetchPrevious}
-              >
-                &larr;
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={this.fetchNext}
-              >
-                &rarr;
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div />
-        )}
-      </Col>
-    );
-  }
-
-  fetchNext = async () => {
-    const position = this._currentQueuePosition;
-    if (position === this.state.history.length - 1) {
-      const details = await MediaManager.random();
-      this.setState((s) => ({
-        current: details,
-        history: s.history.concat(details)
-      }));
-    } else {
-      this.setState({ current: this.state.history[position + 1] });
-    }
-  };
-
-  fetchPrevious = async () => {
-    if (this.state.current && this.state.history.length > 1) {
-      const current = this._currentQueuePosition;
-      const previous = this.state.history[current - 1];
-      this.setState({ current: previous });
-    }
-  };
-
-  private get _currentQueuePosition() {
-    return this.state.history.findIndex(
-      (item) => item._id === this.state.current!._id
-    );
-  }
-}
+      </Row>
+    </Container>
+  );
+};

@@ -1,4 +1,5 @@
 import * as path from 'path';
+import fs from 'fs';
 import MediaRA from '../ResourceAccess/MediaRA';
 import { MediaEngine } from '../Engines/MediaEngine';
 import { MediaItem, MediaType } from '../models';
@@ -15,6 +16,8 @@ import { NotFoundError } from '../Errors/NotFoundError';
 import { UnauthorizedError } from '../Errors/UnauthorizedError';
 import { TagStatistic } from '../ViewModels/TagStatistic';
 import { MediaStateRA } from '../ResourceAccess/MediaStateRA';
+import { toMediaFormat } from '../Formatters/MediaFormat';
+import busboy from 'busboy';
 
 @injectable()
 export class MediaManager {
@@ -33,8 +36,8 @@ export class MediaManager {
     return this._mediaRA.search(term, userId);
   }
 
-  random(userId: string) {
-    return this._mediaRA.random(userId);
+  random(count: number, userId: string) {
+    return this._mediaRA.random(count, userId);
   }
 
   latest(skip: number, limit: number, userId: string) {
@@ -90,6 +93,83 @@ export class MediaManager {
     return this._mediaRA.add(newMediaItem);
   }
 
+  upload(
+    user: {
+      userId: string;
+      username: string;
+    },
+    busboy: busboy.Busboy
+  ) {
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
+    return new Promise<MediaItem>((res, rej) => {
+      const item = {
+        name: null,
+        tags: null,
+        libraryIds: null
+      };
+      busboy.on('field', (name, val) => {
+        if (name === 'info') {
+          const info = JSON.parse(val);
+          Object.assign(item, info);
+        }
+      });
+      busboy.on('file', (field, file, { filename }) => {
+        const newMediaItem = this._mediaEngine.initializeUploadedMedia(
+          filename,
+          user.userId,
+          user.username,
+          serverConfig.mediaLocation
+        );
+
+        file
+          .pipe(
+            fs.createWriteStream(
+              path.join(serverConfig.mediaLocation, newMediaItem.filename)
+            )
+          )
+          .on('finish', async () => {
+            if (newMediaItem.filename.toLowerCase().includes('.mp4')) {
+              // Make sure media has a thumbnail
+              await ThumbProvider.ensureThumbs(
+                [newMediaItem.filename],
+                serverConfig.mediaLocation,
+                serverConfig.thumbLocation
+              );
+            }
+            newMediaItem.name = item.name || newMediaItem.name;
+            newMediaItem.tags = item.tags || newMediaItem.tags;
+
+            const result = await this._mediaRA.add(newMediaItem);
+            // Add item to any selected libraries
+            if (item.libraryIds) {
+              for (let libraryId of item.libraryIds) {
+                await this._libraryRA.addMediaToLibrary(
+                  { id: result._id.toString(), order: 0 },
+                  libraryId
+                );
+              }
+            }
+            return res(result);
+          })
+          .on('error', () => {
+            return rej('An error occurred while storing the upload');
+          });
+      });
+    });
+  }
+
+  async regenerateThumb(id: string, userId: string, timestamp?: string) {
+    const media = await this._mediaRA.findById(id, userId);
+    const serverConfig = AppContext.get(AppContext.WellKnown.Config);
+    await ThumbProvider.ensureThumbs(
+      [media.filename],
+      serverConfig.mediaLocation,
+      serverConfig.thumbLocation,
+      true,
+      timestamp
+    );
+  }
+
   findById(id: string, userId: string) {
     return this._mediaRA.findById(id, userId);
   }
@@ -125,13 +205,15 @@ export class MediaManager {
 
   async requestMeta(id: string, userId: string) {
     const media = await this._mediaRA.findById(id, userId);
-    const { stdout, stderr } = await requestMeta(
-      path.join(media.path, media.filename)
-    );
-    const meta = stdout === '' ? stderr : stdout;
-    media.meta = meta;
+    const data = await requestMeta(path.join(media.path, media.filename));
+
+    if (typeof data === 'string') {
+      media.meta = data;
+    } else {
+      media.formatData = toMediaFormat(data.format);
+    }
     await this._mediaRA.update(media);
-    return meta;
+    return data;
   }
 
   async generateSubs(id: string, track: string, userId: string) {

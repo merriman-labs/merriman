@@ -12,4 +12,5 @@ export type Library = {
   visibility: ItemVisibility;
   createdAt: Date;
   updatedAt: Date;
+  isSeason: boolean;
 };

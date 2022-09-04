@@ -65,7 +65,7 @@ export const MediaPlayer = (props: MediaPlayerProps) => {
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (event.key === 'Enter') {
-      await LibraryManager.create({ name: newLibraryName });
+      await LibraryManager.create({ name: newLibraryName, isSeason: false });
       setNewLibraryName('');
       await getLibraries();
     }
