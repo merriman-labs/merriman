@@ -69,6 +69,7 @@
   "proxy": "http://localhost:4000",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/busboy": "^1.5.0",
     "@types/chance": "^1.0.1",
     "@types/connect-busboy": "0.0.0",
     "@types/connect-ensure-login": "^0.1.5",
