@@ -51,6 +51,7 @@
   "scripts": {
     "cli": "ts-node -P ./server/tsconfig.json server/cli/cli.ts run C:\\Users\\Johnny\\.merriman\\server-config.Movies.json -a",
     "server": "tsnd -P ./server/tsconfig.json server/server.ts server-config.dev.json -a",
+    "start:prod": "node dist_server/server.js /config/server-config.prod.json -a",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:server": "tsc -P ./server/tsconfig.json",
